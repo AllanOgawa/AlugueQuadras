@@ -4,11 +4,7 @@ module.exports = {
     content: ["./src/**/*.{js,jsx,ts,tsx}"],
     presets: [require("nativewind/preset")],
     theme: {
-        extend: {
-            boxShadow: {
-                '3xl': '0 35px 60px -15px #000000',
-            }
-        },
+        extend: {},
     },
     plugins: [],
 }

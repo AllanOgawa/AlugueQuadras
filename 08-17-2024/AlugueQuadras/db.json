@@ -1,0 +1,128 @@
+{
+    "reservas": [
+        {
+            "id": "1",
+            "ativa": true,
+            "local": "Beach Park Maringá",
+            "endereco": "Av. Nóbrega, 62 - Centro, Maringá - PR, 87014-180",
+            "quadra": "Quadra 1",
+            "data": "20 de Agosto - 2024",
+            "hora": "15:10 - 16:00",
+            "valor": "R$ 80,00",
+            "avaliacao": 0,
+            "image": "https://lh3.googleusercontent.com/p/AF1QipOQxdvkKmMQHYfusdz7ryOnSENXjDZhajZgef5K=s1360-w1360-h1020"
+        },
+        {
+            "id": "2",
+            "ativa": false,
+            "local": "Beach Park Maringá",
+            "endereco": "Av. Nóbrega, 62 - Centro, Maringá - PR, 87014-180",
+            "quadra": "Quadra 4",
+            "data": "13 de Agosto, 2024",
+            "hora": "15:10 - 16:00",
+            "valor": "R$ 80,00",
+            "avaliacao": 5.0,
+            "image": "https://lh3.googleusercontent.com/p/AF1QipOQxdvkKmMQHYfusdz7ryOnSENXjDZhajZgef5K=s1360-w1360-h1020"
+        },
+        {
+            "id": "3",
+            "ativa": false,
+            "local": "Beach Park Maringá",
+            "endereco": "Av. Nóbrega, 62 - Centro, Maringá - PR, 87014-180",
+            "quadra": "Quadra 3",
+            "data": "06 de Agosto, 2024",
+            "hora": "15:10 - 16:00",
+            "valor": "R$ 80,00",
+            "avaliacao": 5.0,
+            "image": "https://lh3.googleusercontent.com/p/AF1QipOQxdvkKmMQHYfusdz7ryOnSENXjDZhajZgef5K=s1360-w1360-h1020"
+        },
+        {
+            "id": "4",
+            "ativa": false,
+            "local": "Galpão Beach Sports",
+            "endereco": "Av. Nóbrega, 62 - Centro, Maringá - PR, 87014-180",
+            "quadra": "Quadra Sunset",
+            "data": "30 de Julho, 2024",
+            "hora": "17:10 - 18:00",
+            "valor": "R$ 75,00",
+            "avaliacao": 4.5,
+            "image": "https://scontent-gru2-2.xx.fbcdn.net/v/t39.30808-6/419138678_24520879254226099_3620861067234238337_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=kInX-vP29NgQ7kNvgE-yq5M&_nc_ht=scontent-gru2-2.xx&oh=00_AYAHI9gp5aTxT28fzthF8MlgEwb2Xp98rs-Ux7VTR-3txA&oe=66C9A80C"
+        },
+        {
+            "id": "5",
+            "ativa": false,
+            "local": "Arena Match Point",
+            "endereco": "Av. Nóbrega, 62 - Centro, Maringá - PR, 87014-180",
+            "quadra": "Quadra Spring",
+            "data": "23 de Julho, 2024",
+            "hora": "14:10 - 15:00",
+            "valor": "R$ 85,00",
+            "avaliacao": 4.0,
+            "image": "https://lh3.googleusercontent.com/p/AF1QipOZ0-GSsZXcSsm0uqEu9zeo31kf2h6DcJ7HpuL2=s1360-w1360-h1020"
+        },
+        {
+            "id": "6",
+            "ativa": false,
+            "local": "Euro Beach Tennis",
+            "endereco": "Av. Nóbrega, 62 - Centro, Maringá - PR, 87014-180",
+            "quadra": "Quadra Italy",
+            "data": "16 de Julho, 2024",
+            "hora": "08:10 - 09:00",
+            "valor": "R$ 90,00",
+            "avaliacao": 3.5,
+            "image": "https://lh3.googleusercontent.com/p/AF1QipO7ANttEtrqILGV6iBbWVRxmWWCeCKrsOYY8a7t=s1360-w1360-h1020"
+        }
+    ],
+    "foods": [
+        {
+            "id": "1",
+            "name": "Frango assado",
+            "price": 39.90,
+            "time": "50-60 min",
+            "delivery": 5.99,
+            "rating": 4.8,
+            "image": "https://i.imgur.com/CEVUdju.png",
+            "restaurantId": "1"
+        },
+        {
+            "id": "2",
+            "name": "Marmita fit",
+            "price": 29,
+            "time": "30-40 min",
+            "delivery": 2.99,
+            "rating": 4.9,
+            "image": "https://i.imgur.com/uXRuDFD.png",
+            "restaurantId": "6"
+        },
+        {
+            "id": "3",
+            "name": "Burguer Dev",
+            "price": 40,
+            "time": "50-60 min",
+            "delivery": 5.99,
+            "rating": 4.5,
+            "image": "https://i.imgur.com/O5c3lyU.png",
+            "restaurantId": "5"
+        },
+        {
+            "id": "4",
+            "name": "Picanha Grill",
+            "price": 36,
+            "time": "50-60 min",
+            "delivery": 5.99,
+            "rating": 4.4,
+            "image": "https://i.imgur.com/0UjG3wk.png",
+            "restaurantId": "3"
+        },
+        {
+            "id": "5",
+            "name": "Açai 300ml",
+            "price": 20,
+            "time": "20-30 min",
+            "delivery": 2.99,
+            "rating": 4.4,
+            "image": "https://i.imgur.com/BaUUCkc.png",
+            "restaurantId": "3"
+        }
+    ]
+}
