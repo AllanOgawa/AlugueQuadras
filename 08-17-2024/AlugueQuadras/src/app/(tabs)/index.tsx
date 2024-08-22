@@ -7,7 +7,7 @@ import { FilterSport } from "../../components/filterSport";
 
 const statusBarHeight = Constants.statusBarHeight;
 
-export default function Index() {
+export default function Inicio() {
   return (
     <ScrollView
       style={{ flex: 1 }}

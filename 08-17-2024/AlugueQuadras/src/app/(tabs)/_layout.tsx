@@ -1,6 +1,32 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
+import { Tabs } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
+
+const tabData = [{
+  route: "index",
+  name: "Inicio",
+  iconFocused: "home",
+  iconUnfocused: "home-outline"
+}, {
+  route: "busca",
+  name: "Buscar",
+  iconFocused: "search",
+  iconUnfocused: "search-outline"
+}, {
+  route: "mapa",
+  name: "Mapa",
+  iconFocused: "map",
+  iconUnfocused: "map-outline"
+}, {
+  route: "reserva",
+  name: "Reservas",
+  iconFocused: "calendar",
+  iconUnfocused: "calendar-outline"
+}, {
+  route: "perfil",
+  name: "Perfil",
+  iconFocused: "person",
+  iconUnfocused: "person-outline"
+}];
 
 export default function TabLayout() {
 
@@ -9,91 +35,27 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: false,
       }}>
-
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Inicio',
-          tabBarActiveTintColor: "#f97316",
-          tabBarInactiveTintColor: "#000000",
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? 'home' : 'home-outline'}
-              color={color}
-              size={28}
-              style={{ marginBottom: -3 }}
-            />
-          ),
-        }}
-      />
-
-      <Tabs.Screen
-        name="busca"
-        options={{
-          title: 'Buscar',
-          tabBarActiveTintColor: "#f97316",
-          tabBarInactiveTintColor: "#000000",
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? 'search' : 'search-outline'}
-              color={color}
-              size={28}
-              style={{ marginBottom: -3 }}
-            />
-          ),
-        }}
-      />
-
-      <Tabs.Screen
-        name="mapa"
-        options={{
-          title: 'Mapa',
-          tabBarActiveTintColor: "#f97316",
-          tabBarInactiveTintColor: "#000000",
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? 'map' : 'map-outline'}
-              color={color}
-              size={28}
-              style={{ marginBottom: -3 }}
-            />
-          ),
-        }}
-      />
-
-      <Tabs.Screen
-        name="reserva"
-        options={{
-          title: 'Reservas',
-          tabBarActiveTintColor: "#f97316",
-          tabBarInactiveTintColor: "#000000",
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? 'calendar' : 'calendar-outline'}
-              color={color}
-              size={28}
-              style={{ marginBottom: -3 }}
-            />
-          ),
-        }}
-      />
-
-      <Tabs.Screen
-        name="perfil"
-        options={{
-          title: 'Perfil',
-          tabBarActiveTintColor: "#f97316",
-          tabBarInactiveTintColor: "#000000",
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? 'person' : 'person-outline'}
-              color={color}
-              size={28}
-              style={{ marginBottom: -3 }}
-            />
-          ),
-        }}
-      />
+      {
+        tabData.map((tab, index) => (
+          <Tabs.Screen
+            key={index}
+            name={tab.route}
+            options={{
+              title: tab.name,
+              tabBarActiveTintColor: "#f97316",
+              tabBarInactiveTintColor: "#000000",
+              tabBarIcon: ({ color, focused }) => (
+                <Ionicons
+                  name={focused ? tab.iconFocused : tab.iconUnfocused}
+                  color={color}
+                  size={28}
+                  style={{ marginBottom: -3 }}
+                />
+              )
+            }}
+          />
+        ))
+      }
     </Tabs>
   );
 }

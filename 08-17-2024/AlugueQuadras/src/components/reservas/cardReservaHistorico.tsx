@@ -1,13 +1,14 @@
-import { Pressable, Text, Image, View, StyleSheet } from 'react-native';
+import { Pressable, Text, Image, View } from 'react-native';
 
-import { ReservasProps } from '..'
+import { ReservasProps } from './index'
 import { Ionicons } from '@expo/vector-icons';
+import { estilo } from '@/src/styles/style';
 
 export function CardReservaHistorico({ reserva }: { reserva: ReservasProps }) {
     return (
         <Pressable
-            style={styles.box}
-            className='flex flex-row items-center px-2 rounded-2xl w-[98%] h-28 bg-white'
+            style={estilo.box}
+            className='flex flex-row items-center px-2 rounded-2xl w-[99%] h-28 bg-white'
             key={reserva.id}
             onPress={() => console.log(`Clicou na reserva ${reserva.id} - ${reserva.local}`)}
         >
@@ -26,18 +27,7 @@ export function CardReservaHistorico({ reserva }: { reserva: ReservasProps }) {
                     {reserva.avaliacao}
                     <Ionicons name='star' />
                 </Text>
-
             </View>
         </Pressable>
     );
 }
-
-const styles = StyleSheet.create({
-    box: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.5,
-        shadowRadius: 2,
-        elevation: 6,
-    },
-});

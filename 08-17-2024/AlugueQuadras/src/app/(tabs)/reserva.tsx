@@ -1,11 +1,8 @@
-import { ScrollView, Text, View } from 'react-native';
-
+import { ScrollView, Text, View } from 'react-native'
+import { ReservasList } from '../../components/reservas'
 import Constants from 'expo-constants'
-import { ReservasHistorico } from '@/src/components/reservasHistorico';
-import { ReservasAtivo } from '@/src/components/reservasAtivo';
 
 const statusBarHeight = Constants.statusBarHeight;
-
 
 export default function Reserva() {
   return (
@@ -20,8 +17,7 @@ export default function Reserva() {
       >
         <Text className="text-4xl font-semibold mt-3">Reservas</Text>
 
-        <ReservasAtivo></ReservasAtivo>
-        <ReservasHistorico></ReservasHistorico>
+        <ReservasList />
       </View>
     </ScrollView>
   );

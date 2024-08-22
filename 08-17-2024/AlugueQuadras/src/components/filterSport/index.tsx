@@ -1,5 +1,6 @@
 import { Pressable, Text, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons'
+import { estilo } from '@/src/styles/style';
 
 export function FilterSport() {
   return (
@@ -8,6 +9,7 @@ export function FilterSport() {
       <View className='flex-row justify-between'>
 
         <Pressable
+          style={estilo.box2}
           className='h-20 w-[49%] rounded-2xl bg-orange-500
           flex-row items-center justify-between px-1'
           key="1"
@@ -18,6 +20,7 @@ export function FilterSport() {
         </Pressable>
 
         <Pressable
+          style={estilo.box2}
           className='h-20 w-[49%] rounded-2xl bg-orange-500 
           flex-row items-center justify-between px-1'
           key="2"
@@ -32,6 +35,7 @@ export function FilterSport() {
       <View className='flex-row justify-between mt-3'>
 
         <Pressable
+          style={estilo.box2}
           className='h-20 w-[49%] rounded-2xl bg-orange-500 
           flex-row items-center justify-between px-1'
           key="3"
@@ -42,6 +46,7 @@ export function FilterSport() {
         </Pressable>
 
         <Pressable
+          style={estilo.box2}
           className='h-20 w-[49%] rounded-2xl bg-orange-500 
           flex-row items-center justify-between px-1'
           key="4"
@@ -55,6 +60,7 @@ export function FilterSport() {
 
       <View className='mt-3'>
         <Pressable
+          style={estilo.box2}
           className='w-full h-12 rounded-2xl bg-gray-300
           flex-row items-center justify-center px-1'
           key="5"

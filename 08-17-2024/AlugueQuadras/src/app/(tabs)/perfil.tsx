@@ -1,4 +1,4 @@
-import { ScrollView, Text, View } from 'react-native';
+import { Button, ScrollView, Text, View } from 'react-native';
 
 import Constants from 'expo-constants'
 
@@ -13,6 +13,11 @@ export default function Perfil() {
     >
       <View className="w-full px-4" style={{ marginTop: statusBarHeight + 8 }}>
         <Text className="text-xl font-semibold mt-3">TESTE PERFIL</Text>
+
+        <Button
+          title="Ir para Detalhes"
+        // onPress={() => navigation.navigate('Teste')}
+        />
       </View>
     </ScrollView>
   );
