@@ -12,7 +12,7 @@ export default function Notification() {
             showsVerticalScrollIndicator={false}
         >
             <View className="w-full px-4" style={{ marginTop: statusBarHeight + 8 }}>
-                <Text className="text-xl font-semibold mt-3">NOTIFICAITON BUSCAR</Text>
+                <Text className="text-xl font-semibold mt-3">NOTIFICATION 1</Text>
             </View>
         </ScrollView>
     );
