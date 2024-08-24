@@ -8,7 +8,7 @@ export default function Notification() {
     return (
         <ScrollView
             style={{ flex: 1 }}
-            className="bg-gray-50"
+            className="bg-white"
             showsVerticalScrollIndicator={false}
         >
             <View className="w-full px-4" style={{ marginTop: statusBarHeight + 8 }}>
