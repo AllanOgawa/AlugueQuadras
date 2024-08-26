@@ -1,6 +1,8 @@
 import { Button, ScrollView, Text, View } from 'react-native';
 
+
 import Constants from 'expo-constants'
+import { Navigator } from 'expo-router';
 
 const statusBarHeight = Constants.statusBarHeight;
 

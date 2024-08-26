@@ -1,9 +1,11 @@
 import { Text, View, ScrollView } from "react-native";
 import { Header } from "../../components/header";
 import { Banner } from "../../components/banner";
+import { LastCourt } from "@/src/components/lastCourt";
 
 import Constants from 'expo-constants'
 import { FilterSport } from "../../components/filterSport";
+
 
 const statusBarHeight = Constants.statusBarHeight;
 
@@ -21,6 +23,8 @@ export default function Inicio() {
         <FilterSport />
         <Banner />
         <Text className="text-xl font-semibold mt-3">Ultimas Quadras Visitadas</Text>
+        <LastCourt/>
+
       </View>
     </ScrollView>
   );
