@@ -21,7 +21,6 @@ export async function ObterLocalizacao() {
     });
     
     const city =  reverseGeocode[0]?.city || reverseGeocode[0]?.district || "Cidade não identificada"
-
     
     return {
       latitude,

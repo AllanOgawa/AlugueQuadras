@@ -1,7 +1,10 @@
 import { Tabs } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 
-const tabData = [{
+type TabName = "Inicio" | "Buscar" | "Mapa" | "Reservas" | "Perfil";
+type IconName = "home" | "home-outline" | "search" | "search-outline" | "map" | "map-outline" | "calendar" | "calendar-outline" | "person" | "person-outline";
+
+const tabData: { route: string, name: TabName, iconFocused: IconName, iconUnfocused: IconName }[] = [{
   route: "index",
   name: "Inicio",
   iconFocused: "home",
@@ -44,7 +47,7 @@ export default function TabLayout() {
               title: tab.name,
               tabBarActiveTintColor: "#f97316",
               tabBarInactiveTintColor: "#000000",
-              tabBarIcon: ({ color, focused }) => (
+              tabBarIcon: ({ color, focused }) => ( 
                 <Ionicons
                   name={focused ? tab.iconFocused : tab.iconUnfocused}
                   color={color}
