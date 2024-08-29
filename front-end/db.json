@@ -73,56 +73,21 @@
             "image": "https://lh3.googleusercontent.com/p/AF1QipO7ANttEtrqILGV6iBbWVRxmWWCeCKrsOYY8a7t=s1360-w1360-h1020"
         }
     ],
-    "foods": [
+    "banner": [
         {
             "id": "1",
-            "name": "Frango assado",
-            "price": 39.90,
-            "time": "50-60 min",
-            "delivery": 5.99,
-            "rating": 4.8,
-            "image": "https://i.imgur.com/CEVUdju.png",
-            "restaurantId": "1"
+            "name": "Banner 1",
+            "image": "https://media.discordapp.net/attachments/1166500048176152636/1278514091836833914/banner3.jpg?ex=66d11489&is=66cfc309&hm=a23d274d0424a11bdfbb7a0ff39c2f0f954c0c0bdf72918a147a03a489812f56&=&format=webp&width=1025&height=395"
         },
         {
             "id": "2",
-            "name": "Marmita fit",
-            "price": 29,
-            "time": "30-40 min",
-            "delivery": 2.99,
-            "rating": 4.9,
-            "image": "https://i.imgur.com/uXRuDFD.png",
-            "restaurantId": "6"
+            "name": "Banner 2",
+            "image": "https://media.discordapp.net/attachments/1166500048176152636/1278511025985028169/banner1.jpg?ex=66d111ae&is=66cfc02e&hm=879f662b3457df80be30482a2581ca6d4ef2d5b6831477da4d27c6f903b7490f&=&format=webp&width=1025&height=396"
         },
         {
             "id": "3",
-            "name": "Burguer Dev",
-            "price": 40,
-            "time": "50-60 min",
-            "delivery": 5.99,
-            "rating": 4.5,
-            "image": "https://i.imgur.com/O5c3lyU.png",
-            "restaurantId": "5"
-        },
-        {
-            "id": "4",
-            "name": "Picanha Grill",
-            "price": 36,
-            "time": "50-60 min",
-            "delivery": 5.99,
-            "rating": 4.4,
-            "image": "https://i.imgur.com/0UjG3wk.png",
-            "restaurantId": "3"
-        },
-        {
-            "id": "5",
-            "name": "Açai 300ml",
-            "price": 20,
-            "time": "20-30 min",
-            "delivery": 2.99,
-            "rating": 4.4,
-            "image": "https://i.imgur.com/BaUUCkc.png",
-            "restaurantId": "3"
+            "name": "Banner 3",
+            "image": "https://media.discordapp.net/attachments/1166500048176152636/1278511130926387270/banner2.jpg?ex=66d111c7&is=66cfc047&hm=9124e272aa13f9cb6f82694d740d7bccf2cad6d7a0fd0fa9a8de5a5ba6844b45&=&format=webp&width=1025&height=396"
         }
     ]
 }

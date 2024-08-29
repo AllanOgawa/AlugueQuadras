@@ -1,46 +1,49 @@
-import { FlatList } from 'react-native';
-import { useEffect, useState  } from 'react'
-import { CourtItem } from '../lastCourt/courtItem'
+import { FlatList, Pressable, Text, Image, SafeAreaView } from 'react-native';
+import { useEffect, useState } from 'react'
+import { router } from 'expo-router';
+import * as data from '@/db.json'
 
-// {
-//     "id": "1",
-//     "ativa": true,
-//     "local": "Beach Park Maringá",
-//     "endereco": "Av. Nóbrega, 62 - Centro, Maringá - PR, 87014-180",
-//     "quadra": "Quadra 1",
-//     "data": "20 de Agosto - 2024",
-//     "hora": "15:10 - 16:00",
-//     "valor": "R$ 80,00",
-//     "avaliacao": 0,
-//     "image": "https://lh3.googleusercontent.com/p/AF1QipOQxdvkKmMQHYfusdz7ryOnSENXjDZhajZgef5K=s1360-w1360-h1020"
-// }
-
-export interface Courtprops{
+export interface CourtProps {
   id: string;
   local: string;
   image: string;
 }
 
-export function LastCourt() {
-  const [court, setCourts] = useState<Courtprops[]>([])
+export default function LastCourt() {
+  const [court, setCourts] = useState<CourtProps[]>([])
 
   useEffect(() => {
-    async function getCourts(){
-      const response = await fetch("http://192.168.1.10:3000/reservas")
-      const data = await response.json()
-      setCourts(data);
-    }    
-    getCourts();
+    setCourts(data.reservas)
   }, [])
 
+  const renderItem = ({ item }: { item: CourtProps }) => (
+    <Pressable
+      className='flex flex-col items-center justify-center'
+      onPress={() => router.push('/(tabs)/reserva')}
+    >
+      <Image
+        source={{ uri: item.image }}
+        className='w-24 h-24 rounded-full justify-self-center'
+      />
+      <Text
+        className='text-sm mt-2 w-20 text-center font-bold leading-4 text-black'
+        numberOfLines={2}
+      >
+        {item.local}
+      </Text>
+    </Pressable>
+  );
 
- return (
-  <FlatList
-    data={court}
-    renderItem={ ({ item }) => <CourtItem item={item} /> }
-    horizontal={true}
-    contentContainerStyle={{ gap: 14,paddingRight: 16, marginTop: 16}}
-    showsHorizontalScrollIndicator={false}
-  />
+  return (
+    <SafeAreaView>
+      <Text className="text-xl font-semibold mt-3">Ultimas Quadras Visitadas</Text>
+      <FlatList
+        data={court}
+        renderItem={renderItem}
+        horizontal={true}
+        contentContainerStyle={{ gap: 14, paddingRight: 16, marginTop: 16 }}
+        showsHorizontalScrollIndicator={false}
+      />
+    </SafeAreaView>
   );
 }

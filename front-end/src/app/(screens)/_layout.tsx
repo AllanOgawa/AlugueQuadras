@@ -5,8 +5,7 @@ export default function ScreenLayout() {
   return (
     <Stack>
       <Stack.Screen name="notification" />
-      <Stack.Screen name="quadras"/>
-      <Stack.Screen name="reserva" />
+      <Stack.Screen name="quadras" />
     </Stack>
   );
 }
