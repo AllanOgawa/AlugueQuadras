@@ -89,5 +89,19 @@
             "name": "Banner 3",
             "image": "https://media.discordapp.net/attachments/1166500048176152636/1278511130926387270/banner2.jpg?ex=66d111c7&is=66cfc047&hm=9124e272aa13f9cb6f82694d740d7bccf2cad6d7a0fd0fa9a8de5a5ba6844b45&=&format=webp&width=1025&height=396"
         }
+    ],
+    "user": [
+        {
+            "id": "1",
+            "name": "Heitor Brandolin",
+            "adm": false,
+            "image": "https://www.pbs.org/wnet/nature/files/2020/02/pexels-photo-682375-610x405.jpg"
+        },
+        {
+            "id": "2",
+            "name": "Heitor Brandolin",
+            "adm": false,
+            "image": "https://www.pbs.org/wnet/nature/files/2020/02/pexels-photo-682375-610x405.jpg"
+        }
     ]
 }
