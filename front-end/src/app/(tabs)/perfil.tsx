@@ -2,6 +2,7 @@ import UserIcon from '@/src/components/userIcon';
 import Constants from 'expo-constants';
 import { ScrollView, Text, View } from 'react-native';
 import * as data from '@/db.json'
+import { CardConfig } from '@/src/components/cardConfig';
 
 const statusBarHeight = Constants.statusBarHeight;
 
@@ -13,10 +14,7 @@ export default function Perfil() {
 			className="bg-white"
 			showsVerticalScrollIndicator={false}
 		>
-			<View
-				style={{ flex: 1, marginTop: statusBarHeight + 8 }}
-				className="bg-white w-full px-10 pt-4"
-			>
+			<View className="w-full px-4 py-8" style={{ marginTop: statusBarHeight + 8 }}>
 				<UserIcon image={user.image} />
 				<Text
 					className='font-bold text-center text-2xl'
@@ -24,6 +22,7 @@ export default function Perfil() {
 					{user.name}
 				</Text>
 			</View>
+			<CardConfig/>
 		</ScrollView>
 	);
 }
