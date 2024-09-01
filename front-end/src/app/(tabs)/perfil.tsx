@@ -8,7 +8,7 @@ import NotificationCard from '@/src/components/cardNotification';
 const statusBarHeight = Constants.statusBarHeight;
 
 export default function Perfil() {
-	const user = data.user[0];
+	const user = data.user[1];
 	return (
 		<ScrollView
 			style={{ flex: 1 }}
