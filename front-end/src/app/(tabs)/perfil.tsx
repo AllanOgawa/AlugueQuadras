@@ -3,6 +3,7 @@ import Constants from 'expo-constants';
 import { ScrollView, Text, View } from 'react-native';
 import * as data from '@/db.json'
 import { CardConfig } from '@/src/components/cardConfig';
+import NotificationCard from '@/src/components/cardNotification';
 
 const statusBarHeight = Constants.statusBarHeight;
 
@@ -22,6 +23,7 @@ export default function Perfil() {
 					{user.name}
 				</Text>
 			</View>
+			<NotificationCard/>
 			<CardConfig/>
 		</ScrollView>
 	);
