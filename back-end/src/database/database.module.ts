@@ -17,6 +17,7 @@ import { entities } from './entities';
         database: configService.get<string>('DB_NAME'),
         entities: entities,
         synchronize: false,  // Cria as tabelas automaticamente
+        logging: true
       }),
       inject: [ConfigService],
     }),

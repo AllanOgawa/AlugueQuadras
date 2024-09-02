@@ -5,15 +5,15 @@ export class Usuario {
   @PrimaryGeneratedColumn()
   idkey: number;
 
-  @Column()
+  @Column({ nullable: false })  
   idkey_tipo_usuario: number;
 
-  @Column({ unique: true })
+  @Column({ nullable: false, unique: true })
   email: string;
 
-  @Column()
+  @Column({ nullable: false })
   senha: string;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({ type: 'timestamp' }) 
   data_cadastro: Date;
 }

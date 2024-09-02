@@ -1,4 +1,9 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreateUsuarioDto } from './create-usuario.dto';
+import { IsString, MinLength } from 'class-validator';
 
-export class UpdateUsuarioDto extends PartialType(CreateUsuarioDto) {}
+export class UpdateUsuarioDto {
+  @IsString()
+  @MinLength(6, {
+    message: 'A senha deve ter pelo menos 6 caracteres.',
+  })
+  senha: string;
+}

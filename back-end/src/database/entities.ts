@@ -1,6 +1,6 @@
-import { Usuario } from '../admin/usuario/schema/usuario.schema';
+import { Usuario } from '../admin/usuario/entities/usuario.entity';
 
-// Adicionar todos os schemas aqui para ser lido pelo TypeORM
+// Adicionar todas as entities aqui para ser lido pelo TypeORM
 
 export const entities = [
   Usuario,
