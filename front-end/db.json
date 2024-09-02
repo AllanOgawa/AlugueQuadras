@@ -13,30 +13,6 @@
             "image": "https://lh3.googleusercontent.com/p/AF1QipOQxdvkKmMQHYfusdz7ryOnSENXjDZhajZgef5K=s1360-w1360-h1020"
         },
         {
-            "id": "2",
-            "ativa": false,
-            "local": "Beach Park Maringá",
-            "endereco": "Av. Nóbrega, 62 - Centro, Maringá - PR, 87014-180",
-            "quadra": "Quadra 4",
-            "data": "13 de Agosto, 2024",
-            "hora": "15:10 - 16:00",
-            "valor": "R$ 80,00",
-            "avaliacao": 5.0,
-            "image": "https://lh3.googleusercontent.com/p/AF1QipOQxdvkKmMQHYfusdz7ryOnSENXjDZhajZgef5K=s1360-w1360-h1020"
-        },
-        {
-            "id": "3",
-            "ativa": false,
-            "local": "Beach Park Maringá",
-            "endereco": "Av. Nóbrega, 62 - Centro, Maringá - PR, 87014-180",
-            "quadra": "Quadra 3",
-            "data": "06 de Agosto, 2024",
-            "hora": "15:10 - 16:00",
-            "valor": "R$ 80,00",
-            "avaliacao": 5.0,
-            "image": "https://lh3.googleusercontent.com/p/AF1QipOQxdvkKmMQHYfusdz7ryOnSENXjDZhajZgef5K=s1360-w1360-h1020"
-        },
-        {
             "id": "4",
             "ativa": false,
             "local": "Galpão Beach Sports",
@@ -46,7 +22,7 @@
             "hora": "17:10 - 18:00",
             "valor": "R$ 75,00",
             "avaliacao": 4.5,
-            "image": "https://scontent-gru2-2.xx.fbcdn.net/v/t39.30808-6/419138678_24520879254226099_3620861067234238337_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=kInX-vP29NgQ7kNvgE-yq5M&_nc_ht=scontent-gru2-2.xx&oh=00_AYAHI9gp5aTxT28fzthF8MlgEwb2Xp98rs-Ux7VTR-3txA&oe=66C9A80C"
+            "image": "https://scontent.fldb1-1.fna.fbcdn.net/v/t39.30808-6/419138678_24520879254226099_3620861067234238337_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=G_G1syvNIfoQ7kNvgHMg8Vx&_nc_ht=scontent.fldb1-1.fna&oh=00_AYDsH24AAOTLxYXH3zKk47PiPkfZ5lW4r0q0PcbEt4HrGQ&oe=66D97A0C"
         },
         {
             "id": "5",
@@ -77,17 +53,31 @@
         {
             "id": "1",
             "name": "Banner 1",
-            "image": "https://media.discordapp.net/attachments/1166500048176152636/1278514091836833914/banner3.jpg?ex=66d11489&is=66cfc309&hm=a23d274d0424a11bdfbb7a0ff39c2f0f954c0c0bdf72918a147a03a489812f56&=&format=webp&width=1025&height=395"
+            "image": "https://i.postimg.cc/Ss3N1dR4/banner1.jpg"
         },
         {
             "id": "2",
             "name": "Banner 2",
-            "image": "https://media.discordapp.net/attachments/1166500048176152636/1278511025985028169/banner1.jpg?ex=66d111ae&is=66cfc02e&hm=879f662b3457df80be30482a2581ca6d4ef2d5b6831477da4d27c6f903b7490f&=&format=webp&width=1025&height=396"
+            "image": "https://i.postimg.cc/j5VF8JT9/banner2.jpg"
         },
         {
             "id": "3",
             "name": "Banner 3",
-            "image": "https://media.discordapp.net/attachments/1166500048176152636/1278511130926387270/banner2.jpg?ex=66d111c7&is=66cfc047&hm=9124e272aa13f9cb6f82694d740d7bccf2cad6d7a0fd0fa9a8de5a5ba6844b45&=&format=webp&width=1025&height=396"
+            "image": "https://i.postimg.cc/zv8PNZVF/banner3.jpg"
+        }
+    ],
+    "user": [
+        {
+            "id": "1",
+            "name": "Heitor Brandolin",
+            "adm": false,
+            "image": "https://i.pinimg.com/564x/42/e0/be/42e0bed77037b55e27152e1907c5a875.jpg"
+        },
+        {
+            "id": "2",
+            "name": "Allan Ogawa",
+            "adm": false,
+            "image": "https://upload.wikimedia.org/wikipedia/en/4/4e/Kirby_Nintendo.png"
         }
     ]
 }
