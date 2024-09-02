@@ -1,36 +1,46 @@
-import { View, Pressable, Image } from 'react-native';
-import PagerView from 'react-native-pager-view';
+import { Dimensions, Pressable, Image, SafeAreaView } from 'react-native';
+import Carousel from 'react-native-reanimated-carousel';
+import { useEffect, useState } from 'react';
+import * as data from '@/db.json';
 
-export function Banner() {
+export interface BannerProps {
+    id: string;
+    name: string;
+    image: string;
+}
+
+export default function Banner() {
+    const width = Dimensions.get('window').width;
+    const [banners, setBanner] = useState<BannerProps[]>([])
+
+    useEffect(() => {
+        setBanner(data.banner)
+    }, [])
+
     return (
-        <View className='w-full h-36 md:h-60 rounded-2xl mt-5 mb-4'>
-            <PagerView style={{ flex: 1 }} initialPage={0} pageMargin={14}>
-
-                <Pressable
-                    className='w-full h-36 md:h-60 rounded-2xl'
-                    key="1"
-                    onPress={() => console.log("Clicou banner 1")}
-                >
-                    <Image
-                        source={require("../../assets/banner1.jpg")}
-                        className='w-full h-36 md:h-60 rounded-2xl'
+        <SafeAreaView className='w-full h-36 md:h-60 rounded-2xl mt-5 mb-4'>
+            <Carousel
+                loop
+                width={width - 30}
+                autoPlay={true}
+                style={{ borderRadius: 15 }}
+                autoPlayInterval={8000}
+                data={banners}
+                scrollAnimationDuration={1000}
+                renderItem={({ item }) => (
+                    <Pressable
+                        className='w-full h-36 rounded-2xl'
+                        key={item.id}
+                        onPress={() => console.log("Clicou banner " + item.id)}
                     >
-                    </Image>
-                </Pressable>
-
-                <Pressable
-                    className='w-full h-36 md:h-60 rounded-2xl'
-                    key="2"
-                    onPress={() => console.log("Clicou banner 2")}
-                >
-                    <Image
-                        source={require("../../assets/banner2.jpg")}
-                        className='w-full h-36 md:h-60 rounded-2xl'
-                    >
-                    </Image>
-                </Pressable>
-
-            </PagerView>
-        </View>
+                        <Image
+                            source={{ uri: item.image }}
+                            className='w-full h-36 rounded-2xl'
+                        >
+                        </Image>
+                    </Pressable>
+                )}
+            />
+        </SafeAreaView>
     );
 }

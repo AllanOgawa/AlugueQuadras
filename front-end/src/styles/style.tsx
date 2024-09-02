@@ -14,5 +14,5 @@ export const estilo = StyleSheet.create({
         shadowOpacity: 0.5,
         shadowRadius: 2,
         elevation: 7,
-    },
+    }
 });
