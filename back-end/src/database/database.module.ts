@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { entities } from './entities';  
+import { entities } from './entities';
 
 @Module({
   imports: [
@@ -16,7 +16,7 @@ import { entities } from './entities';
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
         entities: entities,
-        synchronize: false,  // Cria as tabelas automaticamente
+        synchronize: true,  // Cria as tabelas automaticamente
         logging: true
       }),
       inject: [ConfigService],
