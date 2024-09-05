@@ -17,7 +17,7 @@ export default function TextInputExample({ title, hint }: TextInputProps) {
 
     return (
         <SafeAreaView className='flex-col'>
-            <Text className='top-3 ml-3 text-xl'>{title}</Text>
+            <Text className='top-1 ml-3 text-xl'>{title}</Text>
             <TextInput
                 style={styles.input}
                 onChangeText={onChangeText}

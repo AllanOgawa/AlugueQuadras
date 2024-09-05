@@ -9,7 +9,7 @@ export default function QuadrasLayout() {
             <Stack>
                 <Stack.Screen name='home' options={{ headerShown: false }} />
                 <Stack.Screen name='edit' />
-                <Stack.Screen name='create' />
+                <Stack.Screen name='create' options={{ headerShown: false }} />
             </Stack>
         </SafeAreaView>
     );
