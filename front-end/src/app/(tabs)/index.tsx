@@ -15,13 +15,13 @@ const statusBarHeight = Constants.statusBarHeight;
 export default function Inicio() {
 	const user = data.user[0];
 	return (
-		<ScrollView
-			style={{ flex: 1 }}
-			className="bg-white"
-			showsVerticalScrollIndicator={false}
-		>
-			<StatusBar style="dark" translucent={true} backgroundColor="transparent" />
-			<SafeAreaView className="flex-1 bg-white mt-5">
+		<SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+			<ScrollView
+				style={{ flex: 1 }}
+				className="bg-white"
+				showsVerticalScrollIndicator={false}
+			>
+				<StatusBar style="dark" translucent={true} backgroundColor="transparent" />
 				<View className="w-full px-4" style={{ marginTop: statusBarHeight }}>
 					<View className="flex-row justify-between items-center mb-4">
 						<View>
@@ -37,7 +37,7 @@ export default function Inicio() {
 									name="bell"
 									size={16}
 									color="#FF7300"
-									className="absolute top-0 right-0 p-1" // Posiciona o sino sobre a imagem
+									className="absolute top-0  right-0 p-1" // Posiciona o sino sobre a imagem
 								/>
 							</Pressable>
 						</View>
@@ -46,8 +46,8 @@ export default function Inicio() {
 					<Banner />
 					<LastCourt />
 				</View>
-			</SafeAreaView>
-		</ScrollView>
+			</ScrollView>
+		</SafeAreaView>
 	);
 }
 

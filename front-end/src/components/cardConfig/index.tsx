@@ -7,6 +7,11 @@ type MaterialIconName =
     | 'notifications'
     | 'history'
     | 'keyboard-arrow-right'
+    | 'money'
+    | 'sports-tennis'
+    | 'sell'
+    | 'add-circle-outline'
+    | 'create'
 // Adicione aqui mais nomes de ícones que você for utilizar
 
 interface CardConfigProps {

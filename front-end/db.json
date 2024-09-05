@@ -118,7 +118,7 @@
         {
             "id": "1",
             "name": "Heitor Brandolin",
-            "adm": false,
+            "adm": true,
             "image": "https://i.pinimg.com/564x/42/e0/be/42e0bed77037b55e27152e1907c5a875.jpg"
         },
         {
@@ -127,5 +127,31 @@
             "adm": false,
             "image": "https://upload.wikimedia.org/wikipedia/en/4/4e/Kirby_Nintendo.png"
         }
+    ],
+    "quadras": [
+        {
+            "id": "10",
+            "ativa": false,
+            "local": "Euro Beach Tennis",
+            "endereco": "Av. Nóbrega, 62 - Centro, Maringá - PR, 87014-180",
+            "quadra": "Quadra Italy",
+            "data": "16 de Julho, 2024",
+            "hora": "08:10 - 09:00",
+            "valor": "R$ 90,00",
+            "avaliacao": 3.5,
+            "image": "https://lh3.googleusercontent.com/p/AF1QipO7ANttEtrqILGV6iBbWVRxmWWCeCKrsOYY8a7t=s1360-w1360-h1020"
+        },
+        {
+            "id": "10",
+            "ativa": false,
+            "local": "Euro Beach Tennis",
+            "endereco": "Av. Nóbrega, 62 - Centro, Maringá - PR, 87014-180",
+            "quadra": "Quadra Italy",
+            "data": "16 de Julho, 2024",
+            "hora": "08:10 - 09:00",
+            "valor": "R$ 90,00",
+            "avaliacao": 3.5,
+            "image": "https://lh3.googleusercontent.com/p/AF1QipO7ANttEtrqILGV6iBbWVRxmWWCeCKrsOYY8a7t=s1360-w1360-h1020"
+        },
     ]
 }
