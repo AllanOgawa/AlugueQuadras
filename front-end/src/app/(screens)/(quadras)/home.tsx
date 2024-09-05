@@ -12,8 +12,6 @@ const statusBarHeight = Constants.statusBarHeight;
 export default function HomeQuadra() {
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
-            <ArrowBack />
-            <Text className="text-4xl font-semibold ml-2 mt-3">Quadras</Text>
             <View
                 style={{ flex: 1, marginTop: statusBarHeight + 2 }}
                 className="bg-white w-full px-4"

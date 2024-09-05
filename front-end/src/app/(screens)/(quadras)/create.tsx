@@ -3,12 +3,13 @@ import CustomButton from '@/src/components/buttom';
 import TextInputExample from '@/src/components/textInput';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { useEffect } from 'react';
 import { View, Text, SafeAreaView, ScrollView } from 'react-native';
 
 export default function NewCourt() {
+
     return (
         <SafeAreaView>
-            <ArrowBack />
             <ScrollView>
                 <View>
                     <Text className='text-4xl font-semibold ml-2 mt-4'>Registar Local</Text>
