@@ -7,7 +7,7 @@ export default function QuadrasLayout() {
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <Stack>
-                <Stack.Screen name='home' />
+                <Stack.Screen name='home' options={{ headerShown: false }} />
                 <Stack.Screen name='edit' />
                 <Stack.Screen name='create' />
             </Stack>

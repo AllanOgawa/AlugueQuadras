@@ -18,14 +18,15 @@ interface CardConfigProps {
     icon: MaterialIconName;
     title: string;
     subtitle: string;
+    style?: string
     onPress: () => void;
 }
 
-export function CardConfig({ icon, title, subtitle, onPress }: CardConfigProps) {
+export function CardConfig({ icon, title, subtitle, style, onPress }: CardConfigProps) {
     return (
         <View>
             <Pressable
-                className="h-16 w-full rounded-2xl flex-row items-center justify-between px-4"
+                className={style}
                 onPress={onPress}
             >
                 <View className="flex-row items-center">

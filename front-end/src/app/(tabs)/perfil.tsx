@@ -32,24 +32,28 @@ export default function Perfil() {
 						icon="person"
 						title="Minha conta"
 						subtitle="Meus dados"
+						style='h-16 w-full rounded-2xl flex-row items-center justify-between px-4'
 						onPress={() => console.log("Clicou em Minha conta")}
 					/>
 					<CardConfig
 						icon="money"
 						title="Financeiro"
 						subtitle="Minhas Finanças"
+						style='h-16 w-full rounded-2xl flex-row items-center justify-between px-4'
 						onPress={() => console.log("Clicou em Financas")}
 					/>
 					<CardConfig
 						icon="notifications"
 						title="Notificações"
 						subtitle="Minha central de notificações"
+						style='h-16 w-full rounded-2xl flex-row items-center justify-between px-4'
 						onPress={() => console.log("Clicou em Notificações")}
 					/>
 					<CardConfig
 						icon="sports-tennis"
 						title="Quadras"
 						subtitle="Minhas quadras cadastradas"
+						style='h-16 w-full rounded-2xl flex-row items-center justify-between px-4'
 						onPress={() => router.push('/(screens)/(quadras)/home')}
 					/>
 
@@ -57,6 +61,7 @@ export default function Perfil() {
 						icon="sell"
 						title="Promoções"
 						subtitle="Minhas promoções"
+						style='h-16 w-full rounded-2xl flex-row items-center justify-between px-4'
 						onPress={() => console.log("Clicou em Histórico")}
 					/>
 
@@ -83,24 +88,28 @@ export default function Perfil() {
 					icon="person"
 					title="Minha conta"
 					subtitle="Meus dados"
+					style='h-16 w-full rounded-2xl flex-row items-center justify-between px-4'
 					onPress={() => console.log("Clicou em Minha conta")}
 				/>
 				<CardConfig
 					icon="wallet"
 					title="Pagamentos"
 					subtitle="Informações de pagamento"
+					style='h-16 w-full rounded-2xl flex-row items-center justify-between px-4'
 					onPress={() => console.log("Clicou em Pagamentos")}
 				/>
 				<CardConfig
 					icon="notifications"
 					title="Notificações"
 					subtitle="Minha central de notificações"
+					style='h-16 w-full rounded-2xl flex-row items-center justify-between px-4'
 					onPress={() => console.log("Clicou em Notificações")}
 				/>
 				<CardConfig
 					icon="history"
 					title="Histórico"
 					subtitle="Meu histórico de alocações"
+					style='h-16 w-full rounded-2xl flex-row items-center justify-between px-4'
 					onPress={() => console.log("Clicou em Histórico")}
 				/>
 
