@@ -12,6 +12,7 @@ type MaterialIconName =
     | 'sell'
     | 'add-circle-outline'
     | 'create'
+    | 'monetization-on'
 // Adicione aqui mais nomes de ícones que você for utilizar
 
 interface CardConfigProps {

@@ -36,7 +36,7 @@ export default function Perfil() {
 						onPress={() => console.log("Clicou em Minha conta")}
 					/>
 					<CardConfig
-						icon="money"
+						icon="monetization-on"
 						title="Financeiro"
 						subtitle="Minhas Finanças"
 						style='h-16 w-full rounded-2xl flex-row items-center justify-between px-4'
