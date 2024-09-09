@@ -13,22 +13,17 @@ export default function NewCourt() {
                 <View>
                     <Text style={styles.headerText}>Informações Gerais</Text>
                     <TextInputExample
-                        title={'CNPJ'}
-                        hint={'Ex: CNPJ'}
+                        title={'Nome da quadra'}
+                        hint={'Ex: Quadra 2'}
                     />
                     <TextInputExample
-                        title='Nome do responsável'
-                        hint={'Ex: Nome do Responsável'}
+                        title='Esporte'
+                        hint={'Ex: Volei'}
                     />
                     <TextInputExample
-                        title='Telefone para contato'
-                        hint={'(99) 99999-9999'}
+                        title='Informações adicionais'
+                        hint={'Ex: Aos fundos'}
                     />
-                    <TextInputExample
-                        title='Nome do local'
-                        hint={'Ex: Quadra legal'}
-                    />
-
                     <View style={styles.uploadSection}>
                         <Text style={styles.uploadText}>Registro de funcionamento (Alvará)</Text>
                         <View style={styles.uploadButton}>

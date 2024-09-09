@@ -32,7 +32,7 @@ export default function TextInputExample({ title, hint }: TextInputProps) {
 const styles = StyleSheet.create({
     input: {
         height: 40,
-        margin: 13,
+        margin: 14,
         borderWidth: 1,
         padding: 10,
         borderColor: "#FF7300",

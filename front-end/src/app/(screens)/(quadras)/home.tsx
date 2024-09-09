@@ -26,8 +26,8 @@ export default function HomeQuadra() {
                     }} />
                 <CardConfig
                     icon={'create'}
-                    title={'Nova quadra'}
-                    subtitle={'Cadastrar uma nova quadra'}
+                    title={'Editar quadra'}
+                    subtitle={'Editar uma quadra'}
                     style='h-16 w-full rounded-2xl flex-row items-center justify-between'
                     onPress={function (): void {
                         router.push('/edit')
