@@ -1,5 +1,6 @@
 import ArrowBack from '@/src/components/arrowBack';
 import CustomButton from '@/src/components/buttom';
+import DayIcon from '@/src/components/dayIcon';
 import TextInputExample from '@/src/components/textInput';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -24,6 +25,17 @@ export default function NewCourt() {
                         title='Informações adicionais'
                         hint={'Ex: Aos fundos'}
                     />
+
+                    <Text className=' ml-3 py-2 text-xl'>Dias da semana disponíveis:</Text>
+
+                    <View className='flex-row mx-4 justify-between py-2'>
+                        <DayIcon day={'Seg'} color={'#FF7300'} />
+                        <DayIcon day={'Ter'} color={'#FF7300'} />
+                        <DayIcon day={'Qua'} color={'#FF7300'} />
+                        <DayIcon day={'Qui'} color={'#FF7300'} />
+                        <DayIcon day={'Sex'} color={'#FF7300'} />
+                        <DayIcon day={'Sab'} color={'#FF7300'} />
+                    </View>
                     <View style={styles.uploadSection}>
                         <Text style={styles.uploadText}>Registro de funcionamento (Alvará)</Text>
                         <View style={styles.uploadButton}>
