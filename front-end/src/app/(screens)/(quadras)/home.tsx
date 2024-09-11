@@ -1,11 +1,8 @@
-import ArrowBack from '@/src/components/arrowBack';
 import { CardConfig } from '@/src/components/cardConfig';
 import QuadrasList from '@/src/components/quadras';
-import { ReservasList } from '@/src/components/reservas';
-import { MaterialIcons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import { router } from 'expo-router';
-import { View, Text, Button, SafeAreaView, ScrollView } from 'react-native';
+import { View, Text, SafeAreaView, ScrollView } from 'react-native';
 
 const statusBarHeight = Constants.statusBarHeight;
 
