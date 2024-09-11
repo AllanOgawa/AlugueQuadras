@@ -1,7 +1,6 @@
 import { ScrollView, Text, View } from 'react-native';
 
 import Constants from 'expo-constants'
-import HorariosDisponiveis from '@/src/components/timerSelector';
 
 const statusBarHeight = Constants.statusBarHeight;
 

@@ -2,7 +2,12 @@ import { estilo } from '@/src/styles/style';
 import { Pressable, View, Image, Text } from 'react-native';
 import { CourtProps } from '.';
 
-export default function CourtItem({ court }: { court: CourtProps }) {
+interface CourtItemProps {
+    court: CourtProps;
+    onPress: () => void;
+}
+
+export default function CourtItem({ court, onPress }: CourtItemProps) {
     return (
         <Pressable
             style={estilo.box}
@@ -10,7 +15,7 @@ export default function CourtItem({ court }: { court: CourtProps }) {
                 flex flex-row-reverse items-center 
                 justify-between px-2 rounded-2xl w-[99%] h-40 bg-white'
             key={court.id}
-            onPress={() => console.log(`Clicou na quadra ${court.id} - ${court.local}`)}
+            onPress={onPress}
         >
             <Image
                 source={{ uri: court.image }}
@@ -27,9 +32,9 @@ export default function CourtItem({ court }: { court: CourtProps }) {
                 >{court.endereco}</Text>
                 <Text></Text>
                 <Text numberOfLines={1} className='font-semibold'>{court.quadra}</Text>
-                <Text numberOfLines={1} >{court.data}</Text>
-                <Text numberOfLines={1} >{court.hora} • {court.valor}</Text>
+                <Text numberOfLines={1}>{court.data}</Text>
+                <Text numberOfLines={1}>{court.hora} • {court.valor}</Text>
             </View >
-        </Pressable >
+        </Pressable>
     );
 }

@@ -1,5 +1,5 @@
 import { CardConfig } from '@/src/components/cardConfig';
-import QuadrasList from '@/src/components/quadras';
+import CourtList, { CourtProps } from '@/src/components/quadras';
 import Constants from 'expo-constants';
 import { router } from 'expo-router';
 import { View, Text, SafeAreaView, ScrollView } from 'react-native';
@@ -7,6 +7,10 @@ import { View, Text, SafeAreaView, ScrollView } from 'react-native';
 const statusBarHeight = Constants.statusBarHeight;
 
 export default function HomeQuadra() {
+    function handleCourtPress(court: CourtProps): void {
+        console.log(`Você clicou na quadra ${court.local} localizada em ${court.endereco}`)
+    }
+
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <View
@@ -32,7 +36,7 @@ export default function HomeQuadra() {
                 <Text className='font-normal text-3xl py-5'>Ativas</Text>
 
                 <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-                    <QuadrasList />
+                    <CourtList onPress={handleCourtPress} />
                 </ScrollView>
             </View>
         </SafeAreaView >
