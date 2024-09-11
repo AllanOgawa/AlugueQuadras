@@ -1,5 +1,6 @@
 import { Pressable, View, Text } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import Octicons from '@expo/vector-icons/Octicons';
 
 type MaterialIconName =
     | 'person'
@@ -13,7 +14,7 @@ type MaterialIconName =
     | 'add-circle-outline'
     | 'create'
     | 'monetization-on'
-// Adicione aqui mais nomes de ícones que você for utilizar
+    | 'highlight-remove'
 
 interface CardConfigProps {
     icon: MaterialIconName;

@@ -24,6 +24,14 @@ export default function NewCourt() {
                         hint={'Ex: Volei'}
                     />
                     <TextInputExample
+                        title='Valor por hora'
+                        hint={'Ex: R$45,00'}
+                    />
+                    <TextInputExample
+                        title='Endereço'
+                        hint={'Ex: Av: Nobrega, 239'}
+                    />
+                    <TextInputExample
                         title='Informações adicionais'
                         hint={'Ex: Aos fundos'}
                     />
@@ -31,6 +39,7 @@ export default function NewCourt() {
                     <Text className=' ml-3 py-2 text-xl'>Dias da semana disponíveis:</Text>
 
                     <View className='flex-row mx-4 justify-between py-2'>
+                        <DayIcon day={'Dom'} color={'#FF7300'} />
                         <DayIcon day={'Seg'} color={'#FF7300'} />
                         <DayIcon day={'Ter'} color={'#FF7300'} />
                         <DayIcon day={'Qua'} color={'#FF7300'} />

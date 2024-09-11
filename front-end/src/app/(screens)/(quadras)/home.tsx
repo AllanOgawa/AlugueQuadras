@@ -33,6 +33,14 @@ export default function HomeQuadra() {
                     onPress={function (): void {
                         router.push('/edit')
                     }} />
+                <CardConfig
+                    icon={'highlight-remove'}
+                    title={'Remover quadra'}
+                    subtitle={'Remover uma quadra'}
+                    style='h-16 w-full rounded-2xl flex-row items-center justify-between'
+                    onPress={function (): void {
+                        router.push('/edit')
+                    }} />
                 <Text className='font-normal text-3xl py-5'>Ativas</Text>
 
                 <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
