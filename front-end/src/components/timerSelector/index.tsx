@@ -1,52 +1,52 @@
-import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
+import React, { useState } from 'react';
+import { View, Text, ScrollView, TextInput } from 'react-native';
+import DayIcon from '../dayIcon';
 
-const DisponibilidadeQuadra = () => {
-  const horarios = [
-    { dia: 'Ter', inicio: '10:00', fim: '21:00' },
-    { dia: 'Qua', inicio: '10:00', fim: '21:00' },
-    { dia: 'Qui', inicio: '10:00', fim: '21:00' },
-    { dia: 'Sex', inicio: '10:00', fim: '21:00' },
-    { dia: 'Sab', inicio: '8:00', fim: '21:00' },
-    { dia: 'Dom', inicio: '6:00', fim: '22:00' },
-  ];
+
+const diasDaSemana = [
+  { dia: 'Ter', inicio: '10:00', fim: '21:00' },
+  { dia: 'Qua', inicio: '10:00', fim: '21:00' },
+  { dia: 'Qui', inicio: '10:00', fim: '21:00' },
+  { dia: 'Sex', inicio: '10:00', fim: '21:00' },
+  { dia: 'Sab', inicio: '8:00', fim: '21:00' },
+  { dia: 'Dom', inicio: '6:00', fim: '22:00' },
+];
+
+export default function HorariosDisponiveis() {
+  const [horarios, setHorarios] = useState(diasDaSemana);
+
+  const handleHorarioChange = (index: number, campo: string, valor: string) => {
+    const novosHorarios = [...horarios];
+    novosHorarios[index][campo] = valor;
+    setHorarios(novosHorarios);
+  };
 
   return (
-    <View className="p-4">
-      <Text className="text-lg font-bold mb-4">Horários Disponíveis:</Text>
-      <View className="space-y-4">
-        {horarios.map((horario, index) => (
+    <View className='mx-4'>
+      <Text className="py-4 text-xl">Horários Disponíveis:</Text>
+      {horarios.map((dia, index) => (
+        <View key={index} className="flex-row items-center mb-3 justify-between mx-4">
           <View
-            key={index}
-            className="flex-row items-center justify-between bg-white p-2 rounded-lg shadow-sm"
+            className={`h-16 w-16 p-3 rounded-xl justify-center items-center`}
+            style={{ backgroundColor: '#FF7300' }}
           >
-            {/* Dia da semana */}
-            <TouchableOpacity className="bg-orange-500 rounded-full py-2 px-4">
-              <Text className="text-white font-bold text-base">
-                {horario.dia}
-              </Text>
-            </TouchableOpacity>
-
-            {/* Horário de Início */}
-            <View className="flex-row items-center">
-              <FontAwesome name="clock-o" size={16} className="text-orange-500 mr-2" />
-              <Text className="text-base">{horario.inicio}</Text>
-            </View>
-
-            {/* Texto "às" */}
-            <Text className="text-base mx-2 text-gray-500">às</Text>
-
-            {/* Horário de Fim */}
-            <View className="flex-row items-center">
-              <FontAwesome name="clock-o" size={16} className="text-orange-500 mr-2" />
-              <Text className="text-base">{horario.fim}</Text>
-            </View>
+            <Text className='text-white font-semibold' style={{ color: '#ffff' }}>{dia.dia}</Text>
           </View>
-        ))}
-      </View>
+          <TextInput
+            className="border border-orange-500 rounded-lg p-2 px-4 mr-2 text-center"
+            value={dia.inicio}
+            onChangeText={(text) => handleHorarioChange(index, 'inicio', text)}
+            keyboardType="numeric"
+          />
+          <Text className="text-gray-600 font-bold text-xl">as</Text>
+          <TextInput
+            className="border border-orange-500 rounded-lg p-2 px-4 text-center"
+            value={dia.fim}
+            onChangeText={(text) => handleHorarioChange(index, 'fim', text)}
+            keyboardType="numeric"
+          />
+        </View>
+      ))}
     </View>
   );
 };
-
-export default DisponibilidadeQuadra;

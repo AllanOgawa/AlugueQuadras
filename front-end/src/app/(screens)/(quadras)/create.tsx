@@ -6,6 +6,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useEffect } from 'react';
 import { View, Text, SafeAreaView, ScrollView, StyleSheet } from 'react-native';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import HorariosDisponiveis from '@/src/components/timerSelector';
 
 export default function NewCourt() {
     return (
@@ -36,23 +38,28 @@ export default function NewCourt() {
                         <DayIcon day={'Sex'} color={'#FF7300'} />
                         <DayIcon day={'Sab'} color={'#FF7300'} />
                     </View>
+                    <HorariosDisponiveis />
                     <View style={styles.uploadSection}>
-                        <Text style={styles.uploadText}>Registro de funcionamento (Alvará)</Text>
+                        <Text style={styles.uploadText}>Insira algumas fotos do local:</Text>
                         <View style={styles.uploadButton}>
+                            <MaterialIcons name='upload' size={20} style={styles.icon} />
                             <Text style={styles.uploadButtonText}>Upload</Text>
                         </View>
                     </View>
-
                     <View style={styles.fileSection}>
-                        <MaterialIcons name='upload' size={20} style={styles.icon} />
-                        <Text style={styles.fileText}>Alvara.pdf</Text>
+                        <AntDesign name='picture' size={20} style={styles.icon} />
+                        <Text style={styles.fileText}>Foto 1.png</Text>
+                    </View>
+                    <View style={styles.fileSection}>
+                        <AntDesign name='picture' size={20} style={styles.icon} />
+                        <Text style={styles.fileText}>Foto 2.png</Text>
                     </View>
                 </View>
             </ScrollView>
             <View style={styles.buttonContainer}>
                 <CustomButton
-                    title={'Próximo'}
-                    onPress={() => router.push('/notification')}
+                    title={'Cadastrar'}
+                    onPress={() => router.push('/(quadras)/home')}
                     style='bg-orange-500 p-4 rounded-2xl active:bg-orange-400 mx-4'
                 />
             </View>
@@ -72,6 +79,7 @@ const styles = StyleSheet.create({
         fontWeight: '500',
         marginLeft: 12,
         marginTop: 8,
+        flexDirection: "row"
     },
     uploadSection: {
         marginHorizontal: 16,
@@ -86,24 +94,27 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingVertical: 16,
         marginTop: 16,
+        flexDirection: "row",
+        justifyContent: "center"
     },
     uploadButtonText: {
         color: '#ffffff',
         fontWeight: 'bold',
     },
     fileSection: {
-        backgroundColor: '#9ca3af', // Tailwind gray-400
+        backgroundColor: '#b0b6bf',
         borderRadius: 12,
         justifyContent: 'center',
         alignItems: 'center',
         marginHorizontal: 40,
         paddingVertical: 16,
-        marginTop: 16,
+        marginTop: 8,
         flexDirection: 'row',
-        marginBottom: 20
+        marginBottom: 8
     },
     icon: {
-        paddingHorizontal: 8,
+        paddingHorizontal: 4,
+        color: "white"
     },
     fileText: {
         color: '#ffffff',
