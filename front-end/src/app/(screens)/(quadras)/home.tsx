@@ -14,8 +14,7 @@ export default function HomeQuadra() {
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <View
-                style={{ flex: 1, marginTop: statusBarHeight + 2 }}
-                className="bg-white w-full px-4"
+                className="bg-white w-full px-4 flex-1 mt-1"
             >
                 <CardConfig
                     icon={'add-circle-outline'}

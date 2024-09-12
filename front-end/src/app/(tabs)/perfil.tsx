@@ -1,4 +1,4 @@
-import UserIcon from '@/src/components/userIcon';
+import UserIcon from '@/src/components/IconUser';
 import Constants from 'expo-constants';
 import { SafeAreaView, ScrollView, Text, View } from 'react-native';
 import * as data from '@/db.json'
@@ -47,7 +47,7 @@ export default function Perfil() {
 						title="Notificações"
 						subtitle="Minha central de notificações"
 						style='h-16 w-full rounded-2xl flex-row items-center justify-between px-4'
-						onPress={() => console.log("Clicou em Notificações")}
+						onPress={() => router.navigate('/(screens)/notification')}
 					/>
 					<CardConfig
 						icon="sports-tennis"
@@ -62,7 +62,7 @@ export default function Perfil() {
 						title="Promoções"
 						subtitle="Minhas promoções"
 						style='h-16 w-full rounded-2xl flex-row items-center justify-between px-4'
-						onPress={() => console.log("Clicou em Histórico")}
+						onPress={() => console.log("Clicou em Promoções")}
 					/>
 
 				</ScrollView>
@@ -103,7 +103,7 @@ export default function Perfil() {
 					title="Notificações"
 					subtitle="Minha central de notificações"
 					style='h-16 w-full rounded-2xl flex-row items-center justify-between px-4'
-					onPress={() => console.log("Clicou em Notificações")}
+					onPress={() => router.navigate('/(screens)/notification')}
 				/>
 				<CardConfig
 					icon="history"

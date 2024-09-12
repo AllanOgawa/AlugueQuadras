@@ -1,15 +1,28 @@
-import ArrowBack from '@/src/components/arrowBack';
 import CustomButton from '@/src/components/buttom';
-import DayIcon from '@/src/components/dayIcon';
+import DayIcon from '@/src/components/IconDay';
 import TextInputExample from '@/src/components/textInput';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useEffect } from 'react';
 import { View, Text, SafeAreaView, ScrollView, StyleSheet } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import HorariosDisponiveis from '@/src/components/timerSelector';
+import MultiSelect from '@/src/components/IconService';
+
 
 export default function NewCourt() {
+
+    const options = [
+        { id: '1', label: 'Banheiros' },
+        { id: '2', label: 'Alimentação' },
+        { id: '3', label: 'Espaço para crianças' },
+        { id: '4', label: 'Espaço para pets' },
+        { id: '5', label: 'Estacionamento' }
+    ];
+
+    const handleSelectionChange = (selected: string[]) => {
+        console.log('Selecionados:', selected);
+    };
+
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollViewContent}>
@@ -36,18 +49,10 @@ export default function NewCourt() {
                         hint={'Ex: Aos fundos'}
                     />
 
-                    <Text className=' ml-3 py-2 text-xl'>Dias da semana disponíveis:</Text>
-
-                    <View className='flex-row mx-4 justify-between py-2'>
-                        <DayIcon day={'Dom'} color={'#FF7300'} />
-                        <DayIcon day={'Seg'} color={'#FF7300'} />
-                        <DayIcon day={'Ter'} color={'#FF7300'} />
-                        <DayIcon day={'Qua'} color={'#FF7300'} />
-                        <DayIcon day={'Qui'} color={'#FF7300'} />
-                        <DayIcon day={'Sex'} color={'#FF7300'} />
-                        <DayIcon day={'Sab'} color={'#FF7300'} />
+                    <View className="p-4">
+                        <Text className="text-xl mb-4">Selecione uma ou mais opções:</Text>
+                        <MultiSelect options={options} onSelectionChange={handleSelectionChange} />
                     </View>
-                    <HorariosDisponiveis />
                     <View style={styles.uploadSection}>
                         <Text style={styles.uploadText}>Insira algumas fotos do local:</Text>
                         <View style={styles.uploadButton}>
@@ -99,7 +104,7 @@ const styles = StyleSheet.create({
     },
     uploadButton: {
         backgroundColor: '#6b7280', // Tailwind gray-500
-        borderRadius: 12,
+        borderRadius: 16,
         alignItems: 'center',
         paddingVertical: 16,
         marginTop: 16,

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, TextInput } from 'react-native';
-import DayIcon from '../dayIcon';
+
 
 
 const diasDaSemana = [
@@ -25,22 +25,22 @@ export default function HorariosDisponiveis() {
     <View className='mx-4'>
       <Text className="py-4 text-xl">Horários Disponíveis:</Text>
       {horarios.map((dia, index) => (
-        <View key={index} className="flex-row items-center mb-3 justify-between mx-4">
+        <View key={index} className="flex-row items-center font-semibold mb-3 justify-between">
           <View
-            className={`h-16 w-16 p-3 rounded-xl justify-center items-center`}
+            className={`h-14 w-14 p-3 rounded-2xl justify-center items-center mr-8`}
             style={{ backgroundColor: '#FF7300' }}
           >
             <Text className='text-white font-semibold' style={{ color: '#ffff' }}>{dia.dia}</Text>
           </View>
           <TextInput
-            className="border border-orange-500 rounded-lg p-2 px-4 mr-2 text-center"
+            className="border w-[30%] h-14 border-orange-500 rounded-2xl p-2 px-4 text-center"
             value={dia.inicio}
             onChangeText={(text) => handleHorarioChange(index, 'inicio', text)}
             keyboardType="numeric"
           />
-          <Text className="text-gray-600 font-bold text-xl">as</Text>
+          <Text className="text-gray-600 align-middle font-bold text-xl">as</Text>
           <TextInput
-            className="border border-orange-500 rounded-lg p-2 px-4 text-center"
+            className="border w-[30%] h-14 border-orange-500 rounded-2xl p-2 px-4 text-center"
             value={dia.fim}
             onChangeText={(text) => handleHorarioChange(index, 'fim', text)}
             keyboardType="numeric"

@@ -10,7 +10,7 @@ export default function DayIcon({ day, color }: DayIconProps) {
     const [pressed, setPressed] = useState(false);
 
     const togglePressed = () => {
-        setPressed(!pressed); // Alterna o estado de 'pressed' entre true e false
+        setPressed(!pressed);
     };
 
     return (

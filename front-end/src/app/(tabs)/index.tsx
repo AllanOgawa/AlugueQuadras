@@ -7,7 +7,7 @@ import Constants from 'expo-constants'
 import { FilterSport } from "../../components/filterSport";
 import { StatusBar } from "expo-status-bar";
 import * as data from '@/db.json'
-import UserIcon from "@/src/components/userIcon";
+import UserIcon from "@/src/components/IconUser";
 import { router } from "expo-router";
 
 const statusBarHeight = Constants.statusBarHeight;
