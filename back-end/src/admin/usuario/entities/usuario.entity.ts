@@ -1,9 +1,9 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { TipoUsuario } from '../../tipo-usuario/entities/tipo-usuario.entity';
+import { UsuarioTipo } from '../tipo/entities/tipo.entity';
 
 @Entity({ schema: 'admin', name: 'usuario' })
 export class Usuario {
-  @PrimaryGeneratedColumn({ type: 'bigint' })
+  @PrimaryGeneratedColumn({ type: 'bigint' , primaryKeyConstraintName: 'pk_usuario'})
   idkey: number;
   
   @Column({ type: 'int', nullable: false, default: 1 })
@@ -18,7 +18,7 @@ export class Usuario {
   @Column({ type: 'timestamp', nullable: true, default: () => 'CURRENT_TIMESTAMP' })
   data_cadastro: Date;
 
-  @ManyToOne(() => TipoUsuario, tipoUsuario => tipoUsuario.usuarios)
-  @JoinColumn({ name: 'idkey_tipo_usuario', referencedColumnName: 'idkey', foreignKeyConstraintName: 'fk_usuario_tipo_usuario'})
-  tipoUsuario: TipoUsuario;
+  @ManyToOne(() => UsuarioTipo, usuarioTipo => usuarioTipo.usuarios)
+  @JoinColumn({ name: 'idkey_tipo_usuario', referencedColumnName: 'idkey', foreignKeyConstraintName: 'fk_usuario_usuario_tipo'})
+  usuarioTipo: UsuarioTipo;
 }

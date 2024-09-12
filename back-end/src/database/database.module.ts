@@ -6,6 +6,12 @@ import { entities } from './entities';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      envFilePath: process.env.NODE_ENV === 'production' ? '.env.prod'
+      : process.env.NODE_ENV === 'test' ? '.env.test' 
+      : '.env',
+      isGlobal: true, 
+    }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -17,7 +23,7 @@ import { entities } from './entities';
         database: configService.get<string>('DB_NAME'),
         entities: entities,
         synchronize: true,  // Cria as tabelas automaticamente
-        logging: true
+        logging: false
       }),
       inject: [ConfigService],
     }),

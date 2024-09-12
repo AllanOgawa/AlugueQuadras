@@ -1,11 +1,13 @@
-import { NestFactory } from '@nestjs/core';
-import { setupSwagger } from './swagger.config';
 import { AppModule } from './app.module';
+import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
+import { setupSwagger } from './swagger.config';
+
 
 async function bootstrap() {
+  
   const app = await NestFactory.create(AppModule);
-
+  
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,              // Remove propriedades que não estão definidas na DTO
     forbidNonWhitelisted: true,   // Lança um erro se propriedades desconhecidas forem enviadas
