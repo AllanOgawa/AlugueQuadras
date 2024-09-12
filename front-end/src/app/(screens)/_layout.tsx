@@ -14,7 +14,7 @@ export default function MainLayout() {
 				{/* Tela de Editar */}
 				<Stack.Screen name="(quadras)/edit" options={{ headerShown: true, headerTitle: "Editar", animation: 'ios', headerTintColor: "#000000" }} />
 
-				{/* Outras telas, se houver */}
+				<Stack.Screen name="(quadras)/remove" options={{ headerShown: true, headerTitle: "Remover", animation: 'ios', headerTintColor: "#000000" }} />
 			</Stack>
 		</SafeAreaView>
 	);

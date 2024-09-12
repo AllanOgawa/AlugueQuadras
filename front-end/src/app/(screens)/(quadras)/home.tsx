@@ -4,8 +4,6 @@ import Constants from 'expo-constants';
 import { router } from 'expo-router';
 import { View, Text, SafeAreaView, ScrollView } from 'react-native';
 
-const statusBarHeight = Constants.statusBarHeight;
-
 export default function HomeQuadra() {
     function handleCourtPress(court: CourtProps): void {
         console.log(`Você clicou na quadra ${court.local} localizada em ${court.endereco}`)
@@ -38,7 +36,7 @@ export default function HomeQuadra() {
                     subtitle={'Remover uma quadra'}
                     style='h-16 w-full rounded-2xl flex-row items-center justify-between'
                     onPress={function (): void {
-                        router.push('/edit')
+                        router.push('/remove')
                     }} />
                 <Text className='font-normal text-3xl py-5'>Ativas</Text>
 

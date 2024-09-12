@@ -11,7 +11,7 @@ export default function EditCourt() {
                     <Text style={styles.headerText}>Selecione uma quadra para editar:</Text>
                     <Pressable onPress={() => router.navigate('/(quadras)/create')}>
                         <QuadrasList onPress={function (court: CourtProps): void {
-                            router.navigate('/(quadras)/create')
+                            router.navigate('/(quadras)/create');
                         }} />
                     </Pressable>
                 </View>
