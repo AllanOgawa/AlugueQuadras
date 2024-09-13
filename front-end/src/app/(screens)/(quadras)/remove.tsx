@@ -13,30 +13,16 @@ export default function RemoveCourt() {
         setModalVisible(true); // Abre o modal
     };
 
-    // Exibe toast e realiza navegação
     const confirmRemove = () => {
         console.log('Quadra removida:', selectedCourt);
         setModalVisible(false);
-        // Atraso para garantir que o toast seja visível antes da navegação
         setTimeout(() => {
             router.replace({
                 pathname: '/(quadras)/home',
                 params: { message: "Quadra removida com sucesso!" }
             });
-        }, 600); // Tempo para o toast ser exibido
+        }, 600);
     };
-
-    // const confirmRemove = () => {
-    //     console.log('Quadra removida:', selectedCourt);
-    //     setModalVisible(false);
-    //     Toast.show({
-    //         type: 'success',
-    //         text1: 'Quadra removida',
-    //         text2: 'A quadra foi removida com sucesso.',
-    //         autoHide: true,
-    //         visibilityTime: 1000
-    //     });
-    // };
 
     return (
         <SafeAreaView style={styles.container}>
@@ -59,10 +45,10 @@ export default function RemoveCourt() {
                         <Text style={styles.modalText}>Tem certeza que deseja remover essa quadra?</Text>
                         <View style={styles.modalButtons}>
                             <TouchableOpacity style={styles.cancelButton} onPress={() => setModalVisible(false)}>
-                                <Text style={styles.buttonText}>Cancelar</Text>
+                                <Text className='text-black font-medium text-2xs'>Cancelar</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.confirmButton} onPress={confirmRemove}>
-                                <Text style={styles.buttonText}>Confirmar</Text>
+                                <Text className='text-white font-medium text-2xs'>Confirmar</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -112,12 +98,13 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     cancelButton: {
-        backgroundColor: '#d9534f',
+        backgroundColor: '#D9D9D9',
         padding: 10,
         borderRadius: 5,
         flex: 1,
         marginRight: 10,
-        alignItems: 'center'
+        alignItems: 'center',
+        color: '#FF7300'
     },
     confirmButton: {
         backgroundColor: '#FF7300',
@@ -126,9 +113,10 @@ const styles = StyleSheet.create({
         flex: 1,
         marginLeft: 10,
         alignItems: 'center',
+        color: '#ffff'
     },
     buttonText: {
-        color: 'white',
+        color: '#ffff',
         fontWeight: 'bold',
     },
 });
