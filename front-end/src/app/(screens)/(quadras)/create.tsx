@@ -7,6 +7,7 @@ import { View, Text, SafeAreaView, ScrollView, StyleSheet } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import HorariosDisponiveis from '@/src/components/timerSelector';
 import MultiSelect from '@/src/components/IconService';
+import Toast from 'react-native-toast-message';
 
 
 export default function NewCourt() {
@@ -21,6 +22,17 @@ export default function NewCourt() {
 
     const handleSelectionChange = (selected: string[]) => {
         console.log('Selecionados:', selected);
+    };
+
+    // Exibe toast e realiza navegação
+    const confirmCreate = () => {
+        // Atraso para garantir que o toast seja visível antes da navegação
+        setTimeout(() => {
+            router.replace({
+                pathname: '/(quadras)/home',
+                params: { message: "Cadastro realizado com sucesso!" }
+            });
+        }, 600); // Tempo para o toast ser exibido
     };
 
     return (
@@ -73,8 +85,8 @@ export default function NewCourt() {
             <View style={styles.buttonContainer}>
                 <CustomButton
                     title={'Cadastrar'}
-                    onPress={() => router.push('/(quadras)/home')}
                     style='bg-orange-500 p-4 rounded-2xl active:bg-orange-400 mx-4'
+                    onPress={confirmCreate} // Chama a função que exibe o toast e navega
                 />
             </View>
         </SafeAreaView>

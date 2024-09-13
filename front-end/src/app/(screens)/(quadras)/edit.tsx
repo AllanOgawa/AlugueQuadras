@@ -9,10 +9,8 @@ export default function EditCourt() {
             <ScrollView contentContainerStyle={styles.scrollViewContent}>
                 <View>
                     <Text style={styles.headerText}>Selecione uma quadra para editar:</Text>
-                    <Pressable onPress={() => router.navigate('/(quadras)/create')}>
-                        <QuadrasList onPress={function (court: CourtProps): void {
-                            router.navigate('/(quadras)/create');
-                        }} />
+                    <Pressable>
+                        <QuadrasList onPress={() => router.push('/(quadras)/create')} />
                     </Pressable>
                 </View>
             </ScrollView>

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Modal, View, Text, SafeAreaView, ScrollView, StyleSheet, Button, TouchableOpacity } from 'react-native';
 import QuadrasList from '@/src/components/quadras';
 import Toast from 'react-native-toast-message';
+import { router } from 'expo-router';
 
 export default function RemoveCourt() {
     const [modalVisible, setModalVisible] = useState(false);
@@ -12,17 +13,30 @@ export default function RemoveCourt() {
         setModalVisible(true); // Abre o modal
     };
 
+    // Exibe toast e realiza navegação
     const confirmRemove = () => {
         console.log('Quadra removida:', selectedCourt);
         setModalVisible(false);
-        Toast.show({
-            type: 'success',
-            text1: 'Quadra removida',
-            text2: 'A quadra foi removida com sucesso.',
-            autoHide: true,
-            visibilityTime: 1000
-        });
+        // Atraso para garantir que o toast seja visível antes da navegação
+        setTimeout(() => {
+            router.replace({
+                pathname: '/(quadras)/home',
+                params: { message: "Quadra removida com sucesso!" }
+            });
+        }, 600); // Tempo para o toast ser exibido
     };
+
+    // const confirmRemove = () => {
+    //     console.log('Quadra removida:', selectedCourt);
+    //     setModalVisible(false);
+    //     Toast.show({
+    //         type: 'success',
+    //         text1: 'Quadra removida',
+    //         text2: 'A quadra foi removida com sucesso.',
+    //         autoHide: true,
+    //         visibilityTime: 1000
+    //     });
+    // };
 
     return (
         <SafeAreaView style={styles.container}>
