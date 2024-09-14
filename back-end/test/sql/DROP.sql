@@ -6,3 +6,5 @@ WHERE pg_stat_activity.datname = 'alugue_quadras_test'
 DROP DATABASE IF EXISTS alugue_quadras_test;
 
 CREATE DATABASE alugue_quadras_test;
+
+
