@@ -22,9 +22,14 @@ describe('App E2E Tests (Ordered by Dependency)', () => {
   afterAll(async () => {
     await app.close();
   });
+
+
+  describe('Administração', () => {
+    require('../src/admin/usuario/tipo/test/tipo.controller.e2e-spec');
+    require('../src/admin/usuario/test/usuario.e2e-spec');
+  });
   
-  require('../src/admin/usuario/tipo/test/tipo.controller.e2e-spec');
-  // require('../src/admin/usuario/test/usuario.e2e-spec');
+
 });
 
 
