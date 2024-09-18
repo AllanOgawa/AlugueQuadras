@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-
 import { DatabaseModule } from './database/database.module';
 import { AdminModule } from './admin/admin.module';
+import { EstabelecimentoModule } from './domains/gestao/estabelecimento/estabelecimento.module';
 
   @Module({
     imports: [
@@ -13,7 +13,9 @@ import { AdminModule } from './admin/admin.module';
         isGlobal: true, 
       }),
       DatabaseModule,
-      AdminModule
+      AdminModule,
+      EstabelecimentoModule,
+
     ],
     controllers: [],
     providers: [],
