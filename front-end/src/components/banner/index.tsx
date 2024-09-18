@@ -27,19 +27,21 @@ export default function Banner() {
                 autoPlayInterval={8000}
                 data={banners}
                 scrollAnimationDuration={1000}
-                renderItem={({ item }) => (
-                    <Pressable
-                        className='w-full h-36 rounded-2xl'
-                        key={item.id}
-                        onPress={() => console.log("Clicou banner " + item.id)}
-                    >
-                        <Image
-                            source={{ uri: item.image }}
+                renderItem={({ item }) => {
+                    return (
+                        <Pressable
                             className='w-full h-36 rounded-2xl'
+                            key={item.id}
+                            onPress={() => console.log("Clicou banner " + item.id)}
                         >
-                        </Image>
-                    </Pressable>
-                )}
+                            <Image
+                                source={{ uri: item.image }}
+                                className='w-full h-36 rounded-2xl'
+                            >
+                            </Image>
+                        </Pressable>
+                    )
+                }}
             />
         </SafeAreaView>
     );

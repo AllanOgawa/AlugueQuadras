@@ -9,7 +9,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
   app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,              // Remove propriedades que não estão definidas na DTO
+    whitelist: false,              // Remove propriedades que não estão definidas na DTO
     forbidNonWhitelisted: true,   // Lança um erro se propriedades desconhecidas forem enviadas
     transform: false,             // Converte os tipos dos dados automaticamente (por exemplo, string para número)
   }));

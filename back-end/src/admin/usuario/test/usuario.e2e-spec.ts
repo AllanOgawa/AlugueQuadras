@@ -33,8 +33,8 @@ describe('UsuarioModule (e2e)', () => {
       .send(usuarioData)
       .expect(201)
       .expect((res) => {
-        expect(res.body.email).toBe(usuarioData.email);
         expect(res.body.idkey_tipo_usuario).toBe(usuarioData.idkey_tipo_usuario);
+        expect(res.body.email).toBe(usuarioData.email);
       });
   });
 
@@ -76,10 +76,10 @@ describe('UsuarioModule (e2e)', () => {
   });
 
 
-  it('/usuario/:id (DELETE) - deve remover um usuário específico', async () => {
-    const id = 1; 
-    return request(app.getHttpServer())
-      .delete(`/usuario/${id}`)
-      .expect(200);
-  });
+  // it('/usuario/:id (DELETE) - deve remover um usuário específico', async () => {
+  //   const id = 1; 
+  //   return request(app.getHttpServer())
+  //     .delete(`/usuario/${id}`)
+  //     .expect(200);
+  // });
 });

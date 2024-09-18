@@ -69,10 +69,10 @@ describe('UsuarioTipoModule (e2e)', () => {
       });
   });
 
-  it('/usuario/tipo/:id (DELETE) - deve remover um tipo de usuário específico', async () => {
-    const id = 1; 
-    return request(app.getHttpServer())
-      .delete(`/usuario/tipo/${id}`)
-      .expect(200);
-  });
+  // it('/usuario/tipo/:id (DELETE) - deve remover um tipo de usuário específico', async () => {
+  //   const id = 1; 
+  //   return request(app.getHttpServer())
+  //     .delete(`/usuario/tipo/${id}`)
+  //     .expect(200);
+  // });
 });

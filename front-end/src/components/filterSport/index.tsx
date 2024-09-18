@@ -4,7 +4,7 @@ import { estilo } from '@/src/styles/style';
 
 export function FilterSport() {
   return (
-    <View className='w-full mt-5 mb-4'>
+    <View className='w-full mt-2 mb-4'>
       <View className='flex-row justify-between'>
 
         <Pressable
