@@ -9,3 +9,6 @@ npm run typeorm -- migration:generate src/database/typeorm/migrations/SyncWithEx
 ```
 npm run typeorm -- migration:run -d src/database/typeorm/sync.ts
 ```
+
+---
+
