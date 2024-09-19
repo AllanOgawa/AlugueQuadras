@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 
-export default function EstabelecimentoLayout() {
+export default function GestaoQuadraEstabelecimentoLayout() {
   return (
     <Stack>
     </Stack>

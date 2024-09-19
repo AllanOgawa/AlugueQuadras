@@ -2,20 +2,8 @@ import { FlatList, Text, SafeAreaView } from 'react-native';
 import { CardReservaAtivo } from './cardReservaAtivo';
 import { CardReservaHistorico } from './cardReservaHistorico';
 import { useEffect, useState } from 'react';
+import { ReservasProps } from '@src/interfaces/reservas';
 import * as data from '@/db.json';
-
-export interface ReservasProps {
-    id: string;
-    ativa: boolean;
-    local: string;
-    endereco: string;
-    quadra: string;
-    data: string;
-    hora: string;
-    valor: string;
-    avaliacao: number;
-    image: string;
-}
 
 export function ReservasList() {
     const [reservas, setReservas] = useState<ReservasProps[]>([])

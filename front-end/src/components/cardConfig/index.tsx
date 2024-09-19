@@ -1,4 +1,4 @@
-import { estilo } from '@/src/styles/style';
+import { estilo } from 'src/styles/style';
 import { Pressable, View, Text } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
@@ -65,7 +65,7 @@ export function CardConfig() {
                     <MaterialIcons name="keyboard-arrow-right" size={30} color="#FF7300" />
                 </Pressable>
                 <View className="border-b border-gray-300 my-2 mx-8" />
-                
+
             </View>
         </View>
     );

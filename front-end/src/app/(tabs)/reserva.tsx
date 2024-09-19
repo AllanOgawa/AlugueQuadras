@@ -1,5 +1,5 @@
 import { ScrollView, Text, View } from 'react-native'
-import { ReservasList } from '../../components/reservas'
+import { ReservasList } from '@components/reservas'
 import Constants from 'expo-constants'
 
 const statusBarHeight = Constants.statusBarHeight;

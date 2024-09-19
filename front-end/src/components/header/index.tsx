@@ -2,11 +2,10 @@ import { View, Pressable, Text, ActivityIndicator, StatusBar } from 'react-nativ
 import { useState, useEffect } from 'react';
 import { Feather } from '@expo/vector-icons';
 import { ObterLocalizacao } from '../location';
-import { useRouter } from 'expo-router'; 
+import { router } from 'expo-router';
 
 
 export function Header() {
-    const router = useRouter();
     const [city, setCity] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -55,7 +54,7 @@ export function Header() {
                 className="w-10 h-10 flex justify-center items-center"
                 onPress={() => router.push('/notification')}
             >
-                <Feather name="bell" size={25} color="#121212"/>
+                <Feather name="bell" size={25} color="#121212" />
             </Pressable>
         </View>
     );

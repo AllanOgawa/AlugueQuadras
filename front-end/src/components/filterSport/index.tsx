@@ -1,6 +1,6 @@
 import { Pressable, Text, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons'
-import { estilo } from '@/src/styles/style';
+import { estilo } from 'src/styles/style';
 
 export function FilterSport() {
   return (
@@ -9,7 +9,7 @@ export function FilterSport() {
 
         <Pressable
           style={estilo.box2}
-          className='h-20 w-[49%] rounded-2xl bg-orange-500
+          className='h-20 w-[49%] rounded-2xl bg-primary
           flex-row items-center justify-between px-1'
           key="1"
           onPress={() => console.log("Clicou filtro Beach Tennis")}
@@ -20,7 +20,7 @@ export function FilterSport() {
 
         <Pressable
           style={estilo.box2}
-          className='h-20 w-[49%] rounded-2xl bg-orange-500 
+          className='h-20 w-[49%] rounded-2xl bg-primary 
           flex-row items-center justify-between px-1'
           key="2"
           onPress={() => console.log("Clicou filtro Voleibol")}
@@ -35,7 +35,7 @@ export function FilterSport() {
 
         <Pressable
           style={estilo.box2}
-          className='h-20 w-[49%] rounded-2xl bg-orange-500 
+          className='h-20 w-[49%] rounded-2xl bg-primary 
           flex-row items-center justify-between px-1'
           key="3"
           onPress={() => console.log("Clicou filtro Futsal")}
@@ -46,7 +46,7 @@ export function FilterSport() {
 
         <Pressable
           style={estilo.box2}
-          className='h-20 w-[49%] rounded-2xl bg-orange-500 
+          className='h-20 w-[49%] rounded-2xl bg-primary 
           flex-row items-center justify-between px-1'
           key="4"
           onPress={() => console.log("Clicou filtro Basquete")}

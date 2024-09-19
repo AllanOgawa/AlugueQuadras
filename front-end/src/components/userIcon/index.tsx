@@ -1,6 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { View, Image, Text } from 'react-native';
-import * as data from '@/db.json';
+import { View, Image } from 'react-native';
 
 export interface UserIconProps {
 	image: string;

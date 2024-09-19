@@ -1,10 +1,10 @@
 import { Text, View, ScrollView } from "react-native";
-import { Header } from "../../components/header";
-import Banner from "../../components/banner";
-import LastCourt from "@/src/components/lastCourt";
+import { Header } from "@components/header";
+import Banner from "@components/banner";
+import LastCourt from "@components/lastCourt";
 
 import Constants from 'expo-constants'
-import { FilterSport } from "../../components/filterSport";
+import { FilterSport } from "@components/filterSport";
 import { StatusBar } from "expo-status-bar";
 
 const statusBarHeight = Constants.statusBarHeight;
@@ -12,7 +12,7 @@ const statusBarHeight = Constants.statusBarHeight;
 export default function Inicio() {
   return (
     <ScrollView
-    
+
       style={{ flex: 1 }}
       className="bg-white"
       showsVerticalScrollIndicator={false}

@@ -1,14 +1,14 @@
-import UserIcon from '@/src/components/userIcon';
+import UserIcon from '@components/userIcon';
 import Constants from 'expo-constants';
 import { ScrollView, Text, View } from 'react-native';
 import * as data from '@/db.json'
-import { CardConfig } from '@/src/components/cardConfig';
-import NotificationCard from '@/src/components/cardNotification';
+import { CardConfig } from '@components/cardConfig';
+import NotificationCard from '@components/cardNotification';
 
 const statusBarHeight = Constants.statusBarHeight;
 
 export default function Perfil() {
-	const user = data.user[0];
+	const user = data.user[1];
 	return (
 		<ScrollView
 			style={{ flex: 1 }}
@@ -23,8 +23,8 @@ export default function Perfil() {
 					{user.name}
 				</Text>
 			</View>
-			<NotificationCard/>
-			<CardConfig/>
+			<NotificationCard />
+			<CardConfig />
 		</ScrollView>
 	);
 }
