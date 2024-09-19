@@ -23,7 +23,7 @@ export default function Banner() {
                 autoPlayInterval={8000}
                 data={banners}
                 scrollAnimationDuration={1000}
-                renderItem={({ item }) => (
+                renderItem={({ item }: { item: ImagemProps }) => (
                     <Pressable
                         className='w-full h-48 rounded-2xl'
                         key={item.id}
@@ -35,7 +35,8 @@ export default function Banner() {
                         >
                         </Image>
                     </Pressable>
-                )}
+                )
+                }
             />
         </SafeAreaView>
     );

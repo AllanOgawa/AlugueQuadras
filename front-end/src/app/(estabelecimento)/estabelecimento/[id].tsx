@@ -1,5 +1,4 @@
-import { Text, TouchableOpacity, View, StyleSheet, Animated } from 'react-native';
-import globalStyles from '@src/styles/globalStyles';  // Importa os estilos globais
+import { Text, View, StyleSheet, Animated } from 'react-native';
 import { useNavigation, useLocalSearchParams } from 'expo-router';
 import { useState, useEffect } from 'react';
 import CarouselQuadra from '@components/carouselQuadra';
@@ -8,10 +7,11 @@ import ExpandableText from '@components/expandableText';
 import Acomodacoes from '@components/acomodacoes';
 import LocationEstabelecimento from '@components/localizacaoEstabelecimento';
 import { EstabelecimentoProps } from '@src/interfaces/estabelecimento';
-
-import * as data from '@/db.json';
 import ListaQuadrasEstabelecimento from '@components/listaQuadrasEstabelecimento';
 import HorarioEstabelecimento from '@components/horarioEstabelecimento';
+import BotaoCustom from '@components/botaoCustom';
+
+import * as data from '@/db.json';
 
 
 export default function Estabelecimento() {
@@ -58,7 +58,7 @@ export default function Estabelecimento() {
 
   if (estabelecimento == undefined || null) return (<Text>Erro TESTTT</Text>);
   return (
-    <View className='flex-1 justify-center items-center'>
+    <View className='flex-1'>
       <Animated.ScrollView
         style={{ flex: 1 }}
         className="bg-white"
@@ -111,25 +111,24 @@ export default function Estabelecimento() {
         </View>
       </Animated.ScrollView>
 
-
-
-      <View className='absoulute bottom-0 h-24 items-center justify-center'>
-        <View>
-          <TouchableOpacity style={[styles.button, globalStyles.primaryBackground]}>
-            <Text className='text-2xl color-white'>Reservar Quadra</Text>
-          </TouchableOpacity>
-        </View>
+      <View style={styles.buttonContainer}>
+        <BotaoCustom
+          title={'Alugar Quadra'}
+          style='bg-primary p-4 rounded-2xl active:bg-secondary mx-4'
+          onPress={() => { }}
+        />
       </View>
 
     </View>
   );
 }
 const styles = StyleSheet.create({
-  button: {
-    width: 350,
-    padding: 15,
-    borderRadius: 15,
-    alignItems: 'center'
+
+  buttonContainer: {
+    backgroundColor: '#', // Tailwind slate-800
+    paddingVertical: 8,
+    justifyContent: 'flex-end',
+
   },
   headerText: {
     fontSize: 18,

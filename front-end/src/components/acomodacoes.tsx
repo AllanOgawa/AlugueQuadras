@@ -1,6 +1,7 @@
 import { View, Text, ScrollView } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { AcomodacoesProps } from '@src/interfaces/acomodacoes';
+
 export default function Acomodacoes({ acomodacoes }: { acomodacoes: AcomodacoesProps[] }) {
     return (
         <View className='mt-7'>

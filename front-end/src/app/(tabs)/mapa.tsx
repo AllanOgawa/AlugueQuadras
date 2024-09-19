@@ -2,7 +2,7 @@ import { Text, View, StyleSheet, ActivityIndicator } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { useState, useEffect } from 'react';
 
-import { ObterLocalizacao } from '@components/location';
+import { ObterLocalizacao } from '@components/obterLocalizacao';
 
 export default function Mapa() {
   const [location, setLocation] = useState({
