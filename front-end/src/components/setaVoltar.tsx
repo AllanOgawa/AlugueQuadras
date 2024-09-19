@@ -1,8 +1,8 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { View, Text, Pressable, TextInputComponent } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 
-export default function ArrowBack() {
+export default function SetaVoltar() {
     return (
         <Pressable onPress={router.back}>
             <View className='flex-row items-center relative'>

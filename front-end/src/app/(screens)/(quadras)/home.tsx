@@ -1,6 +1,5 @@
-import { CardConfig } from '@/src/components/cardConfig';
-import CourtList, { CourtProps } from '@/src/components/quadras';
-import Constants from 'expo-constants';
+import { CardConfig } from '@components/cardConfig';
+import CourtList, { CourtProps } from '@components/quadras';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect } from 'react';
 import { View, Text, SafeAreaView, ScrollView } from 'react-native';

@@ -1,4 +1,3 @@
-import { estilo } from '@/src/styles/style';
 import { Pressable, View, Image, Text } from 'react-native';
 import { CourtProps } from '.';
 
@@ -23,7 +22,7 @@ export default function CourtItem({ court, onPress }: CourtItemProps) {
             />
             <View className='flex-auto'>
                 <Text
-                    className='text-lg font-bold color-orange-500'
+                    className='text-lg font-bold color-primary'
                     numberOfLines={1}
                 >{court.local}</Text>
                 <Text

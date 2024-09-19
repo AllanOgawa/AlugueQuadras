@@ -12,7 +12,7 @@ interface TextInputProps {
     hint: string;
 }
 
-export default function TextInputExample({ title, hint }: TextInputProps) {
+export default function InputTexto({ title, hint }: TextInputProps) {
     const [text, onChangeText] = React.useState('');
 
     return (

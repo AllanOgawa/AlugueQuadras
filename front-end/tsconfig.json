@@ -1,12 +1,21 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
+    "resolveJsonModule": true,
+    "esModuleInterop": true, // Opcional, ajuda com importações padrão
     "strict": true,
     "jsx": "react-jsx",
     "allowJs": true,
+    "baseUrl": ".",
     "paths": {
       "@/*": [
         "./*"
+      ],
+      "@src/*": [
+        "src/*"
+      ],
+      "@components/*": [
+        "src/components/*"
       ]
     }
   },

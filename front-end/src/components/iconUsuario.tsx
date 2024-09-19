@@ -1,13 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { View, Image, Text } from 'react-native';
-import * as data from '@/db.json';
+import { View, Image } from 'react-native';
 
 interface UserIconProps {
 	image: string;
 	style?: string; // Parâmetro opcional para a classe de estilo
 }
 
-export default function UserIcon({ image, style }: UserIconProps) {
+export default function IconUsuario({ image, style }: UserIconProps) {
 	return (
 		<View className='flex-col items-center justify-center mb-4'>
 			<Image

@@ -1,13 +1,13 @@
 import { Text, View, ScrollView, SafeAreaView, Pressable } from "react-native";
-import Banner from "../../components/banner";
-import LastCourt from "@/src/components/lastCourt";
+import Banner from "@components/banner";
+import LastCourt from "@components/lastCourt";
 import { Feather } from '@expo/vector-icons';
 
 import Constants from 'expo-constants'
-import { FilterSport } from "../../components/filterSport";
+import { FilterSport } from "@components/filterSport";
 import { StatusBar } from "expo-status-bar";
 import * as data from '@/db.json'
-import UserIcon from "@/src/components/IconUser";
+import IconUsuario from "@components/iconUsuario";
 import { router } from "expo-router";
 
 const statusBarHeight = Constants.statusBarHeight;
@@ -32,7 +32,7 @@ export default function Inicio() {
 							<Pressable
 								onPress={() => router.push('/notification')}
 							>
-								<UserIcon image={user.image} style="w-16 h-16 rounded-full border-2 border-black" />
+								<IconUsuario image={user.image} style="w-16 h-16 rounded-full border-2 border-black" />
 								<Feather
 									name="bell"
 									size={16}

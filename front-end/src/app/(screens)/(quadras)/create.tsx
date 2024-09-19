@@ -1,13 +1,10 @@
-import CustomButton from '@/src/components/buttom';
-import DayIcon from '@/src/components/IconDay';
-import TextInputExample from '@/src/components/textInput';
+import BotaoCustom from '@components/botaoCustom';
+import InputTexto from '@components/inputTexto';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { View, Text, SafeAreaView, ScrollView, StyleSheet } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import HorariosDisponiveis from '@/src/components/timerSelector';
-import MultiSelect from '@/src/components/IconService';
-import Toast from 'react-native-toast-message';
+import MultiSelect from '@components/IconService';
 
 
 export default function NewCourt() {
@@ -40,23 +37,23 @@ export default function NewCourt() {
             <ScrollView contentContainerStyle={styles.scrollViewContent}>
                 <View>
                     <Text style={styles.headerText}>Informações Gerais</Text>
-                    <TextInputExample
+                    <InputTexto
                         title={'Nome da quadra'}
                         hint={'Ex: Quadra 2'}
                     />
-                    <TextInputExample
+                    <InputTexto
                         title='Esporte'
                         hint={'Ex: Volei'}
                     />
-                    <TextInputExample
+                    <InputTexto
                         title='Valor por hora'
                         hint={'Ex: R$45,00'}
                     />
-                    <TextInputExample
+                    <InputTexto
                         title='Endereço'
                         hint={'Ex: Av: Nobrega, 239'}
                     />
-                    <TextInputExample
+                    <InputTexto
                         title='Informações adicionais'
                         hint={'Ex: Aos fundos'}
                     />
@@ -83,9 +80,9 @@ export default function NewCourt() {
                 </View>
             </ScrollView>
             <View style={styles.buttonContainer}>
-                <CustomButton
+                <BotaoCustom
                     title={'Cadastrar'}
-                    style='bg-orange-500 p-4 rounded-2xl active:bg-orange-400 mx-4'
+                    style='bg-primary p-4 rounded-2xl active:bg-secondary mx-4'
                     onPress={confirmCreate} // Chama a função que exibe o toast e navega
                 />
             </View>

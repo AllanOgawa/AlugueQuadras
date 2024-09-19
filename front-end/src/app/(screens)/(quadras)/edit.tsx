@@ -1,7 +1,6 @@
-import CustomButton from '@/src/components/buttom';
 import { router } from 'expo-router';
 import { View, Text, SafeAreaView, ScrollView, StyleSheet, Pressable } from 'react-native';
-import QuadrasList, { CourtProps } from '@/src/components/quadras';
+import QuadrasList from '@components/quadras';
 
 export default function EditCourt() {
     return (

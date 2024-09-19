@@ -2,7 +2,7 @@ import { Text, View, StyleSheet, ActivityIndicator } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { useState, useEffect } from 'react';
 
-import { ObterLocalizacao } from '../../components/location';
+import { ObterLocalizacao } from '@components/obterLocalizacao';
 
 export default function Mapa() {
   const [location, setLocation] = useState({
@@ -14,7 +14,7 @@ export default function Mapa() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    (async () => { 
+    (async () => {
       const locationData = await ObterLocalizacao();
       if (locationData) {
         setLocation({
@@ -31,7 +31,7 @@ export default function Mapa() {
   if (loading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="large" color="#FF7300"/>
+        <ActivityIndicator size="large" color="#FF7300" />
       </View>
     );
   }

@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TextInput } from 'react-native';
-
-
+import { View, Text, TextInput } from 'react-native';
 
 const diasDaSemana = [
   { dia: 'Ter', inicio: '10:00', fim: '21:00' },
@@ -33,14 +31,14 @@ export default function HorariosDisponiveis() {
             <Text className='text-white font-semibold' style={{ color: '#ffff' }}>{dia.dia}</Text>
           </View>
           <TextInput
-            className="border w-[30%] h-14 border-orange-500 rounded-2xl p-2 px-4 text-center"
+            className="border w-[30%] h-14 border-primary rounded-2xl p-2 px-4 text-center"
             value={dia.inicio}
             onChangeText={(text) => handleHorarioChange(index, 'inicio', text)}
             keyboardType="numeric"
           />
           <Text className="text-gray-600 align-middle font-bold text-xl">as</Text>
           <TextInput
-            className="border w-[30%] h-14 border-orange-500 rounded-2xl p-2 px-4 text-center"
+            className="border w-[30%] h-14 border-primary rounded-2xl p-2 px-4 text-center"
             value={dia.fim}
             onChangeText={(text) => handleHorarioChange(index, 'fim', text)}
             keyboardType="numeric"

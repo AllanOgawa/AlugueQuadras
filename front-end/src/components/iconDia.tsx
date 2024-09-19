@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
-import { View, Text, Button, Pressable } from 'react-native';
+import { useState } from 'react';
+import { View, Text, Pressable } from 'react-native';
 
 interface DayIconProps {
     day: string,
     color: string
 }
 
-export default function DayIcon({ day, color }: DayIconProps) {
+export default function IconDia({ day, color }: DayIconProps) {
     const [pressed, setPressed] = useState(false);
 
     const togglePressed = () => {

@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { Modal, View, Text, SafeAreaView, ScrollView, StyleSheet, Button, TouchableOpacity } from 'react-native';
-import QuadrasList from '@/src/components/quadras';
-import Toast from 'react-native-toast-message';
+import { Modal, View, Text, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import QuadrasList from '@components/quadras';
 import { router } from 'expo-router';
 
 export default function RemoveCourt() {
