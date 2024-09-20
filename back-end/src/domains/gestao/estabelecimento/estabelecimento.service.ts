@@ -22,7 +22,7 @@ export class EstabelecimentoService{
 
 
   async findOne(id: number): Promise<Estabelecimento>{
-    const estabelecimento =  await this.estabelecimentoRepository.findOne({where:{idKey: id}});
+    const estabelecimento =  await this.estabelecimentoRepository.findOne({where:{idkey: id}});
     if(!estabelecimento){
       throw new NotFoundException('Estabelecimento não encontrado');
     }

@@ -14,10 +14,6 @@ export class CreateEstabelecimentoDto {
   @IsNotEmpty()
   telefone: string;
 
-  @IsEmail()
-  @IsNotEmpty()
-  email: string;
-
   @IsString()
   @IsNotEmpty()
   alvara?: string;

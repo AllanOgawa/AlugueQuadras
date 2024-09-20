@@ -4,26 +4,26 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 export class Estabelecimento {
 
 @PrimaryGeneratedColumn({type: 'bigint' , primaryKeyConstraintName:'pk_estabelecimento'})
-idKey:number;
+idkey:number;
 
 @Column({type: 'text', nullable: false, unique: true})
 cnpj: string;
 
-@Column({type: 'text', name: 'razao_social', nullable: false})
-razaoSocial: string
+@Column({type: 'text', nullable: false})
+razao_social: string;
+
+@Column({type: 'text', nullable: false})
+nome_fantasia: string;
 
 @Column({type: 'text', nullable:false})
-telefone: string
-
-@Column({ type: 'text', nullable: false, unique: true })
-email: string;
+telefone: string;
 
 @Column({type: 'text', nullable: true})
 alvara: string;
 
-@CreateDateColumn({type: 'timestamp', name: 'data_cadastro'})
-dataCadastro: Date;
+@Column({ type: 'timestamp', nullable: true, default: () => 'CURRENT_TIMESTAMP' })
+data_cadastro: Date;
 
-@UpdateDateColumn({ type: 'timestamp', name: 'data_atualizacao' })
-dataAtualizacao: Date;
+@UpdateDateColumn({ type: 'timestamp', nullable: true, default: () => 'CURRENT_TIMESTAMP' })
+data_atualizacao: Date;
 }

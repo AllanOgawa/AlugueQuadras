@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm'; // Importa o TypeOrmModule
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { EstabelecimentoService } from './estabelecimento.service';
 import { EstabelecimentoController } from './estabelecimento.controller';
-import { Estabelecimento } from './entities/estabelecimento.entity'; // Importa a entidade
+import { Estabelecimento } from './entities/estabelecimento.entity'; 
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Estabelecimento])], // Registra a entidade Estabelecimento
+  imports: [TypeOrmModule.forFeature([Estabelecimento])], 
   controllers: [EstabelecimentoController],
   providers: [EstabelecimentoService],
 })

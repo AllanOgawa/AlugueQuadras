@@ -3,13 +3,15 @@ import { EstabelecimentoService } from './estabelecimento.service';
 import { CreateEstabelecimentoDto } from './dto/create-estabelecimento.dto';
 import { UpdateEstabelecimentoDto } from './dto/update-estabelecimento.dto';
 import { Estabelecimento } from './entities/estabelecimento.entity';
+import { ApiTags, ApiBody } from '@nestjs/swagger';
 
-
-// Adicionar decorator do Swagger
+// Adicionar decorator do Swagger em todas as rotas
+@ApiTags('Estabelecimento')
 @Controller('estabelecimento')
 export class EstabelecimentoController {
   constructor(private readonly estabelecimentoService: EstabelecimentoService) {}
 
+  @ApiBody({description: 'Criação de um novo estabelecimento'})
   @Post()
   create(@Body() createEstabelecimentoDto: CreateEstabelecimentoDto) {
     return this.estabelecimentoService.create(createEstabelecimentoDto);
