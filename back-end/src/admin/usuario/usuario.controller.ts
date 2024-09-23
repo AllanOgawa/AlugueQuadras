@@ -6,7 +6,6 @@ import { UsuarioService } from './usuario.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 
-
 @ApiTags('Usuário')
 @Controller('usuario')
 export class UsuarioController {
@@ -40,12 +39,12 @@ export class UsuarioController {
       }
       return usuario;
     } catch (error) {
-      if (error.status === HttpStatus.NOT_FOUND) {
-        throw error;
-      } else {
-        console.error('Erro ao buscar usuário:', error);
-        throw new HttpException('Erro ao buscar usuário', HttpStatus.INTERNAL_SERVER_ERROR);
-      }
+        if (error.status === HttpStatus.NOT_FOUND) {
+          throw error;
+        } else {
+          console.error('Erro ao buscar usuário:', error);
+          throw new HttpException('Erro ao buscar usuário', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
   }
 

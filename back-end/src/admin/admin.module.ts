@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { UsuarioModule } from './usuario/usuario.module';
-
+import { UsuarioTipoModule } from './usuario/tipo/tipo.module';
 
 @Module({
   imports: [
-    UsuarioModule
+    UsuarioModule,
+    UsuarioTipoModule,
   ],
   exports: [
     UsuarioModule
