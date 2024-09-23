@@ -6,10 +6,11 @@ import HorizontalLine from '@components/horizontalLine';
 import ExpandableText from '@components/expandableText';
 import Acomodacoes from '@components/acomodacoes';
 import LocationEstabelecimento from '@components/localizacaoEstabelecimento';
-import { EstabelecimentoProps } from '@src/interfaces/estabelecimento';
 import ListaQuadrasEstabelecimento from '@components/listaQuadrasEstabelecimento';
 import HorarioEstabelecimento from '@components/horarioEstabelecimento';
 import BotaoCustom from '@components/botaoCustom';
+import AvaliacoesEstabelecimento from '@components/avaliacoesEstabelecimento';
+import { EstabelecimentoProps } from '@src/interfaces/estabelecimento';
 
 import * as data from '@/db.json';
 
@@ -19,7 +20,7 @@ export default function Estabelecimento() {
   const navigation = useNavigation();
   const [scrollY] = useState(new Animated.Value(0));
   const [fadeAnim] = useState(new Animated.Value(0)); // Novo valor animado para a opacidade
-  const [estabelecimento, setEstabelecimento] = useState<EstabelecimentoProps>()
+  const [estabelecimento, setEstabelecimento] = useState<EstabelecimentoProps>();
 
   useEffect(() => {
     setEstabelecimento(data.estabelecimento.find(item => item.id == id))
@@ -98,6 +99,14 @@ export default function Estabelecimento() {
             longitude={estabelecimento.longitude}
             markerTitle={estabelecimento.name}
             endereco={estabelecimento.endereco}
+          />
+
+          <HorizontalLine margin={28} />
+          <Text className='font-bold text-xl mb-7'>Avaliações</Text>
+          <AvaliacoesEstabelecimento
+            idEstabelecimento={estabelecimento.id}
+            avaliacoes={estabelecimento.avaliacoes}
+            avaliacaoMedia={estabelecimento.avaliacao}
           />
 
           <HorizontalLine margin={28} />
