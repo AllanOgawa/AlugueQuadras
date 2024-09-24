@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 
-interface ExpandableTextProps {
+interface TextoExpandivelProps {
+    className: string;
     text: string;
     numberOfLines: number;
     numberOfChar: number;
 }
 
-export default function ExpandableText({ text, numberOfLines, numberOfChar }: ExpandableTextProps) {
+export default function TextoExpandivel({ className, text, numberOfLines, numberOfChar }: TextoExpandivelProps) {
     const [expanded, setExpanded] = useState(false);
 
     const toggleExpand = () => {
@@ -18,11 +19,11 @@ export default function ExpandableText({ text, numberOfLines, numberOfChar }: Ex
 
     return (
         <View>
-            <Text className='text-lg' numberOfLines={expanded ? 0 : numberOfLines}>
+            <Text className={className} numberOfLines={expanded ? 0 : numberOfLines}>
                 {expanded || !isTruncated ? text : text.slice(0, numberOfChar).trim() + '... '}
 
                 {!expanded && isTruncated && (
-                    <Text className='color-gray-400 font-bold' onPress={toggleExpand}>
+                    <Text className={`color-secondary font-bold ${className}`} onPress={toggleExpand}>
                         Ver Mais
                     </Text>
                 )}
@@ -30,7 +31,7 @@ export default function ExpandableText({ text, numberOfLines, numberOfChar }: Ex
 
             {expanded && (
                 <TouchableOpacity onPress={toggleExpand}>
-                    <Text className='color-gray-400 font-bold'>Ver Menos</Text>
+                    <Text className={`color-secondary font-bold ${className}`} >Ver Menos</Text>
                 </TouchableOpacity>
             )}
         </View>

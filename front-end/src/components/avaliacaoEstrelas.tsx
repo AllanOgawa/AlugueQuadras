@@ -2,7 +2,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { View } from 'react-native';
 import { Colors } from '@src/constants/Colors';
 
-export default function AvaliacaoEstrelas({ avaliacao }: { avaliacao: number }) {
+export default function AvaliacaoEstrelas({ avaliacao, size }: { avaliacao: number, size: number }) {
     const stars = Array(5).fill(0);
 
     const getTipoEstrela = (index: number) => {
@@ -21,7 +21,7 @@ export default function AvaliacaoEstrelas({ avaliacao }: { avaliacao: number }) 
                 <FontAwesome
                     key={index}
                     name={getTipoEstrela(index)}
-                    size={32}
+                    size={size}
                     color={Colors.secondary}
                 />
             ))}

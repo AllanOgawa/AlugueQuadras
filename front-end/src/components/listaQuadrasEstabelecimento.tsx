@@ -22,7 +22,7 @@ export default function ListaQuadrasEstabelecimento({ quadras }: { quadras: Quad
     return (
         <View>
             <Text className='font-bold text-xl mb-7'>Quadras ({quadras.length})</Text>
-            {quadras.map((quadra, index) => (
+            {quadras.map((quadra) => (
                 <View key={quadra.id}>
                     <View className='flex flex-row w-full'>
                         <TouchableOpacity className='w-32 h-[120] rounded-2xl justify-self-center' onPress={() => openModal(quadra.image)}>
@@ -51,7 +51,7 @@ export default function ListaQuadrasEstabelecimento({ quadras }: { quadras: Quad
                             </Text>
                         </View>
                     </View>
-                    <HorizontalLine margin={(quadras.length == index + 1) ? 28 : 14} />
+                    <HorizontalLine margin={14} />
                 </View>
             ))
             }

@@ -3,7 +3,7 @@ import { useNavigation, useLocalSearchParams } from 'expo-router';
 import { useState, useEffect } from 'react';
 import CarouselQuadra from '@components/carouselQuadra';
 import HorizontalLine from '@components/horizontalLine';
-import ExpandableText from '@components/expandableText';
+import TextoExpandivel from '@components/textoExpandivel';
 import Acomodacoes from '@components/acomodacoes';
 import LocationEstabelecimento from '@components/localizacaoEstabelecimento';
 import ListaQuadrasEstabelecimento from '@components/listaQuadrasEstabelecimento';
@@ -72,7 +72,7 @@ export default function Estabelecimento() {
       >
         <CarouselQuadra imagemQuadra={estabelecimento.image} />
 
-        <View className='px-4'>
+        <View className='px-4 mb-5'>
           <View className="flex-row py-4">
             <View className="flex-1 justify-center">
               <Text numberOfLines={3} className='font-semibold text-2xl color-black'>
@@ -93,7 +93,7 @@ export default function Estabelecimento() {
           <HorizontalLine margin={28} />
           <ListaQuadrasEstabelecimento quadras={estabelecimento.quadras} />
 
-          <Text className='font-bold text-xl mb-7'>Localização do Estabelecimento</Text>
+          <Text className='font-bold text-xl mb-7 mt-2'>Localização do Estabelecimento</Text>
           <LocationEstabelecimento
             latitude={estabelecimento.latitude}
             longitude={estabelecimento.longitude}
@@ -107,15 +107,15 @@ export default function Estabelecimento() {
             idEstabelecimento={estabelecimento.id}
             avaliacoes={estabelecimento.avaliacoes}
             avaliacaoMedia={estabelecimento.avaliacao}
+            telaCheia={false}
           />
 
-          <HorizontalLine margin={28} />
           <Text className='font-bold text-xl mb-7'>Horário de Funcionamento</Text>
           <HorarioEstabelecimento horarios={estabelecimento.horario} />
 
           <HorizontalLine margin={28} />
           <Text className='font-bold text-xl mb-7'>Sobre nós</Text>
-          <ExpandableText text={estabelecimento.sobre} numberOfLines={5} numberOfChar={200} />
+          <TextoExpandivel className='text-lg' text={estabelecimento.sobre} numberOfLines={5} numberOfChar={200} />
 
         </View>
       </Animated.ScrollView>
