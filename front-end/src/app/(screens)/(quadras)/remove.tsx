@@ -1,11 +1,23 @@
-import { useState } from 'react';
-import { Modal, View, Text, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Modal, View, Text, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
 import QuadrasList from '@components/quadras';
 import { router } from 'expo-router';
 
+import * as data from '@/db.json'
+import { EstabelecimentoProps } from '@/src/interfaces/estabelecimento';
+import ListaQuadrasEstabelecimento from '@/src/components/listaQuadrasEstabelecimento';
+
 export default function RemoveCourt() {
+    const [estabelecimento, setEstabelecimento] = useState<EstabelecimentoProps | null>(null);
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedCourt, setSelectedCourt] = useState(null);
+
+    useEffect(() => {
+        if (data.estabelecimento && data.estabelecimento.length > 0) {
+            // Defina o primeiro estabelecimento (ou outro critério de escolha)
+            setEstabelecimento(data.estabelecimento[1]);
+        }
+    }, []);
 
     const handleRemove = (court) => {
         setSelectedCourt(court);
@@ -13,7 +25,7 @@ export default function RemoveCourt() {
     };
 
     const confirmRemove = () => {
-        console.log('Quadra removida:', selectedCourt);
+        console.log('Quadra removida:', estabelecimento?.quadras);
         setModalVisible(false);
         setTimeout(() => {
             router.replace({
@@ -28,7 +40,11 @@ export default function RemoveCourt() {
             <ScrollView contentContainerStyle={styles.scrollViewContent}>
                 <View>
                     <Text style={styles.headerText}>Selecione uma quadra para remover:</Text>
-                    <QuadrasList onPress={handleRemove} />
+                    {estabelecimento?.quadras && (
+                        <Pressable onPress={handleRemove}>
+                            <ListaQuadrasEstabelecimento quadras={estabelecimento.quadras} />
+                        </Pressable>
+                    )}
                 </View>
             </ScrollView>
 
@@ -119,4 +135,8 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
 });
+
+function setEstabelecimento(arg0: any) {
+    throw new Error('Function not implemented.');
+}
 
