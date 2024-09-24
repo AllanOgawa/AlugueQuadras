@@ -23,7 +23,7 @@ export default function Perfil() {
 				>
 					<View className="w-full px-4 py-8" style={{ marginTop: statusBarHeight }}>
 						<IconUsuario image={user.image} style="w-24 h-24 rounded-full border-2 border-black" />
-						<Text className="font-bold text-center text-2xl">
+						<Text className="font-bold text-center text-2xl mt-2">
 							{user.name}
 						</Text>
 					</View>
