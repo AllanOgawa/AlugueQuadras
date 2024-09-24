@@ -3,7 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 
 import { UsuarioModule } from '../usuario.module'; 
-import { DatabaseModule } from '../../../database/database.module';
+import { DatabaseModule } from '@database/database.module';
 
 describe('UsuarioModule (e2e)', () => {
   let app: INestApplication;

@@ -16,22 +16,39 @@ export class UsuarioService {
   async create(createUsuarioDto: CreateUsuarioDto): Promise<Usuario> {
       const usuario = this.usuarioRepository.create(createUsuarioDto);
       return await this.usuarioRepository.save(usuario);
-    }
+  }
 
   async findAll(): Promise<Usuario[]> {
-    return await this.usuarioRepository.find();
+    return await this.usuarioRepository.find({relations: ['tipo']});
   }
 
-  async findOne(id: number): Promise<Usuario> {
-    return await this.usuarioRepository.findOne({ where: { idkey: id } });
+  async findByIdkey(idkey: number): Promise<Usuario> {
+    return await this.usuarioRepository.findOne({ 
+      where: { idkey: idkey },
+      relations: ['tipo']
+    });
   }
 
-  async update(id: number, updateUsuarioDto: UpdateUsuarioDto): Promise<Usuario> {
-    await this.usuarioRepository.update(id, updateUsuarioDto);
-    return this.findOne(id);
+  async findByEmail(email: string): Promise<Usuario> {
+    return await this.usuarioRepository.findOne({ 
+      where: { email: email },
+      relations: ['tipo']
+    });
   }
 
-  async remove(id: number): Promise<void> {
-    await this.usuarioRepository.delete(id);
+  async findByUsername(username: string): Promise<Usuario> {
+    return await this.usuarioRepository.findOne({
+      where: { username: username },
+      relations: ['tipo'] 
+    });
+  }
+
+  async update(idkey: number, updateUsuarioDto: UpdateUsuarioDto): Promise<Usuario> {
+    await this.usuarioRepository.update(idkey, updateUsuarioDto);
+    return this.findByIdkey(idkey);
+  }
+
+  async remove(idkey: number): Promise<void> {
+    await this.usuarioRepository.delete(idkey);
   }
 }

@@ -30,10 +30,10 @@
       }
     }
 
-    @Get(':id')
-    async findOne(@Param('id') id: string): Promise<UsuarioTipo> {
+    @Get(':idkey')
+    async findOne(@Param('idkey') idkey: string): Promise<UsuarioTipo> {
       try {
-        const tipoUsuario = await this.tipoUsuarioService.findOne(+id);
+        const tipoUsuario = await this.tipoUsuarioService.findOne(+idkey);
         if (!tipoUsuario) {
           throw new HttpException('Tipo de usuário não encontrado', HttpStatus.NOT_FOUND);
         }
@@ -48,11 +48,11 @@
       }
     }
 
-    @Patch(':id')
-    async update(@Param('id') id: string, @Body(ValidationPipe) updateUsuarioTipoDto: UpdateUsuarioTipoDto): Promise<UsuarioTipo> {
+    @Patch(':idkey')
+    async update(@Param('idkey') idkey: string, @Body(ValidationPipe) updateUsuarioTipoDto: UpdateUsuarioTipoDto): Promise<UsuarioTipo> {
       try {
-        await this.findOne(id);
-        return await this.tipoUsuarioService.update(+id, updateUsuarioTipoDto);
+        await this.findOne(idkey);
+        return await this.tipoUsuarioService.update(+idkey, updateUsuarioTipoDto);
       } catch (error) {
         if (error.status === HttpStatus.NOT_FOUND) {
           throw error;
@@ -62,11 +62,11 @@
       }
     }
 
-    @Delete(':id')
-    async remove(@Param('id') id: string): Promise<void> {
+    @Delete(':idkey')
+    async remove(@Param('idkey') idkey: string): Promise<void> {
       try {
-        await this.findOne(id);
-        await this.tipoUsuarioService.remove(+id);
+        await this.findOne(idkey);
+        await this.tipoUsuarioService.remove(+idkey);
       } catch (error) {
         if (error.status === HttpStatus.NOT_FOUND) {
           throw error;

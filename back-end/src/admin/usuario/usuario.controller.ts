@@ -1,10 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 
 import { Usuario } from './entities/usuario.entity';
 import { UsuarioService } from './usuario.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
+
+import { JwtAuthGuard } from '@/src/auth/guard/jwt-auth.guard';
 
 @ApiTags('Usuário')
 @Controller('usuario')
@@ -21,6 +23,7 @@ export class UsuarioController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async findAll(): Promise<Usuario[]> {
     try {
@@ -30,10 +33,10 @@ export class UsuarioController {
     }
   }
 
-  @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Usuario> {
+  @Get(':idkey')
+  async findByIdkey(@Param('idkey') idkey: string): Promise<Usuario> {
     try {
-      const usuario = await this.usuarioService.findOne(+id);
+      const usuario = await this.usuarioService.findByIdkey(+idkey);
       if (!usuario) {
         throw new HttpException('Usuário não encontrado', HttpStatus.NOT_FOUND);
       }
@@ -48,11 +51,11 @@ export class UsuarioController {
     }
   }
 
-  @Patch(':id')
-  async update(@Param('id') id: string, @Body(ValidationPipe) updateUsuarioDto: UpdateUsuarioDto): Promise<Usuario> {
+  @Patch(':idkey')
+  async update(@Param('idkey') idkey: string, @Body(ValidationPipe) updateUsuarioDto: UpdateUsuarioDto): Promise<Usuario> {
     try {
-      await this.findOne(id);
-      return await this.usuarioService.update(+id, updateUsuarioDto);
+      await this.findByIdkey(idkey);
+      return await this.usuarioService.update(+idkey, updateUsuarioDto);
     } catch (error) {
       if (error.status === HttpStatus.NOT_FOUND) {
         throw error;
@@ -62,11 +65,11 @@ export class UsuarioController {
     }
   }
 
-  @Delete(':id')
-  async remove(@Param('id') id: string): Promise<void> {
+  @Delete(':idkey')
+  async remove(@Param('idkey') idkey: string): Promise<void> {
     try {
-      await this.findOne(id);
-      await this.usuarioService.remove(+id);
+      await this.findByIdkey(idkey);
+      await this.usuarioService.remove(+idkey);
     } catch (error) {
       if (error.status === HttpStatus.NOT_FOUND) {
         throw error;

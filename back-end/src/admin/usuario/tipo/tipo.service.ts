@@ -22,16 +22,16 @@ export class UsuarioTipoService {
     return await this.usuarioTipoRepository.find();
   }
 
-  async findOne(id: number): Promise<UsuarioTipo> {
-    return await this.usuarioTipoRepository.findOne({ where: { idkey: id } });
+  async findOne(idkey: number): Promise<UsuarioTipo> {
+    return await this.usuarioTipoRepository.findOne({ where: { idkey: idkey } });
   }
 
-  async update(id: number, updateUsuarioTipoDto: UpdateUsuarioTipoDto): Promise<UsuarioTipo> {
-    await this.usuarioTipoRepository.update(id, updateUsuarioTipoDto);
-    return this.findOne(id); 
+  async update(idkey: number, updateUsuarioTipoDto: UpdateUsuarioTipoDto): Promise<UsuarioTipo> {
+    await this.usuarioTipoRepository.update(idkey, updateUsuarioTipoDto);
+    return this.findOne(idkey); 
   }
 
-  async remove(id: number): Promise<void> {
-    await this.usuarioTipoRepository.delete(id);
+  async remove(idkey: number): Promise<void> {
+    await this.usuarioTipoRepository.delete(idkey);
   }
 }

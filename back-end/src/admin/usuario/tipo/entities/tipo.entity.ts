@@ -9,6 +9,6 @@ export class UsuarioTipo {
   @Column({ type: 'text', nullable: true })
   descricao: string;  
 
-  @OneToMany(() => Usuario, usuario => usuario.usuarioTipo)
+  @OneToMany(() => Usuario, usuario => usuario.tipo)
   usuarios: Usuario[];
 }
