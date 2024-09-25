@@ -3,13 +3,14 @@ import { useNavigation, useLocalSearchParams } from 'expo-router';
 import { useState, useEffect } from 'react';
 import CarouselQuadra from '@components/carouselQuadra';
 import HorizontalLine from '@components/horizontalLine';
-import ExpandableText from '@components/expandableText';
+import TextoExpandivel from '@components/textoExpandivel';
 import Acomodacoes from '@components/acomodacoes';
 import LocationEstabelecimento from '@components/localizacaoEstabelecimento';
-import { EstabelecimentoProps } from '@src/interfaces/estabelecimento';
 import ListaQuadrasEstabelecimento from '@components/listaQuadrasEstabelecimento';
 import HorarioEstabelecimento from '@components/horarioEstabelecimento';
 import BotaoCustom from '@components/botaoCustom';
+import AvaliacoesEstabelecimento from '@components/avaliacoesEstabelecimento';
+import { EstabelecimentoProps } from '@src/interfaces/estabelecimento';
 
 import * as data from '@/db.json';
 import { QuadraProps } from '@/src/interfaces/quadra';

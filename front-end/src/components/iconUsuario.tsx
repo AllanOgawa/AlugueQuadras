@@ -7,7 +7,7 @@ interface UserIconProps {
 
 export default function IconUsuario({ image, style }: UserIconProps) {
 	return (
-		<View className='flex-col items-center justify-center mb-4'>
+		<View className='flex-col items-center justify-center'>
 			<Image
 				className={`${style}`} // Adiciona a classe de estilo aqui
 				source={{ uri: image }}

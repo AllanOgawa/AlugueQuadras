@@ -28,7 +28,7 @@ export default function Inicio() {
 							<Text className="text-xl font-semibold">Olá {user.name}</Text>
 							<Text className="text-xl">Vamos Jogar hoje?</Text>
 						</View>
-						<View className="relative">
+						<View className="relative mb-2">
 							<Pressable
 								onPress={() => router.push('/notification')}
 							>

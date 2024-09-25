@@ -7,6 +7,9 @@ export default function EstabelecimentoLayout() {
       <Stack.Screen name="estabelecimento/[id]" options={{
         headerShown: true, headerTitle: "",
       }} />
+      <Stack.Screen name="avaliacoes" options={{
+        headerShown: true, headerTitle: "Avaliações",
+      }} />
     </Stack>
   );
 }
