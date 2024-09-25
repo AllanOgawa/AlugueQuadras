@@ -41,7 +41,7 @@ export default function EditCourt() {
             <ScrollView contentContainerStyle={styles.scrollViewContent}>
                 <View>
                     <Text style={styles.headerText}>Selecione uma quadra para editar:</Text>
-                    <Pressable>
+                    <Pressable onPress={() => router.push('/(quadras)/create')}>
                         {estabelecimento?.quadras && (
                             <ListaQuadrasEstabelecimento quadras={estabelecimento.quadras} />
                         )}
