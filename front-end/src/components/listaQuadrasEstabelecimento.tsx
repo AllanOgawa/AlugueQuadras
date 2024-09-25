@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { View, Text, Modal, Image, Dimensions, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Modal, Image, Dimensions, TouchableOpacity, StyleSheet, Pressable } from 'react-native';
 import { QuadraProps } from '@src/interfaces/quadra';
 import HorizontalLine from './horizontalLine';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 const { width, height } = Dimensions.get('window');
 
-export default function ListaQuadrasEstabelecimento({ quadras }: { quadras: QuadraProps[] }) {
+export default function ListaQuadrasEstabelecimento({ quadras, onClick }: { quadras: QuadraProps[], onClick: (quadra: QuadraProps) => void }) {
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
@@ -19,6 +19,7 @@ export default function ListaQuadrasEstabelecimento({ quadras }: { quadras: Quad
         setModalVisible(false);
         setSelectedImage(null);
     };
+
     return (
         <View>
             <Text className='font-bold text-xl mb-7'>Quadras ({quadras.length})</Text>
@@ -32,29 +33,29 @@ export default function ListaQuadrasEstabelecimento({ quadras }: { quadras: Quad
                             />
                         </TouchableOpacity>
                         <View className='ml-3 flex-1'>
-                            <View className="flex-1">
-                                <Text className='text-lg leading-5 font-bold' numberOfLines={2} >
-                                    {quadra.name}
+                            <Pressable onPress={() => onClick(quadra)}>
+                                <View className="flex-1">
+                                    <Text className='text-lg leading-5 font-bold' numberOfLines={2}>
+                                        {quadra.name}
+                                    </Text>
+                                    <Text className='text-sm leading-4 mt-1 color-gray-600' numberOfLines={2} >
+                                        {quadra.esportes.map((esporte, index) => (
+                                            (index == 0) ? esporte.name : `, ${esporte.name}`
+                                        ))}
+                                    </Text>
+                                </View>
+                                <Text className='text-lg leading-5' numberOfLines={1} >
+                                    {quadra.valor}
                                 </Text>
-                                <Text className='text-sm leading-4 mt-1 color-gray-600' numberOfLines={2} >
-                                    {quadra.esportes.map((esporte, index) => (
-                                        (index == 0) ? esporte.name : `, ${esporte.name}`
-                                    ))
-                                    }
+                                <Text className='text-sm leading-4 color-gray-600' numberOfLines={1} >
+                                    Dimensões: {quadra.largura}m(L) x {quadra.comprimento}m(C)
                                 </Text>
-                            </View>
-                            <Text className='text-lg leading-5' numberOfLines={1} >
-                                {quadra.valor}
-                            </Text>
-                            <Text className='text-sm leading-4 color-gray-600' numberOfLines={1} >
-                                Dimensões: {quadra.largura}m(L) x {quadra.comprimento}m(C)
-                            </Text>
+                            </Pressable>
                         </View>
                     </View>
                     <HorizontalLine margin={(quadras.length == index + 1) ? 28 : 14} />
                 </View>
-            ))
-            }
+            ))}
 
             <Modal
                 visible={modalVisible}

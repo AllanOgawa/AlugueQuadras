@@ -1,12 +1,11 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { View, Text, SafeAreaView, ScrollView, StyleSheet, Pressable } from 'react-native';
+import { View, Text, SafeAreaView, ScrollView, StyleSheet } from 'react-native';
 import ListaQuadrasEstabelecimento from '@/src/components/listaQuadrasEstabelecimento';
 import { useEffect, useState } from 'react';
 import Toast from 'react-native-toast-message';
 import { EstabelecimentoProps } from '@/src/interfaces/estabelecimento';
 
 import * as data from '@/db.json';
-import { CourtProps } from '@/src/components/quadras';
 import { QuadraProps } from '@/src/interfaces/quadra';
 
 export default function EditCourt() {
@@ -15,7 +14,8 @@ export default function EditCourt() {
 
     // Função para lidar com o clique em uma quadra
     function handleCourtPress(quadra: QuadraProps): void {
-        console.log(`Você clicou na quadra ${quadra.name} localizada em ${quadra.id}`);
+        // console.log(`Você clicou na quadra ${quadra.name}, ID: ${quadra.id}`);
+        router.push('/create')
     }
 
     // Exibir toast com a mensagem, se disponível
@@ -43,9 +43,10 @@ export default function EditCourt() {
                 <View>
                     <Text style={styles.headerText}>Selecione uma quadra para editar:</Text>
                     {estabelecimento?.quadras?.length ? (
-                        <Pressable onPress={() => handleCourtPress(estabelecimento.quadras[0])}>
-                            <ListaQuadrasEstabelecimento quadras={estabelecimento.quadras} />
-                        </Pressable>
+                        <ListaQuadrasEstabelecimento
+                            quadras={estabelecimento.quadras}
+                            onClick={handleCourtPress}
+                        />
                     ) : (
                         <Text style={styles.emptyText}>Nenhuma quadra disponível no momento.</Text>
                     )}

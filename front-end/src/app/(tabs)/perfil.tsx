@@ -54,7 +54,7 @@ export default function Perfil() {
 						title="Quadras"
 						subtitle="Minhas quadras cadastradas"
 						style='h-16 w-full rounded-2xl flex-row items-center justify-between px-4'
-						onPress={() => router.push('/(screens)/(quadras)/home')}
+						onPress={() => router.push('/home')}
 					/>
 
 					<CardConfig
@@ -103,7 +103,7 @@ export default function Perfil() {
 					title="Notificações"
 					subtitle="Minha central de notificações"
 					style='h-16 w-full rounded-2xl flex-row items-center justify-between px-4'
-					onPress={() => router.navigate('/(screens)/notification')}
+					onPress={() => router.navigate('/notification')}
 				/>
 				<CardConfig
 					icon="history"

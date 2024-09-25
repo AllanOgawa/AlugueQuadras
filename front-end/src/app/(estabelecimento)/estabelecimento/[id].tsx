@@ -12,6 +12,7 @@ import HorarioEstabelecimento from '@components/horarioEstabelecimento';
 import BotaoCustom from '@components/botaoCustom';
 
 import * as data from '@/db.json';
+import { QuadraProps } from '@/src/interfaces/quadra';
 
 
 export default function Estabelecimento() {
@@ -90,7 +91,7 @@ export default function Estabelecimento() {
 					<Acomodacoes acomodacoes={estabelecimento.acomodacoes} />
 
 					<HorizontalLine margin={28} />
-					<ListaQuadrasEstabelecimento quadras={estabelecimento.quadras} />
+					<ListaQuadrasEstabelecimento quadras={estabelecimento.quadras} onClick={() => { }} />
 
 					<Text className='font-bold text-xl mb-7'>Localização do Estabelecimento</Text>
 					<LocationEstabelecimento
