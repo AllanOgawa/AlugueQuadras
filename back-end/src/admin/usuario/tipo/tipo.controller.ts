@@ -33,7 +33,7 @@
     @Get(':idkey')
     async findOne(@Param('idkey') idkey: string): Promise<UsuarioTipo> {
       try {
-        const tipoUsuario = await this.tipoUsuarioService.findOne(+idkey);
+        const tipoUsuario = await this.tipoUsuarioService.findByIdkey(+idkey);
         if (!tipoUsuario) {
           throw new HttpException('Tipo de usuário não encontrado', HttpStatus.NOT_FOUND);
         }

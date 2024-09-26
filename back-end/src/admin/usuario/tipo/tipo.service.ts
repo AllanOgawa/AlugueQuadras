@@ -22,13 +22,13 @@ export class UsuarioTipoService {
     return await this.usuarioTipoRepository.find();
   }
 
-  async findOne(idkey: number): Promise<UsuarioTipo> {
+  async findByIdkey(idkey: number): Promise<UsuarioTipo> {
     return await this.usuarioTipoRepository.findOne({ where: { idkey: idkey } });
   }
 
   async update(idkey: number, updateUsuarioTipoDto: UpdateUsuarioTipoDto): Promise<UsuarioTipo> {
     await this.usuarioTipoRepository.update(idkey, updateUsuarioTipoDto);
-    return this.findOne(idkey); 
+    return this.findByIdkey(idkey); 
   }
 
   async remove(idkey: number): Promise<void> {

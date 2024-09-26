@@ -6,10 +6,9 @@ export class Usuario {
   @PrimaryGeneratedColumn({ type: 'bigint' , primaryKeyConstraintName: 'pk_usuario'})
   idkey: number;
 
-  @ManyToOne(() => UsuarioTipo, usuarioTipo => usuarioTipo.usuarios)
-  @JoinColumn({ name: 'idkey_tipo_usuario', referencedColumnName: 'idkey', foreignKeyConstraintName: 'fk_usuario_usuario_tipo'})
-  tipo: UsuarioTipo;
-
+  @Column({ type: 'int', nullable:false, default: 1 })
+  idkey_tipo_usuario: number;
+  
   @Column({ type: 'text', nullable:false})
   username: string;
   
@@ -19,7 +18,13 @@ export class Usuario {
   @Column({ type: 'text', nullable: false })
   senha: string;
   
+  @Column({ type: 'text', nullable: false })
+  cpf: string;
+  
   @Column({ type: 'timestamp', nullable: true, default: () => 'CURRENT_TIMESTAMP' })
   data_cadastro: Date;
-
+  
+  @ManyToOne(() => UsuarioTipo, usuarioTipo => usuarioTipo.usuarios)
+  @JoinColumn({ name: 'idkey_tipo_usuario', referencedColumnName: 'idkey', foreignKeyConstraintName: 'fk_usuario_usuario_tipo'})
+  tipo: UsuarioTipo;
 }

@@ -4,7 +4,6 @@ import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { Usuario } from './entities/usuario.entity';
 import { UsuarioService } from './usuario.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
-import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 
 import { JwtAuthGuard } from '@/src/auth/guard/jwt-auth.guard';
 
@@ -50,20 +49,6 @@ export class UsuarioController {
           console.error('Erro ao buscar usuário:', error);
           throw new HttpException('Erro ao buscar usuário', HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }
-  }
-
-  @Patch(':idkey')
-  async update(@Param('idkey') idkey: string, @Body(ValidationPipe) updateUsuarioDto: UpdateUsuarioDto): Promise<Usuario> {
-    try {
-      await this.findByIdkey(idkey);
-      return await this.usuarioService.update(+idkey, updateUsuarioDto);
-    } catch (error) {
-      if (error.status === HttpStatus.NOT_FOUND) {
-        throw error;
-      } else {
-        throw new HttpException('Erro ao atualizar usuário', HttpStatus.INTERNAL_SERVER_ERROR);
-      }
     }
   }
 

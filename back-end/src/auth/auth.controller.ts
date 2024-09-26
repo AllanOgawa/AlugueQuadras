@@ -5,7 +5,7 @@ import { ApiTags } from '@nestjs/swagger';
 
 import { LocalAuthGuard } from './guard/local-auth.guard';
 import { JwtAuthGuard } from './guard/jwt-auth.guard';
-import { MudarSenhaDto } from './dto/mudar-senha';
+import { MudarSenhaDto } from './dto/mudar-senha.dto';
 
 @ApiTags('Autenticação')
 @Controller('auth')
@@ -16,7 +16,7 @@ export class AuthController {
   @Post('login')
   async login(@Request() req) {
     try{
-      return this.authService.login(req.user);
+      return await this.authService.login(req.user);
     }catch (error){
       console.error('Erro ao fazer login:', error);
       throw new HttpException('Erro ao fazer login', HttpStatus.INTERNAL_SERVER_ERROR);
