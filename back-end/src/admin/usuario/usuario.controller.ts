@@ -33,11 +33,13 @@ export class UsuarioController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':idkey')
   async findByIdkey(@Param('idkey') idkey: string): Promise<Usuario> {
     try {
       const usuario = await this.usuarioService.findByIdkey(+idkey);
-      if (!usuario) {
+      if (!usuario) 
+        {
         throw new HttpException('Usuário não encontrado', HttpStatus.NOT_FOUND);
       }
       return usuario;

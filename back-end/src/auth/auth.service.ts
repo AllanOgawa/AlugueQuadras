@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 
 import { UsuarioService } from '../admin/usuario/usuario.service';
+import { MudarSenhaDto } from './dto/mudar-senha';
 
 @Injectable()
 export class AuthService {
@@ -54,6 +55,29 @@ export class AuthService {
     return {
       access_token: this.jwtService.sign(payload),
     };
+  }
+
+
+  async changePassword(idkey: number, mudarSenhaDTO: MudarSenhaDto): Promise<void> {
+    const { senhaAtual, senhaNova } = mudarSenhaDTO;
+
+    const usuario = await this.usuarioService.findByIdkey(idkey);
+    if (!usuario) {
+      throw new UnauthorizedException('Usuário não encontrado.');
+    }
+
+    const senhaCorreta = await bcrypt.compare(senhaAtual, usuario.senha);
+    if (!senhaCorreta) {
+      throw new UnauthorizedException('A senha atual está incorreta.');
+    }
+
+    const senhaIgual = await bcrypt.compare(senhaNova, usuario.senha);
+    if (senhaIgual) {
+      throw new BadRequestException('A nova senha deve ser diferente da senha atual.');
+    }
+
+    const senhaNovaHashed = await bcrypt.hash(senhaNova, 10);
+    await this.usuarioService.updatePassword(idkey, senhaNovaHashed);
   }
 
 }

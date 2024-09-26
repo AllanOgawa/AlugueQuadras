@@ -48,6 +48,10 @@ export class UsuarioService {
     return this.findByIdkey(idkey);
   }
 
+  async updatePassword(idkey: number, senhaNovaHashed: string): Promise<void> {
+    await this.usuarioRepository.update(idkey, { senha: senhaNovaHashed });
+  }
+
   async remove(idkey: number): Promise<void> {
     await this.usuarioRepository.delete(idkey);
   }
