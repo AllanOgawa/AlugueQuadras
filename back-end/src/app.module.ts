@@ -1,26 +1,24 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_FILTER } from '@nestjs/core';
-
 import { DatabaseModule } from './database/database.module';
 import { AdminModule } from './admin/admin.module';
+import { EstabelecimentoModule } from './domains/gestao/estabelecimento/estabelecimento.module';
 
   @Module({
     imports: [
       ConfigModule.forRoot({
-        envFilePath: '.env',
+        envFilePath:  process.env.NODE_ENV === 'production' ? '.env.prod'
+          : process.env.NODE_ENV === 'test' ? '.env.test' 
+          : '.env',
         isGlobal: true, 
       }),
       DatabaseModule,
-      AdminModule
+      AdminModule,
+      EstabelecimentoModule,
+
     ],
     controllers: [],
-    providers: [
-    //   {
-    //   provide: APP_FILTER,
-    //   useClass: AllExceptionsFilter,
-    // },
-    ],
+    providers: [],
   })
   export class AppModule { }
 

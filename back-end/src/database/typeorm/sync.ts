@@ -10,7 +10,7 @@ export const DataSourceSync = new DataSource({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   entities: entities,
-  // migrations: ['src/database/typeorm/migrations/*.ts'],
+  migrations: ['src/database/typeorm/migrations/*.ts'],
   synchronize: false
 });
 

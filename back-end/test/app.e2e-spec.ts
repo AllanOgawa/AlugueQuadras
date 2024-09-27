@@ -1,24 +1,35 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
-import { AppModule } from './../src/app.module';
 
-describe('AppController (e2e)', () => {
+import { DatabaseModule } from '../src/database/database.module';
+import { AppModule } from '../src/app.module';
+
+describe('App E2E Tests (Ordered by Dependency)', () => {
   let app: INestApplication;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
+    
+    // runSQLScripts();
+
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
+      imports: [AppModule, DatabaseModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
   });
 
-  it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
+  afterAll(async () => {
+    await app.close();
   });
+
+
+  describe('Administração', () => {
+    require('../src/admin/usuario/tipo/test/tipo.controller.e2e-spec');
+    require('../src/admin/usuario/test/usuario.e2e-spec');
+  });
+  
+
 });
+
+
