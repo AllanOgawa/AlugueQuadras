@@ -26,7 +26,7 @@ export default function NewCourt() {
         // Atraso para garantir que o toast seja visível antes da navegação
         setTimeout(() => {
             router.replace({
-                pathname: '/(quadras)/home',
+                pathname: '/home',
                 params: { message: "Cadastro realizado com sucesso!" }
             });
         }, 600); // Tempo para o toast ser exibido

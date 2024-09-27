@@ -9,7 +9,8 @@ export default function RootLayout() {
       <StatusBar style="dark" translucent={true} backgroundColor="transparent" />
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="(screens)" options={{ headerShown: false }} />
+        {/* <Stack.Screen name="(screens)" options={{ headerShown: false }} /> */}
+        <Stack.Screen name="(quadra)" options={{ headerShown: false }} />
         <Stack.Screen name="(estabelecimento)" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
       </Stack>

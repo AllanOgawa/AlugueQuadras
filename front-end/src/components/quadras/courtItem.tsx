@@ -1,5 +1,6 @@
 import { Pressable, View, Image, Text } from 'react-native';
 import { CourtProps } from '.';
+import { estilo } from '@/src/styles/style';
 
 interface CourtItemProps {
     court: CourtProps;

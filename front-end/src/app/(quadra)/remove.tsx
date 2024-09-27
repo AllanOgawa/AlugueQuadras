@@ -1,23 +1,35 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Modal, View, Text, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
-import QuadrasList from '@components/quadras';
 import { router } from 'expo-router';
 
+import * as data from '@/db.json';
+import { EstabelecimentoProps } from '@/src/interfaces/estabelecimento';
+import ListaQuadrasEstabelecimento from '@/src/components/listaQuadrasEstabelecimento';
+
 export default function RemoveCourt() {
+    const [estabelecimento, setEstabelecimento] = useState<EstabelecimentoProps | null>(null);
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedCourt, setSelectedCourt] = useState(null);
 
-    const handleRemove = (court) => {
-        setSelectedCourt(court);
-        setModalVisible(true); // Abre o modal
+    // Função para remover quadra
+    const handleRemove = (estabelecimento?) => {
+        setSelectedCourt(estabelecimento);
+        setModalVisible(true); // Abre o modal de confirmação
     };
+
+    // Carrega os dados do JSON ao montar o componente
+    useEffect(() => {
+        if (data.estabelecimento && data.estabelecimento.length > 0) {
+            setEstabelecimento(data.estabelecimento[1]);
+        }
+    }, []);
 
     const confirmRemove = () => {
         console.log('Quadra removida:', selectedCourt);
         setModalVisible(false);
         setTimeout(() => {
             router.replace({
-                pathname: '/(quadras)/home',
+                pathname: '/home',
                 params: { message: "Quadra removida com sucesso!" }
             });
         }, 600);
@@ -28,7 +40,9 @@ export default function RemoveCourt() {
             <ScrollView contentContainerStyle={styles.scrollViewContent}>
                 <View>
                     <Text style={styles.headerText}>Selecione uma quadra para remover:</Text>
-                    <QuadrasList onPress={handleRemove} />
+                    {estabelecimento?.quadras && (
+                        <ListaQuadrasEstabelecimento quadras={estabelecimento.quadras} onClick={handleRemove} />
+                    )}
                 </View>
             </ScrollView>
 
@@ -44,10 +58,10 @@ export default function RemoveCourt() {
                         <Text style={styles.modalText}>Tem certeza que deseja remover essa quadra?</Text>
                         <View style={styles.modalButtons}>
                             <TouchableOpacity style={styles.cancelButton} onPress={() => setModalVisible(false)}>
-                                <Text className='text-black font-medium text-2xs'>Cancelar</Text>
+                                <Text style={styles.buttonText}>Cancelar</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.confirmButton} onPress={confirmRemove}>
-                                <Text className='text-white font-medium text-2xs'>Confirmar</Text>
+                                <Text style={styles.buttonText}>Confirmar</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -103,7 +117,6 @@ const styles = StyleSheet.create({
         flex: 1,
         marginRight: 10,
         alignItems: 'center',
-        color: '#FF7300'
     },
     confirmButton: {
         backgroundColor: '#FF7300',
@@ -112,11 +125,9 @@ const styles = StyleSheet.create({
         flex: 1,
         marginLeft: 10,
         alignItems: 'center',
-        color: '#ffff'
     },
     buttonText: {
-        color: '#ffff',
+        color: '#fff',
         fontWeight: 'bold',
     },
 });
-
