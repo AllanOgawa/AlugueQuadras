@@ -2,22 +2,31 @@ import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 
-import { UsuarioService } from '../admin/usuario/usuario.service';
-import { MudarSenhaDto } from './dto/mudar-senha.dto';
+import { UsuarioService } from './usuario/usuario.service';
+import { UsuarioTipoService } from './usuario/tipo/tipo.service';
+import { ChangePasswordDTO } from './dto/change-password.dto';
+import { GetProfileDto } from './dto/get-profile.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private usuarioService: UsuarioService,
+    private readonly usuarioTipoService: UsuarioTipoService,
+    private readonly usuarioService: UsuarioService,
     private jwtService: JwtService,
   ) {}
 
   async register(usuario: any) {
-    const hashedPassword = await bcrypt.hash(usuario.senha, 10);
+    const { tipo, senhaSemHash, data_nascimento, ...userData } = usuario;
+
+    const tipoUsuario     = await this.usuarioTipoService.findByIdkey(tipo);
+    const hashedPassword  = await bcrypt.hash(usuario.senha, 10);
 
     const novoUsuario = await this.usuarioService.create({
-      ...usuario,
+      ...userData,
+      tipo: tipoUsuario,
       senha: hashedPassword,
+      data_nascimento: new Date(data_nascimento)
     });
 
     const { senha, ...result } = novoUsuario;
@@ -46,9 +55,9 @@ export class AuthService {
   // Gera um token JWT para o usuário autenticado
   async login(usuario: any) {
     const payload = { 
+      idkey: usuario.idkey,
       username: usuario.username,
-      email: usuario.email, 
-      sub: usuario.idkey,
+      email: usuario.email,
       tipo: usuario.tipo.descricao 
     };
 
@@ -58,8 +67,8 @@ export class AuthService {
   }
 
 
-  async changePassword(idkey: number, mudarSenhaDTO: MudarSenhaDto): Promise<void> {
-    const { senhaAtual, senhaNova } = mudarSenhaDTO;
+  async changePassword(idkey: number, changePasswordDTO: ChangePasswordDTO): Promise<void> {
+    const { senhaAtual, senhaNova } = changePasswordDTO;
 
     const usuario = await this.usuarioService.findByIdkey(idkey);
     if (!usuario) {
@@ -80,4 +89,51 @@ export class AuthService {
     await this.usuarioService.updatePassword(idkey, senhaNovaHashed);
   }
 
+  async getProfile(idkey: number): Promise<any>{
+    const usuario = await this.usuarioService.findByIdkey(idkey);
+
+    if (!usuario) {
+      throw new UnauthorizedException('Usuário não encontrado.');
+    }
+
+    const perfil: GetProfileDto = {
+      idkey: usuario.idkey,
+      nome: usuario.nome,
+      username: usuario.username,
+      email: usuario.email,
+      cpf: usuario.cpf,
+      data_nascimento: usuario.data_nascimento,
+      data_cadastro: usuario.data_cadastro,
+      tipo: {
+        idkey: usuario.tipo.idkey,
+        descricao: usuario.tipo.descricao,
+      },
+      imagem: usuario.imagem ? usuario.imagem.toString('base64') : null, 
+    };
+
+    return perfil;
+  }
+
+  async updateProfile(idkey: number, updateProfileDto: UpdateProfileDto): Promise<GetProfileDto> {
+    const { nome, imagem } = updateProfileDto;
+
+    const usuario = await this.usuarioService.findByIdkey(idkey);
+    if (!usuario) {
+      throw new UnauthorizedException('Usuário não encontrado.');
+    }
+
+    if (nome) {
+      usuario.nome = nome;
+    }
+
+    if (imagem) {
+      const bufferImagem = Buffer.from(imagem, 'base64');
+      usuario.imagem = bufferImagem;
+    }
+
+    const usuarioAtualizado = await this.usuarioService.update(idkey, usuario);
+    const perfilAtualizado  = await this.getProfile(idkey);
+
+    return perfilAtualizado;
+  }
 }

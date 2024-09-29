@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
-import { AdminModule } from './admin/admin.module';
 import { EstabelecimentoModule } from './domains/gestao/estabelecimento/estabelecimento.module';
 import { AuthModule } from './auth/auth.module';
 
@@ -15,7 +14,6 @@ import { AuthModule } from './auth/auth.module';
     }),
     DatabaseModule,
     AuthModule,
-    AdminModule,
     EstabelecimentoModule,
   ],
   controllers: [],

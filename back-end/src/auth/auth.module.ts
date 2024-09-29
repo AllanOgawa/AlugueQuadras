@@ -2,7 +2,8 @@ import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 
-import { UsuarioModule } from '@src/admin/usuario/usuario.module';
+import { UsuarioTipoModule } from './usuario/tipo/tipo.module';
+import { UsuarioModule } from './usuario/usuario.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 
@@ -11,6 +12,7 @@ import { JwtStrategy } from './strategies/jwt-auth.strategy';
 
 @Module({
   imports: [
+    UsuarioTipoModule,
     UsuarioModule,
     PassportModule,
     JwtModule.register({

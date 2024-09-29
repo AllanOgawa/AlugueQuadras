@@ -1,6 +1,6 @@
 import { IsString, IsNotEmpty, MinLength } from 'class-validator';
 
-export class MudarSenhaDto {
+export class ChangePasswordDTO {
   @IsString({ message: 'A senha atual deve ser uma string.' })
   @IsNotEmpty({ message: 'A senha atual não pode estar vazia.' })
   senhaAtual: string;

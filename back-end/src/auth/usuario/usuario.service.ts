@@ -13,12 +13,8 @@ export class UsuarioService {
   ) {}
 
   async create(createUsuarioDto: CreateUsuarioDto): Promise<Usuario> {
-      const usuario = this.usuarioRepository.create(createUsuarioDto);
-      return await this.usuarioRepository.save(usuario);
-  }
-
-  async findAll(): Promise<Usuario[]> {
-    return await this.usuarioRepository.find({relations: ['tipo']});
+    const usuario = this.usuarioRepository.create(createUsuarioDto);
+    return await this.usuarioRepository.save(usuario);
   }
 
   async findByIdkey(idkey: number): Promise<Usuario> {
@@ -42,6 +38,11 @@ export class UsuarioService {
     });
   }
 
+  async update(idkey: number, updateData: Partial<Usuario>): Promise<Usuario> {
+    await this.usuarioRepository.update(idkey, updateData);
+    return this.findByIdkey(idkey);
+  }
+  
   async updatePassword(idkey: number, senhaNovaHashed: string): Promise<void> {
     await this.usuarioRepository.update(idkey, { senha: senhaNovaHashed });
   }
@@ -49,4 +50,7 @@ export class UsuarioService {
   async remove(idkey: number): Promise<void> {
     await this.usuarioRepository.delete(idkey);
   }
+
+
+
 }

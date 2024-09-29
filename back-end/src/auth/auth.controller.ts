@@ -1,17 +1,20 @@
-import { Controller, Request, Post, UseGuards, Body, ValidationPipe, HttpStatus, HttpException, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import { Controller, Request, Post, UseGuards, Body, ValidationPipe, HttpStatus, HttpException, UnauthorizedException, BadRequestException, Get, Patch } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateUsuarioDto } from '../admin/usuario/dto/create-usuario.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { CreateUsuarioDto } from './usuario/dto/create-usuario.dto';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 
 import { LocalAuthGuard } from './guard/local-auth.guard';
 import { JwtAuthGuard } from './guard/jwt-auth.guard';
-import { MudarSenhaDto } from './dto/mudar-senha.dto';
+import { ChangePasswordDTO } from './dto/change-password.dto';
+import { GetProfileDto } from './dto/get-profile.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @ApiTags('Autenticação')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
-
+  
+  @ApiBody({ description: 'Login de usuário.' })
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Request() req) {
@@ -23,6 +26,7 @@ export class AuthController {
     }
   }
 
+  @ApiBody({ description: 'Criação de um novo usuário.' })
   @Post('register')
   async register(@Body(ValidationPipe) createUsuarioDto: CreateUsuarioDto) {
     try{
@@ -33,12 +37,14 @@ export class AuthController {
     }
   }
 
+
+  @ApiBody({ description: 'Alteração de senha.' })
   @UseGuards(JwtAuthGuard)
   @Post('change-password')
-  async changePassword(@Body(ValidationPipe) mudarSenhaDto: MudarSenhaDto, @Request() req) {
+  async changePassword(@Body(ValidationPipe) changePasswordDTO: ChangePasswordDTO, @Request() req) {
     try {
-      const userId = req.user.userId;
-      await this.authService.changePassword(userId, mudarSenhaDto);
+      const userIdkey = req.user.idkey;
+      await this.authService.changePassword(userIdkey, changePasswordDTO);
       return { message: 'Senha atualizada com sucesso.' };
     } catch (error) {
       if (error instanceof UnauthorizedException || error instanceof BadRequestException) {
@@ -46,5 +52,22 @@ export class AuthController {
       }
       throw new HttpException('Erro ao trocar senha', HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  @ApiBody({ description: 'Retorna perfil completo do usuário' })
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  async getProfile(@Request() req): Promise<GetProfileDto> {
+    const userIdkey = req.user.idkey;
+    return this.authService.getProfile(userIdkey);
+  }
+
+
+  @ApiBody({ description: 'Atualização de dados do usuário' })
+  @UseGuards(JwtAuthGuard)
+  @Patch('profile')
+  async updateProfile(@Request() req, @Body() updateProfileDto: UpdateProfileDto): Promise<GetProfileDto> {
+    const userIdkey = req.user.idkey;
+    return this.authService.updateProfile(userIdkey, updateProfileDto);
   }
 }

@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
-import { UsuarioService } from '@src/admin/usuario/usuario.service';
+import { UsuarioService } from '@/src/auth/usuario/usuario.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -22,7 +22,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('Usuário não encontrado ou não autorizado');
     }
     return {
-      userId: usuario.idkey,
+      idkey: usuario.idkey,
       username: usuario.username,
       email: usuario.email,
       tipo: usuario.tipo.descricao,
