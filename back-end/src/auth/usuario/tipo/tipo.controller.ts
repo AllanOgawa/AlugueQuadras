@@ -7,19 +7,19 @@
   import { UpdateUsuarioTipoDto } from './dto/update-tipo.dto';
 
   @ApiTags('Tipo de Usuário')
-  @Controller('usuario/tipo')
+  @Controller('auth/usuario/tipo')
   export class UsuarioTipoController {
     constructor(private readonly tipoUsuarioService: UsuarioTipoService) {}
 
-    // @ApiBody({ description: 'Criação de um novo tipo de usuário.' })
-    // @Post()
-    // async create(@Body(ValidationPipe) createUsuarioTipoDto: CreateUsuarioTipoDto): Promise<UsuarioTipo> {
-    //   try {
-    //     return await this.tipoUsuarioService.create(createUsuarioTipoDto);
-    //   } catch (error) {
-    //     throw new HttpException('Erro ao criar tipo de usuário', HttpStatus.INTERNAL_SERVER_ERROR);
-    //   }
-    // }
+    @ApiBody({ description: 'Criação de um novo tipo de usuário.' })
+    @Post()
+    async create(@Body(ValidationPipe) createUsuarioTipoDto: CreateUsuarioTipoDto): Promise<UsuarioTipo> {
+      try {
+        return await this.tipoUsuarioService.create(createUsuarioTipoDto);
+      } catch (error) {
+        throw new HttpException('Erro ao criar tipo de usuário', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    }
 
     // @Get()
     // async findAll(): Promise<UsuarioTipo[]> {

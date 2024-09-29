@@ -5,7 +5,7 @@ import { Usuario } from './entities/usuario.entity';
 import { UsuarioService } from './usuario.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 
-import { JwtAuthGuard } from '@/src/auth/guard/jwt-auth.guard';
+import { JwtAuthGuard } from '@src/auth/guard/jwt-auth.guard';
 
 @ApiTags('Usuário')
 @Controller('usuario')

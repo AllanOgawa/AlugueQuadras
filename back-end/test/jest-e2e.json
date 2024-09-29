@@ -6,9 +6,8 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
-  "globals": {
-    "ts-jest": {
-      "tsconfig": "tsconfig.json"
-    }
+  "moduleNameMapper": {
+    "^@src/(.*)$": "<rootDir>/../src/$1",
+    "^@database/(.*)$": "<rootDir>/../src/database/$1"
   }
 }

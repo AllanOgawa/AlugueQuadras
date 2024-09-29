@@ -20,18 +20,18 @@ export class EstabelecimentoController {
     return this.estabelecimentoService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.estabelecimentoService.findOne(+id);
+  @Get(':idkey')
+  findOne(@Param('idkey') idkey: string) {
+    return this.estabelecimentoService.findOne(+idkey);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateEstabelecimentoDto: Estabelecimento) {
-    return this.estabelecimentoService.update(+id, updateEstabelecimentoDto);
+  @Patch(':idkey')
+  update(@Param('idkey') idkey: string, @Body() updateEstabelecimentoDto: Estabelecimento) {
+    return this.estabelecimentoService.update(+idkey, updateEstabelecimentoDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.estabelecimentoService.remove(+id);
+  @Delete(':idkey')
+  remove(@Param('idkey') idkey: string) {
+    return this.estabelecimentoService.remove(+idkey);
   }
 }

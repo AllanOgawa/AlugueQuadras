@@ -24,9 +24,8 @@ describe('App E2E Tests (Ordered by Dependency)', () => {
   });
 
 
-  describe('Administração', () => {
-    require('../src/admin/usuario/tipo/test/tipo.controller.e2e-spec');
-    require('../src/admin/usuario/test/usuario.e2e-spec');
+  describe('Autenticação', () => {
+    require('../src/auth/test/auth.e2e-spec');
   });
   
 
