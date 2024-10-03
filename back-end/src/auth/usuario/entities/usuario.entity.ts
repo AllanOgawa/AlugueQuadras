@@ -21,11 +21,11 @@ export class Usuario {
   @Column({ type: 'text', nullable: false, unique: true })
   cpf: string;
   
-  @Column({ type: 'date', nullable: false })
-  data_nascimento: Date;
+  @Column({ type: 'date', name: 'data_nascimento', nullable: false })
+  dataNascimento: Date;
 
-  @Column({ type: 'timestamp', nullable: true, default: () => 'CURRENT_TIMESTAMP' })
-  data_cadastro: Date;
+  @Column({ type: 'timestamp',  name: 'data_cadastro', nullable: true, default: () => 'CURRENT_TIMESTAMP' })
+  dataCadastro: Date;
   
   @ManyToOne(() => UsuarioTipo, usuarioTipo => usuarioTipo.usuarios)
   @JoinColumn({ name: 'idkey_tipo_usuario', referencedColumnName: 'idkey', foreignKeyConstraintName: 'fk_usuario_usuario_tipo'})

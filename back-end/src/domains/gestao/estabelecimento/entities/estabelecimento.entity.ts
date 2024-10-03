@@ -1,10 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn,  } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from "typeorm";
+import { Quadra } from "../quadra/entities/quadra.entity";
 
 @Entity({schema:'gestao', name:'estabelecimento'})
 export class Estabelecimento {
 
 @PrimaryGeneratedColumn({type: 'bigint' , primaryKeyConstraintName:'pk_estabelecimento'})
-idKey:number;
+idkey: number;
 
 @Column({type: 'text', nullable: false, unique: true})
 cnpj: string;
@@ -26,4 +27,7 @@ dataCadastro: Date;
 
 @UpdateDateColumn({ type: 'timestamp', name: 'data_atualizacao' })
 dataAtualizacao: Date;
+
+@OneToMany(() => Quadra, quadra => quadra.estabelecimento)
+quadras: Quadra[];
 }

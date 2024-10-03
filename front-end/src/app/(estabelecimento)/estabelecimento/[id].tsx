@@ -51,7 +51,7 @@ export default function Estabelecimento() {
 					duration: 25, // Duração do fade out
 					useNativeDriver: true,
 				}).start();
-			}
+			}""
 		});
 		return () => {
 			scrollY.removeListener(listener);

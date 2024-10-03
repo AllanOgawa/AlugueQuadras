@@ -13,29 +13,29 @@ export class EstabelecimentoService{
 
   async create(CreateEstabelecimentoDto: CreateEstabelecimentoDto): Promise<Estabelecimento>{
     const estabelecimento = await this.estabelecimentoRepository.create(CreateEstabelecimentoDto);
-    return this.estabelecimentoRepository.save(estabelecimento);
+    return await this.estabelecimentoRepository.save(estabelecimento);
   }
 
   async findAll(): Promise<Estabelecimento[]>{
-    return await this.estabelecimentoRepository.find();
+    return await this.estabelecimentoRepository.find({
+      relations: ['quadras']
+    });
   }
 
-
-  async findOne(idkey: number): Promise<Estabelecimento>{
-    const estabelecimento =  await this.estabelecimentoRepository.findOne({where:{idKey: idkey}});
-    if(!estabelecimento){
-      throw new NotFoundException('Estabelecimento não encontrado');
-    }
-    return estabelecimento;
+  async findByIdkey(idkey: number): Promise<Estabelecimento>{
+    return await this.estabelecimentoRepository.findOne({
+      where:{idkey: idkey},
+      relations: ['quadras']
+    });
   }
 
-  async update(idkey: number, data: Estabelecimento): Promise<Estabelecimento>{
-    await this.estabelecimentoRepository.update(idkey, data);
-    return this.findOne(idkey);
+  async update(idkey: number, updateData: Partial<Estabelecimento>): Promise<Estabelecimento>{
+    await this.estabelecimentoRepository.update(idkey, updateData);
+    return this.findByIdkey(idkey);
   }
 
   async remove(idkey: number): Promise<void>{
-    const estabelecimento = await this.findOne(idkey);
+    const estabelecimento = await this.findByIdkey(idkey);
     await this.estabelecimentoRepository.remove(estabelecimento);
   }
 }

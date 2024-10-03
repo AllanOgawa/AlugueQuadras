@@ -51,6 +51,4 @@ export class UsuarioService {
     await this.usuarioRepository.delete(idkey);
   }
 
-
-
 }

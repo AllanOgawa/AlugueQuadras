@@ -4,8 +4,8 @@ export class GetProfileDto {
   username: string;
   email: string;
   cpf: string;
-  data_nascimento: Date;
-  data_cadastro: Date;
+  dataNascimento: Date;
+  dataCadastro: Date;
   tipo: {
     idkey: number;
     descricao: string;
