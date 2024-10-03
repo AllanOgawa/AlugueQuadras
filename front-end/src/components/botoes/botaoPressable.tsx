@@ -7,7 +7,7 @@ interface CustomButtonProps {
     customStyles?: ViewStyle; // Estilos personalizados para sombra ou outras propriedades
 }
 
-export default function BotaoCustom({ title, style, onPress, customStyles }: CustomButtonProps) {
+export default function BotaoPressable({ title, style, onPress, customStyles }: CustomButtonProps) {
     return (
         <Pressable
             onPress={onPress}

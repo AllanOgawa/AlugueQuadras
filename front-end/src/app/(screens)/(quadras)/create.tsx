@@ -1,10 +1,11 @@
-import BotaoCustom from '@components/botaoCustom';
+import BotaoPressable from '@components/botoes/botaoPressable';
 import InputTexto from '@components/inputTexto';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { View, Text, SafeAreaView, ScrollView, StyleSheet } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MultiSelect from '@components/IconService';
+import globalStyles from '@/src/styles/globalStyles';
 
 
 export default function NewCourt() {
@@ -79,8 +80,8 @@ export default function NewCourt() {
                     </View>
                 </View>
             </ScrollView>
-            <View style={styles.buttonContainer}>
-                <BotaoCustom
+            <View style={globalStyles.buttonContainer}>
+                <BotaoPressable
                     title={'Cadastrar'}
                     style='bg-primary p-4 rounded-2xl active:bg-secondary mx-4'
                     onPress={confirmCreate} // Chama a função que exibe o toast e navega
@@ -142,10 +143,5 @@ const styles = StyleSheet.create({
     fileText: {
         color: '#ffffff',
         fontWeight: 'bold',
-    },
-    buttonContainer: {
-        backgroundColor: '#', // Tailwind slate-800
-        paddingVertical: 8,
-        justifyContent: 'flex-end',
     },
 });

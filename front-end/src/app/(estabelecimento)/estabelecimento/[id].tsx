@@ -1,3 +1,4 @@
+import globalStyles from '@/src/styles/globalStyles';
 import { Text, View, StyleSheet, Animated } from 'react-native';
 import { useNavigation, useLocalSearchParams } from 'expo-router';
 import { useState, useEffect } from 'react';
@@ -8,7 +9,7 @@ import Acomodacoes from '@components/acomodacoes';
 import LocationEstabelecimento from '@components/localizacaoEstabelecimento';
 import ListaQuadrasEstabelecimento from '@components/listaQuadrasEstabelecimento';
 import HorarioEstabelecimento from '@components/horarioEstabelecimento';
-import BotaoCustom from '@components/botaoCustom';
+import BotaoPressable from '@components/botoes/botaoPressable';
 import AvaliacoesEstabelecimento from '@components/avaliacoesEstabelecimento';
 import { EstabelecimentoProps } from '@src/interfaces/estabelecimento';
 
@@ -120,8 +121,8 @@ export default function Estabelecimento() {
         </View>
       </Animated.ScrollView>
 
-      <View style={styles.buttonContainer}>
-        <BotaoCustom
+      <View style={globalStyles.buttonContainer}>
+        <BotaoPressable
           title={'Alugar Quadra'}
           style='bg-primary p-4 rounded-2xl active:bg-secondary mx-4'
           onPress={() => { }}
@@ -132,13 +133,6 @@ export default function Estabelecimento() {
   );
 }
 const styles = StyleSheet.create({
-
-  buttonContainer: {
-    backgroundColor: '#', // Tailwind slate-800
-    paddingVertical: 8,
-    justifyContent: 'flex-end',
-
-  },
   headerText: {
     fontSize: 18,
     fontWeight: "bold",

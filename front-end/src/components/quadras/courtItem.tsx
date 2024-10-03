@@ -1,5 +1,6 @@
 import { Pressable, View, Image, Text } from 'react-native';
 import { CourtProps } from '.';
+import globalStyles from '@src/styles/globalStyles';
 
 interface CourtItemProps {
     court: CourtProps;
@@ -9,7 +10,7 @@ interface CourtItemProps {
 export default function CourtItem({ court, onPress }: CourtItemProps) {
     return (
         <Pressable
-            style={estilo.box}
+            style={globalStyles.box}
             className='
                 flex flex-row-reverse items-center 
                 justify-between px-2 rounded-2xl w-[99%] h-40 bg-white'
