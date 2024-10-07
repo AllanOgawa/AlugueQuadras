@@ -1,3 +1,4 @@
+import globalStyles from '@/src/styles/globalStyles';
 import { Text, View, StyleSheet, Animated } from 'react-native';
 import { useNavigation, useLocalSearchParams } from 'expo-router';
 import { useState, useEffect } from 'react';
@@ -8,7 +9,7 @@ import Acomodacoes from '@components/acomodacoes';
 import LocationEstabelecimento from '@components/localizacaoEstabelecimento';
 import ListaQuadrasEstabelecimento from '@components/listaQuadrasEstabelecimento';
 import HorarioEstabelecimento from '@components/horarioEstabelecimento';
-import BotaoCustom from '@components/botaoCustom';
+import BotaoPressable from '@components/botoes/botaoPressable';
 import AvaliacoesEstabelecimento from '@components/avaliacoesEstabelecimento';
 import { EstabelecimentoProps } from '@src/interfaces/estabelecimento';
 
@@ -21,7 +22,7 @@ export default function Estabelecimento() {
 	const navigation = useNavigation();
 	const [scrollY] = useState(new Animated.Value(0));
 	const [fadeAnim] = useState(new Animated.Value(0)); // Novo valor animado para a opacidade
-	const [estabelecimento, setEstabelecimento] = useState<EstabelecimentoProps>()
+	const [estabelecimento, setEstabelecimento] = useState<EstabelecimentoProps>();
 
 	useEffect(() => {
 		setEstabelecimento(data.estabelecimento.find(item => item.id == id))
@@ -73,7 +74,7 @@ export default function Estabelecimento() {
 			>
 				<CarouselQuadra imagemQuadra={estabelecimento.image} />
 
-				<View className='px-4'>
+				<View className='px-4 mb-5'>
 					<View className="flex-row py-4">
 						<View className="flex-1 justify-center">
 							<Text numberOfLines={3} className='font-semibold text-2xl color-black'>
@@ -94,7 +95,7 @@ export default function Estabelecimento() {
 					<HorizontalLine margin={28} />
 					<ListaQuadrasEstabelecimento quadras={estabelecimento.quadras} onClick={() => { }} />
 
-					<Text className='font-bold text-xl mb-7'>Localização do Estabelecimento</Text>
+					<Text className='font-bold text-xl mb-7 mt-2'>Localização do Estabelecimento</Text>
 					<LocationEstabelecimento
 						latitude={estabelecimento.latitude}
 						longitude={estabelecimento.longitude}
@@ -103,18 +104,26 @@ export default function Estabelecimento() {
 					/>
 
 					<HorizontalLine margin={28} />
+					<Text className='font-bold text-xl mb-7'>Avaliações</Text>
+					<AvaliacoesEstabelecimento
+						idEstabelecimento={estabelecimento.id}
+						avaliacoes={estabelecimento.avaliacoes}
+						avaliacaoMedia={estabelecimento.avaliacao}
+						telaCheia={false}
+					/>
+
 					<Text className='font-bold text-xl mb-7'>Horário de Funcionamento</Text>
 					<HorarioEstabelecimento horarios={estabelecimento.horario} />
 
 					<HorizontalLine margin={28} />
 					<Text className='font-bold text-xl mb-7'>Sobre nós</Text>
-					<ExpandableText text={estabelecimento.sobre} numberOfLines={5} numberOfChar={200} />
+					<TextoExpandivel className='text-lg' text={estabelecimento.sobre} numberOfLines={5} numberOfChar={200} />
 
 				</View>
 			</Animated.ScrollView>
 
-			<View style={styles.buttonContainer}>
-				<BotaoCustom
+			<View style={globalStyles.buttonContainer}>
+				<BotaoPressable
 					title={'Alugar Quadra'}
 					style='bg-primary p-4 rounded-2xl active:bg-secondary mx-4'
 					onPress={() => { }}
@@ -125,13 +134,6 @@ export default function Estabelecimento() {
 	);
 }
 const styles = StyleSheet.create({
-
-	buttonContainer: {
-		backgroundColor: '#', // Tailwind slate-800
-		paddingVertical: 8,
-		justifyContent: 'flex-end',
-
-	},
 	headerText: {
 		fontSize: 18,
 		fontWeight: "bold",

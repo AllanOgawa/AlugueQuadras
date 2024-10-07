@@ -30,14 +30,14 @@ export default function Inicio() {
 						</View>
 						<View className="relative mb-2">
 							<Pressable
-								onPress={() => router.push('/notification')}
+								onPress={() => router.push('/(usuario)/cadastro')}
 							>
 								<IconUsuario image={user.image} style="w-16 h-16 rounded-full border-2 border-black" />
 								<Feather
 									name="bell"
 									size={16}
 									color="#FF7300"
-									className="absolute top-0  right-0 p-1" // Posiciona o sino sobre a imagem
+									className="absolute top-0 right-0 p-1" // Posiciona o sino sobre a imagem
 								/>
 							</Pressable>
 						</View>

@@ -12,6 +12,7 @@ export default function RootLayout() {
         {/* <Stack.Screen name="(screens)" options={{ headerShown: false }} /> */}
         <Stack.Screen name="(quadra)" options={{ headerShown: false }} />
         <Stack.Screen name="(estabelecimento)" options={{ headerShown: false }} />
+        <Stack.Screen name="(usuario)" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
       </Stack>
       <Toast />
