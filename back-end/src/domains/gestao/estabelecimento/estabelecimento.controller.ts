@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, ValidationPipe, HttpStatus, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, ValidationPipe, HttpStatus, UseGuards, Request } from '@nestjs/common';
 import { EstabelecimentoService } from './estabelecimento.service';
 import { CreateEstabelecimentoDto } from './dto/create-estabelecimento.dto';
 import { UpdateEstabelecimentoDto } from './dto/update-estabelecimento.dto';
@@ -14,18 +14,20 @@ export class EstabelecimentoController {
   constructor(private readonly estabelecimentoService: EstabelecimentoService) {}
 
   @Post()
-  async create(@Body(ValidationPipe) createEstabelecimentoDto: CreateEstabelecimentoDto) {
+  async create(@Request() req, @Body(ValidationPipe) createEstabelecimentoDto: CreateEstabelecimentoDto) {
     try {
-      return this.estabelecimentoService.create(createEstabelecimentoDto);
+      const usuario = req.user;
+      return this.estabelecimentoService.create(createEstabelecimentoDto, usuario);
     } catch (error) {
       throw new HttpException('Erro ao buscar estabelecimentos', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   @Get()
-  async findAll() {
+  async findAllByUser(@Request() req) {
     try {
-      return await this.estabelecimentoService.findAll();
+      const usuario = req.user;
+      return await this.estabelecimentoService.findAllByUser(usuario);
       } catch (error) {
         throw new HttpException('Erro ao buscar todos estabelecimentos', HttpStatus.INTERNAL_SERVER_ERROR);
       }

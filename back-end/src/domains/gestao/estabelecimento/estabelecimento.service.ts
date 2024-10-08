@@ -3,6 +3,7 @@ import { Estabelecimento } from "./entities/estabelecimento.entity";
 import { Repository } from "typeorm";
 import { CreateEstabelecimentoDto } from "./dto/create-estabelecimento.dto";
 import { Injectable, NotFoundException } from "@nestjs/common";
+import { Usuario } from "@src/auth/usuario/entities/usuario.entity";
 
 @Injectable()
 export class EstabelecimentoService{
@@ -11,8 +12,8 @@ export class EstabelecimentoService{
     private readonly estabelecimentoRepository: Repository<Estabelecimento>,
   ){}
 
-  async create(CreateEstabelecimentoDto: CreateEstabelecimentoDto): Promise<Estabelecimento>{
-    const estabelecimento = await this.estabelecimentoRepository.create(CreateEstabelecimentoDto);
+  async create(createEstabelecimentoDto: CreateEstabelecimentoDto, usuario: Usuario): Promise<Estabelecimento>{
+    const estabelecimento = await this.estabelecimentoRepository.create({...createEstabelecimentoDto, usuario});
     return await this.estabelecimentoRepository.save(estabelecimento);
   }
 
@@ -22,9 +23,16 @@ export class EstabelecimentoService{
     });
   }
 
+  async findAllByUser(usuario: Usuario): Promise<Estabelecimento[]>{
+    return await this.estabelecimentoRepository.find({
+      where: { usuario },
+      relations: ['quadras']
+    });
+  }
+
   async findByIdkey(idkey: number): Promise<Estabelecimento>{
     return await this.estabelecimentoRepository.findOne({
-      where:{idkey: idkey},
+      where:{ idkey },
       relations: ['quadras']
     });
   }

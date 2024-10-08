@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, JoinColumn } from "typeorm";
 import { Quadra } from "../quadra/entities/quadra.entity";
+import { Usuario } from "@src/auth/usuario/entities/usuario.entity";
 
 @Entity({schema:'gestao', name:'estabelecimento'})
 export class Estabelecimento {
@@ -22,7 +23,7 @@ email: string;
 @Column({type: 'text', nullable: true})
 alvara: string;
 
-@CreateDateColumn({type: 'timestamp', name: 'data_cadastro'})
+@Column({ type: 'timestamp',  name: 'data_cadastro', nullable: true, default: () => 'CURRENT_TIMESTAMP' })
 dataCadastro: Date;
 
 @UpdateDateColumn({ type: 'timestamp', name: 'data_atualizacao' })
@@ -30,4 +31,8 @@ dataAtualizacao: Date;
 
 @OneToMany(() => Quadra, quadra => quadra.estabelecimento)
 quadras: Quadra[];
+
+@ManyToOne(() => Usuario, usuario => usuario.estabelecimentos, { eager: true })
+@JoinColumn({ name: 'idkey_usuario' })
+usuario: Usuario;
 }
