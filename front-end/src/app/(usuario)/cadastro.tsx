@@ -7,22 +7,30 @@ import Input from '@components/inputs/input';
 import InputSenha from '@components/inputs/inputSenha';
 import BotaoTouchableOpacity from '@components/botoes/botaoTouchableOpacity';
 import SetaVoltar from '@/src/components/setaVoltar';
+import InputData from '@/src/components/inputs/inputData';
 
 const statusBarHeight = Constants.statusBarHeight;
 
 export default function UsuarioCadastro() {
     const [nome, setNome] = useState('');
+    const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [cpf, setCpf] = useState('');
+    const [dtNascimento, setDtNascimento] = useState('');
+    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+
     const [senha, setSenha] = useState('');
     const [confirmarSenha, setConfirmarSenha] = useState('');
+
     const [errorNome, setErrorNome] = useState('');
+    const [errorUsername, setErrorUsername] = useState('');
     const [errorEmail, setErrorEmail] = useState('');
     const [errorCpf, setErrorCpf] = useState('');
     const [errorSenha, setErrorSenha] = useState('');
     const [errorConfirmarSenha, setErrorConfirmarSenha] = useState('');
 
     const nomeInputRef = useRef<TextInput>(null);
+    const usernameInputRef = useRef<TextInput>(null);
     const emailInputRef = useRef<TextInput>(null);
     const cpfInputRef = useRef<TextInput>(null);
     const senhaInputRef = useRef<TextInput>(null);
@@ -36,6 +44,7 @@ export default function UsuarioCadastro() {
         setErrorNome((!nome) ? "o campo Nome é obrigatório." : "");
         setErrorSenha((!senha) ? "o campo Senha é obrigatório." : "");
         setErrorConfirmarSenha((!confirmarSenha) ? "a confirmação de Senha é obrigatório." : "");
+        setErrorUsername((!username) ? "o campo Username é obrigatório" : "");
 
         if (!email) erroEmail = "o campo Email é obrigatório.";
         else if (!emailRegex.test(email)) erroEmail = "Formato de Email Inválido.";
@@ -62,6 +71,10 @@ export default function UsuarioCadastro() {
         setCpf(formattedCpf);
     };
 
+    const handleDateChange = (date: Date) => {
+        setSelectedDate(date); // Atualizar a data selecionada
+    };
+
     return (
         <SafeAreaView className='flex-1 bg-white' style={{ marginTop: statusBarHeight + 8 }}>
             <SetaVoltar />
@@ -80,6 +93,18 @@ export default function UsuarioCadastro() {
                         errorMessage={errorNome}
                         value={nome}
                         onChangeText={setNome}
+                        autoComplete="name"
+                        returnKeyType="next"
+                        onSubmitEditing={() => usernameInputRef.current?.focus()}
+                    />
+                    <Input
+                        className='mb-5'
+                        ref={usernameInputRef}
+                        label="Username:"
+                        obrigatorio
+                        errorMessage={errorUsername}
+                        value={username}
+                        onChangeText={setUsername}
                         autoComplete="name"
                         returnKeyType="next"
                         onSubmitEditing={() => emailInputRef.current?.focus()}
@@ -109,7 +134,12 @@ export default function UsuarioCadastro() {
                         onChangeText={handleCpfChange}
                         autoComplete="off"
                         returnKeyType="next"
-                        onSubmitEditing={() => senhaInputRef.current?.focus()}
+                    />
+                    <InputData
+                        label="Data de Nascimento:"
+                        onDateChange={handleDateChange}
+                        className='mb-5'
+                        obrigatorio
                     />
                     <InputSenha
                         ref={senhaInputRef}

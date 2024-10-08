@@ -2,7 +2,7 @@ import { Pressable, Text, ViewStyle } from 'react-native';
 
 interface CustomButtonProps {
     title: string;
-    style: string; // ClassName do Tailwind
+    style?: string; // ClassName do Tailwind
     onPress: () => void;
     customStyles?: ViewStyle; // Estilos personalizados para sombra ou outras propriedades
 }
