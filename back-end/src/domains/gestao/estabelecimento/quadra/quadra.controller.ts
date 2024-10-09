@@ -8,12 +8,12 @@ import { JwtAuthGuard } from '@src/auth/guard/jwt-auth.guard';
 
 @ApiTags('Quadra')
 @UseGuards(JwtAuthGuard)
-@Controller('quadra')
+@Controller('estabelecimento/quadra')
 export class QuadraController {
   constructor(private readonly quadraService: QuadraService) {}
 
   @Post()
-  async create(@Body(ValidationPipe) createQuadraDto: CreateQuadraDto) {
+  async create(@Body(ValidationPipe) createQuadraDto: CreateQuadraDto): Promise<Quadra> {
     try {
       return await this.quadraService.create(createQuadraDto);
     } catch (error) {
@@ -24,17 +24,6 @@ export class QuadraController {
     }
   }
 
-  @Get()
-  async findAll() {
-    try {
-      return await this.quadraService.findAll();
-    } catch (error) {
-      throw new HttpException(
-        'Erro ao buscar todas as quadras',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
 
   @Get(':idkey')
   async findByIdkey(@Param('idkey') idkey: number): Promise<Quadra> {
@@ -58,10 +47,7 @@ export class QuadraController {
   }
 
   @Patch(':idkey')
-  async update(
-    @Param('idkey') idkey: number,
-    @Body(ValidationPipe) updateQuadraDto: UpdateQuadraDto,
-  ): Promise<Quadra> {
+  async update(@Param('idkey') idkey: number, @Body(ValidationPipe) updateQuadraDto: UpdateQuadraDto): Promise<Quadra> {
     try {
       await this.findByIdkey(idkey);
       return await this.quadraService.update(idkey, updateQuadraDto);

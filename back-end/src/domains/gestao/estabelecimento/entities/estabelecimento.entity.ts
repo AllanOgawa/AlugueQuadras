@@ -14,7 +14,7 @@ cnpj: string;
 @Column({type: 'text', name: 'razao_social', nullable: false})
 razaoSocial: string
 
-@Column({type: 'text', nullable:false})
+@Column({type: 'text', nullable: false})
 telefone: string
 
 @Column({ type: 'text', nullable: false, unique: true })
@@ -32,7 +32,7 @@ dataAtualizacao: Date;
 @OneToMany(() => Quadra, quadra => quadra.estabelecimento)
 quadras: Quadra[];
 
-@ManyToOne(() => Usuario, usuario => usuario.estabelecimentos, { eager: true })
+@ManyToOne(() => Usuario, usuario => usuario.estabelecimentos)
 @JoinColumn({ name: 'idkey_usuario' })
 usuario: Usuario;
 }

@@ -14,11 +14,12 @@ export class EstabelecimentoController {
   constructor(private readonly estabelecimentoService: EstabelecimentoService) {}
 
   @Post()
-  async create(@Request() req, @Body(ValidationPipe) createEstabelecimentoDto: CreateEstabelecimentoDto) {
+  async create(@Body(ValidationPipe) createEstabelecimentoDto: CreateEstabelecimentoDto, @Request() req) {
     try {
       const usuario = req.user;
       return this.estabelecimentoService.create(createEstabelecimentoDto, usuario);
     } catch (error) {
+      console.log(error);
       throw new HttpException('Erro ao buscar estabelecimentos', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -51,6 +52,7 @@ export class EstabelecimentoController {
     }
   }
 
+
   @Patch(':idkey')
   async update(@Param('idkey') idkey: number, @Body(ValidationPipe) updateEstabelecimentoDto: UpdateEstabelecimentoDto): Promise<Estabelecimento> {
     try {
@@ -66,10 +68,11 @@ export class EstabelecimentoController {
   }
 
   @Delete(':idkey')
-  async remove(@Param('idkey') idkey: number): Promise<void> {
+  async remove(@Param('idkey') idkey: number, @Request() req): Promise<void> {
     try {
+      const usuario = req.user;
       await this.findByIdkey(idkey);
-      await this.estabelecimentoService.remove(idkey);
+      await this.estabelecimentoService.remove(idkey, usuario);
     } catch (error) {
       if (error.status === HttpStatus.NOT_FOUND) {
         throw error;
