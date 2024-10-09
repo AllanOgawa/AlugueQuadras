@@ -8,6 +8,8 @@ import InputSenha from '@components/inputs/inputSenha';
 import BotaoTouchableOpacity from '@components/botoes/botaoTouchableOpacity';
 import SetaVoltar from '@/src/components/setaVoltar';
 import InputData from '@/src/components/inputs/inputData';
+import UploadImagem from '@/src/components/UploadImagem';
+import UploadImage from '@/src/components/UploadImagem';
 
 const statusBarHeight = Constants.statusBarHeight;
 
@@ -75,6 +77,11 @@ export default function UsuarioCadastro() {
         setSelectedDate(date); // Atualizar a data selecionada
     };
 
+    const handleImageUpload = (url: string) => {
+        console.log('Imagem enviada para:', url);
+        // Aqui você pode realizar outras ações como salvar a URL no banco de dados
+    };
+
     return (
         <SafeAreaView className='flex-1 bg-white' style={{ marginTop: statusBarHeight + 8 }}>
             <SetaVoltar />
@@ -84,6 +91,10 @@ export default function UsuarioCadastro() {
             >
                 <View className="w-full px-4">
                     <Text className="text-4xl font-semibold mt-10 mb-5">Criar conta</Text>
+
+                    <UploadImage
+                        onImageUpload={handleDateChange}
+                    />
 
                     <Input
                         className='mb-5'
