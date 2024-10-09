@@ -26,7 +26,7 @@ export class AuthService {
       ...userData,
       tipo: tipoUsuario,
       senha: hashedPassword,
-      data_nascimento: new Date(data_nascimento)
+      dataNascimento: new Date(data_nascimento)
     });
 
     const { senha, ...result } = novoUsuario;
@@ -102,8 +102,8 @@ export class AuthService {
       username: usuario.username,
       email: usuario.email,
       cpf: usuario.cpf,
-      data_nascimento: usuario.data_nascimento,
-      data_cadastro: usuario.data_cadastro,
+      dataNascimento: usuario.dataNascimento,
+      dataCadastro: usuario.dataCadastro,
       tipo: {
         idkey: usuario.tipo.idkey,
         descricao: usuario.tipo.descricao,
@@ -114,7 +114,7 @@ export class AuthService {
     return perfil;
   }
 
-  async updateProfile(idkey: number, updateProfileDto: UpdateProfileDto): Promise<GetProfileDto> {
+  async updateProfile(idkey: number, updateProfileDto: UpdateProfileDto): Promise<any> {
     const { nome, imagem } = updateProfileDto;
 
     const usuario = await this.usuarioService.findByIdkey(idkey);
@@ -132,8 +132,7 @@ export class AuthService {
     }
 
     const usuarioAtualizado = await this.usuarioService.update(idkey, usuario);
-    const perfilAtualizado  = await this.getProfile(idkey);
 
-    return perfilAtualizado;
+    return usuarioAtualizado;
   }
 }
