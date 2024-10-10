@@ -8,6 +8,7 @@ import InputSenha from '@components/inputs/inputSenha';
 import BotaoTouchableOpacity from '@components/botoes/botaoTouchableOpacity';
 import SetaVoltar from '@/src/components/setaVoltar';
 import InputData from '@/src/components/inputs/inputData';
+import { router } from 'expo-router';
 
 const statusBarHeight = Constants.statusBarHeight;
 
@@ -56,6 +57,8 @@ export default function UsuarioCadastro() {
 
         if (confirmarSenha !== senha)
             setErrorConfirmarSenha("As senhas não coincidem.");
+
+        console.log(nome)
     };
 
     const handleCpfChange = (text: string) => {
@@ -172,7 +175,7 @@ export default function UsuarioCadastro() {
 
             <View style={globalStyles.buttonContainer}>
                 <BotaoTouchableOpacity
-                    title={'Alugar Quadra'}
+                    title={'Cadastrar'}
                     className='bg-primary p-4 rounded-2xl active:bg-secondary mx-4'
                     onPress={handleSubmit}
                 />

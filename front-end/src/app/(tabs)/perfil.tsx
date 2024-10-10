@@ -51,10 +51,16 @@ export default function Perfil() {
 					/>
 					<CardConfig
 						icon="sports-tennis"
-						title="Quadras"
-						subtitle="Minhas quadras cadastradas"
-						style='h-16 w-full rounded-2xl flex-row items-center justify-between px-4'
-						onPress={() => router.push('/home')}
+						title="Tenho um negócio"
+						subtitle="Torne-se um parceiro nosso!"
+						style="h-16 w-full rounded-2xl flex-row items-center justify-between px-4"
+						onPress={() => {
+							if (user.adm) {
+								router.push('/(quadra)/home')
+							} else {
+								console.log("Usuário não é administrador, ação não permitida.");
+							}
+						}}
 					/>
 
 					<CardConfig
@@ -112,7 +118,19 @@ export default function Perfil() {
 					style='h-16 w-full rounded-2xl flex-row items-center justify-between px-4'
 					onPress={() => console.log("Clicou em Histórico")}
 				/>
-
+				<CardConfig
+					icon="sports-tennis"
+					title="Tenho um negócio"
+					subtitle="Torne-se um parceiro nosso!"
+					style="h-16 w-full rounded-2xl flex-row items-center justify-between px-4"
+					onPress={() => {
+						if (user.adm) {
+							router.replace('/(estabelecimento)')
+						} else {
+							console.log("Usuário não é administrador, ação não permitida.");
+						}
+					}}
+				/>
 			</ScrollView>
 		</SafeAreaView>
 	);
