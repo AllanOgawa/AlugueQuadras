@@ -56,7 +56,7 @@ export default function Perfil() {
 						style="h-16 w-full rounded-2xl flex-row items-center justify-between px-4"
 						onPress={() => {
 							if (user.adm) {
-								router.push('/(quadra)/home')
+								router.push('/(estabelecimento)/home')
 							} else {
 								console.log("Usuário não é administrador, ação não permitida.");
 							}
@@ -124,8 +124,8 @@ export default function Perfil() {
 					subtitle="Torne-se um parceiro nosso!"
 					style="h-16 w-full rounded-2xl flex-row items-center justify-between px-4"
 					onPress={() => {
-						if (user.adm) {
-							router.replace('/(estabelecimento)')
+						if (!user.adm) {
+							router.push('/(quadra)/home')
 						} else {
 							console.log("Usuário não é administrador, ação não permitida.");
 						}
