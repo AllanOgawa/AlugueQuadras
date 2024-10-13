@@ -1,13 +1,14 @@
 import { Controller, Request, Post, UseGuards, Body, ValidationPipe, HttpStatus, HttpException, UnauthorizedException, BadRequestException, Get, Patch } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { CreateUsuarioDto } from './usuario/dto/create-usuario.dto';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 
+import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guard/local-auth.guard';
 import { JwtAuthGuard } from './guard/jwt-auth.guard';
+
+import { CreateProfileDto } from './dto/create-profile.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import { ChangePasswordDTO } from './dto/change-password.dto';
 import { GetProfileDto } from './dto/get-profile.dto';
-import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @ApiTags('Autenticação')
 @Controller('auth')
@@ -28,9 +29,9 @@ export class AuthController {
 
   @ApiBody({ description: 'Criação de um novo usuário.' })
   @Post('register')
-  async register(@Body(ValidationPipe) createUsuarioDto: CreateUsuarioDto) {
+  async register(@Body(ValidationPipe) createProfileDto: CreateProfileDto) {
     try{
-      return this.authService.register(createUsuarioDto);
+      return this.authService.register(createProfileDto);
     }catch (error) {
       console.error('Erro ao criar usuário:', error);
       throw new HttpException('Erro ao criar usuário', HttpStatus.INTERNAL_SERVER_ERROR);

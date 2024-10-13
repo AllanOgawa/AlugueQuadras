@@ -2,35 +2,30 @@ import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 
-import { UsuarioService } from './usuario/usuario.service';
-import { UsuarioTipoService } from './usuario/tipo/tipo.service';
-import { ChangePasswordDTO } from './dto/change-password.dto';
-import { GetProfileDto } from './dto/get-profile.dto';
-import { UpdateProfileDto } from './dto/update-profile.dto';
+import { UsuarioService }     from './usuario/usuario.service';
+
+import { ChangePasswordDTO }  from './dto/change-password.dto';
+import { GetProfileDto }      from './dto/get-profile.dto';
+import { UpdateProfileDto }   from './dto/update-profile.dto';
+import { CreateProfileDto } from './dto/create-profile.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly usuarioTipoService: UsuarioTipoService,
     private readonly usuarioService: UsuarioService,
     private jwtService: JwtService,
   ) {}
 
-  async register(usuario: any) {
-    const { tipo, senhaSemHash, data_nascimento, ...userData } = usuario;
-
-    const tipoUsuario     = await this.usuarioTipoService.findByIdkey(tipo);
-    const hashedPassword  = await bcrypt.hash(usuario.senha, 10);
-
+  async register(createProfileDto: CreateProfileDto): Promise<any> {
+    const { senha, ...usuario } = createProfileDto;
+    
+    const hashedPassword  = await bcrypt.hash(senha, 10);
     const novoUsuario = await this.usuarioService.create({
-      ...userData,
-      tipo: tipoUsuario,
-      senha: hashedPassword,
-      dataNascimento: new Date(data_nascimento)
+      ...usuario,
+      senha: hashedPassword
     });
 
-    const { senha, ...result } = novoUsuario;
-    return result;
+    return novoUsuario;
   }
 
   async validateUser(login: string, senha: string): Promise<any> {
@@ -55,10 +50,10 @@ export class AuthService {
   // Gera um token JWT para o usuário autenticado
   async login(usuario: any) {
     const payload = { 
-      idkey: usuario.idkey,
+      idkey:    usuario.idkey,
       username: usuario.username,
-      email: usuario.email,
-      tipo: usuario.tipo.descricao 
+      email:    usuario.email,
+      tipo:     usuario.tipo.descricao 
     };
 
     return {
@@ -104,34 +99,25 @@ export class AuthService {
       cpf: usuario.cpf,
       dataNascimento: usuario.dataNascimento,
       dataCadastro: usuario.dataCadastro,
-      tipo: {
-        idkey: usuario.tipo.idkey,
-        descricao: usuario.tipo.descricao,
-      },
-      imagem: usuario.imagem ? usuario.imagem.toString('base64') : null, 
+      tipo: usuario.tipo,
+      imagens: usuario.imagens.map((imagem)=>({
+        idkey: imagem.idkey,
+        path: imagem.path,
+        dataCadastro: imagem.dataCadastro,
+      })), 
     };
 
     return perfil;
   }
 
   async updateProfile(idkey: number, updateProfileDto: UpdateProfileDto): Promise<any> {
-    const { nome, imagem } = updateProfileDto;
 
     const usuario = await this.usuarioService.findByIdkey(idkey);
     if (!usuario) {
       throw new UnauthorizedException('Usuário não encontrado.');
     }
 
-    if (nome) {
-      usuario.nome = nome;
-    }
-
-    if (imagem) {
-      const bufferImagem = Buffer.from(imagem, 'base64');
-      usuario.imagem = bufferImagem;
-    }
-
-    const usuarioAtualizado = await this.usuarioService.update(idkey, usuario);
+    const usuarioAtualizado = await this.usuarioService.update(idkey, updateProfileDto);
 
     return usuarioAtualizado;
   }

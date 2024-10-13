@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, JoinColumn } from "typeorm";
 import { Quadra } from "../quadra/entities/quadra.entity";
-import { Usuario } from "@src/auth/usuario/entities/usuario.entity";
+
+import { Usuario } from "@src/domains/auth/usuario/entities/usuario.entity";
 
 @Entity({schema:'gestao', name:'estabelecimento'})
 export class Estabelecimento {

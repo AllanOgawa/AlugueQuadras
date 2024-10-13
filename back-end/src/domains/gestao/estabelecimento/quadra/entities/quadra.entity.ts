@@ -16,6 +16,12 @@ export class Quadra {
   @Column({ type: 'numeric', nullable: false })
   valor: number;
 
+  @Column({ type: 'numeric', nullable: false })
+  largura: number;
+
+  @Column({ type: 'numeric', nullable: false })
+  comprimento: number;
+
   @Column({ type: 'text', nullable: true })
   imagem: string;
 

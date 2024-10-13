@@ -1,7 +1,6 @@
-import { IsEmail, IsNotEmpty, IsString, IsNumber, IsOptional, MinLength, IsDate } from 'class-validator';
-import { UsuarioTipo } from '../tipo/entities/tipo.entity';
+import { IsEmail, IsNotEmpty, IsString, IsNumber, IsOptional, MinLength, IsDate, IsArray } from 'class-validator';
 
-export class CreateUsuarioDto {
+export class CreateProfileDto {
   @IsString({ message: 'O campo username deve ser uma string.' })
   @IsNotEmpty({ message: 'O campo username não pode estar vazio.' })
   @MinLength(6, {
@@ -28,14 +27,12 @@ export class CreateUsuarioDto {
   @IsNotEmpty({ message: 'O campo cpf não pode estar vazio.' })
   cpf: string;
 
-  @IsString({ message: 'O campo data_nascimento deve ser date.'})
-  @IsNotEmpty({ message: 'O campo data_nascimento não pode estar vazio.'})
-  data_nascimento: string;
+  @IsString({ message: 'O campo dataNascimento deve ser date.'})
+  @IsNotEmpty({ message: 'O campo dataNascimento não pode estar vazio.'})
+  dataNascimento: string;
 
   @IsOptional()
-  data_cadastro?: Date;  // Opcional, será gerado automaticamente se não for fornecido
-
-  @IsNumber()
-  @IsNotEmpty({ message: 'O campo cpf não pode estar vazio.' })
-  tipo: UsuarioTipo;
+  @IsArray()
+  @IsString({ each: true })
+  imagensToAdd?: string[];
 }

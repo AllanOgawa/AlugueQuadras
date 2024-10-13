@@ -4,8 +4,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import { EstabelecimentoService } from '../estabelecimento.service';
 
-import { Quadra } from './entities/quadra.entity';
-import { TipoEsporte } from './entities/tipo-esporte.entity';
+import { Quadra }       from './entities/quadra.entity';
+import { TipoEsporte }  from './entities/tipo-esporte.entity';
 
 import { UpdateQuadraDto } from './dto/update-quadra.dto';
 import { CreateQuadraDto } from './dto/create-quadra.dto';
