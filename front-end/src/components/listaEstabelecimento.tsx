@@ -1,22 +1,16 @@
 import React from 'react';
-import { View, Text, Image, FlatList, StyleSheet } from 'react-native';
-
-interface Estabelecimento {
-    id: string;
-    name: string;
-    endereco: string;
-    avaliacao: number;
-    image: { id: string; name: string; image: string }[];
-}
+import { View, Text, Image, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { EstabelecimentoProps } from '../interfaces/estabelecimento';
 
 interface Props {
-    data: Estabelecimento[];
+    data: EstabelecimentoProps[];
+    onPress: (estabelecimento: EstabelecimentoProps) => void; // Adicionando onPress como propriedade
 }
 
-const ListaEstabelecimento: React.FC<Props> = ({ data }) => {
+const ListaEstabelecimento: React.FC<Props> = ({ data, onPress }) => {
     // Renderiza cada estabelecimento da lista
-    const renderEstabelecimento = ({ item }: { item: Estabelecimento }) => (
-        <View style={styles.card}>
+    const renderEstabelecimento = ({ item }: { item: EstabelecimentoProps }) => (
+        <TouchableOpacity style={styles.card} onPress={() => onPress(item)}>
             <Text style={styles.name}>{item.name}</Text>
             <Text style={styles.endereco}>{item.endereco}</Text>
             <Text style={styles.avaliacao}>Avaliação: {item.avaliacao.toFixed(1)} ⭐</Text>
@@ -29,13 +23,13 @@ const ListaEstabelecimento: React.FC<Props> = ({ data }) => {
                 )}
                 showsHorizontalScrollIndicator={false}
             />
-        </View>
+        </TouchableOpacity>
     );
 
     return (
         <FlatList
             data={data}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item.id.toString()}
             renderItem={renderEstabelecimento}
             contentContainerStyle={styles.container}
         />

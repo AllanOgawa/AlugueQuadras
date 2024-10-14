@@ -7,19 +7,17 @@ import { useEffect, useState } from 'react';
 import { View, Text, SafeAreaView, FlatList } from 'react-native';
 import Toast from 'react-native-toast-message';
 
-import * as data from '@/db.json'; // Importa o JSON com os dados
+import * as data from '@/db.json';
 
 export default function HomeEstabelecimento() {
-    const [estabelecimentos, setEstabelecimentos] = useState<EstabelecimentoProps[]>([]); // Array de estabelecimentos
+    const [estabelecimentos, setEstabelecimentos] = useState<EstabelecimentoProps[]>([]);
     const { message } = useLocalSearchParams();
-    const [loading, setLoading] = useState(false); // Estado de carregamento
+    const [loading, setLoading] = useState(false);
 
-    // Função para lidar com o clique em uma quadra
     function handleCourtPress(court: CourtProps): void {
         console.log(`Você clicou na quadra ${court.local} localizada em ${court.endereco}`);
     }
 
-    // Exibir toast com a mensagem, se disponível
     useEffect(() => {
         if (message) {
             const toastMessage = Array.isArray(message) ? message.join(', ') : message;
@@ -30,14 +28,12 @@ export default function HomeEstabelecimento() {
         }
     }, [message]);
 
-    // Carrega os dados do JSON ao montar o componente
     useEffect(() => {
         if (data.estabelecimento && data.estabelecimento.length > 0) {
-            setEstabelecimentos(data.estabelecimento); // Define todos os estabelecimentos
+            setEstabelecimentos(data.estabelecimento);
         }
     }, []);
 
-    // Cabeçalho da lista
     const getHeader = () => (
         <View className='m-5'>
             <CardConfig
@@ -74,15 +70,15 @@ export default function HomeEstabelecimento() {
     };
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: 'white', marginHorizontal: 5 }}>
             <FlatList
                 data={estabelecimentos}
-                renderItem={({ item }) => <ListaEstabelecimento data={[item]} />} // Exibe um estabelecimento por vez
+                renderItem={({ item }) => <ListaEstabelecimento data={[item]} onPress={() => { }} />}
                 ListHeaderComponent={getHeader}
                 ListFooterComponent={getFooter}
-                keyExtractor={(item) => item.id.toString()} // Supondo que cada estabelecimento tenha um ID único
-                onEndReached={() => setLoading(true)} // Carrega mais dados quando atinge o final da lista
-                onEndReachedThreshold={0.1} // Define o limite para carregar mais dados
+                keyExtractor={(item) => item.id.toString()}
+                onEndReached={() => setLoading(true)}
+                onEndReachedThreshold={0.1}
             />
         </SafeAreaView>
     );

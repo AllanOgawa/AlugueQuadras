@@ -12,7 +12,7 @@ export default function MainLayout() {
 				<Stack.Screen name="create" options={{ headerShown: false, headerTitle: "Nova quadra", animation: 'ios', headerTintColor: "#000000" }} />
 
 				{/* Tela de Editar */}
-				<Stack.Screen name="(edit" options={{ headerShown: true, headerTitle: "Editar", animation: 'ios', headerTintColor: "#000000" }} />
+				<Stack.Screen name="edit" options={{ headerShown: true, headerTitle: "Editar", animation: 'ios', headerTintColor: "#000000" }} />
 
 				{/* Tela de Remover */}
 				<Stack.Screen name="remove" options={{ headerShown: true, headerTitle: "Remover", animation: 'ios', headerTintColor: "#000000" }} />
