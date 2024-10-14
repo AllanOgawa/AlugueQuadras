@@ -2,6 +2,9 @@ import { AppModule } from './app.module';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { setupSwagger } from './swagger.config';
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
+
+import * as bodyParser from 'body-parser';
 
 
 async function bootstrap() {
@@ -15,6 +18,11 @@ async function bootstrap() {
   }));
 
   setupSwagger(app);
+
+  app.useGlobalFilters(new AllExceptionsFilter());
+
+  app.use(bodyParser.json({ limit: '10mb' }));
+  app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
   await app.listen(3000);
 }

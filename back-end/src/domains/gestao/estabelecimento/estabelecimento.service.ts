@@ -21,21 +21,21 @@ export class EstabelecimentoService{
   }
 
 
-  async findOne(id: number): Promise<Estabelecimento>{
-    const estabelecimento =  await this.estabelecimentoRepository.findOne({where:{idKey: id}});
+  async findOne(idkey: number): Promise<Estabelecimento>{
+    const estabelecimento =  await this.estabelecimentoRepository.findOne({where:{idKey: idkey}});
     if(!estabelecimento){
       throw new NotFoundException('Estabelecimento não encontrado');
     }
     return estabelecimento;
   }
 
-  async update(id: number, data: Estabelecimento): Promise<Estabelecimento>{
-    await this.estabelecimentoRepository.update(id, data);
-    return this.findOne(id);
+  async update(idkey: number, data: Estabelecimento): Promise<Estabelecimento>{
+    await this.estabelecimentoRepository.update(idkey, data);
+    return this.findOne(idkey);
   }
 
-  async remove(id: number): Promise<void>{
-    const estabelecimento = await this.findOne(id);
+  async remove(idkey: number): Promise<void>{
+    const estabelecimento = await this.findOne(idkey);
     await this.estabelecimentoRepository.remove(estabelecimento);
   }
 }
