@@ -22,23 +22,25 @@ export class UsuarioService {
 
   async findByIdkey(idkey: number): Promise<Usuario> {
     return await this.usuarioRepository.findOne({ 
-      where: { idkey },
-      relations: ['tipo']
+      where: { idkey }
     });
   }
 
   async findByEmail(email: string): Promise<Usuario> {
     return await this.usuarioRepository.findOne({ 
-      where: { email },
-      relations: ['tipo']
+      where: { email }
     });
   }
 
   async findByUsername(username: string): Promise<Usuario> {
-    return await this.usuarioRepository.findOne({
-      where: { username },
-      relations: ['tipo'] 
-    });
+    try{
+      return await this.usuarioRepository.findOne({ 
+        where: { username }
+      });
+    } catch (error) { 
+      console.log(error);
+      throw new BadRequestException('Erro ao buscar usuário por username.');
+    }
   }
 
   async create(createProfileDto: CreateProfileDto): Promise<any> {
