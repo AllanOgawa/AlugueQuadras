@@ -6,10 +6,10 @@ import { useRef, useState } from 'react';
 import Input from '@components/inputs/input';
 import InputSenha from '@components/inputs/inputSenha';
 import BotaoTouchableOpacity from '@components/botoes/botaoTouchableOpacity';
-import SetaVoltar from '@/src/components/setaVoltar';
-import InputData from '@/src/components/inputs/inputData';
-import UploadImagem from '@/src/components/UploadImagem';
-import UploadImage from '@/src/components/UploadImagem';
+import SetaVoltar from '@components/setaVoltar';
+import InputData from '@components/inputs/inputData';
+import UploadImagem from '@components/UploadImagem';
+import UploadImage from '@components/UploadImagem';
 
 export default function UsuarioCadastro() {
     const [nome, setNome] = useState('');
@@ -17,7 +17,6 @@ export default function UsuarioCadastro() {
     const [email, setEmail] = useState('');
     const [cpf, setCpf] = useState('');
     const [dtNascimento, setDtNascimento] = useState('');
-    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
     const [senha, setSenha] = useState('');
     const [confirmarSenha, setConfirmarSenha] = useState('');
@@ -26,13 +25,18 @@ export default function UsuarioCadastro() {
     const [errorUsername, setErrorUsername] = useState('');
     const [errorEmail, setErrorEmail] = useState('');
     const [errorCpf, setErrorCpf] = useState('');
+    const [errorDtNascimento, setErrorDtNascimento] = useState('');
+
     const [errorSenha, setErrorSenha] = useState('');
     const [errorConfirmarSenha, setErrorConfirmarSenha] = useState('');
+
 
     const nomeInputRef = useRef<TextInput>(null);
     const usernameInputRef = useRef<TextInput>(null);
     const emailInputRef = useRef<TextInput>(null);
     const cpfInputRef = useRef<TextInput>(null);
+    const dtNascimentoInputRef = useRef<TextInput>(null);
+
     const senhaInputRef = useRef<TextInput>(null);
     const confirmarSenhaInputRef = useRef<TextInput>(null);
 
@@ -54,6 +58,9 @@ export default function UsuarioCadastro() {
         else if (cpf.length < 14) erroCpf = "CPF Inválido.";
         setErrorCpf(erroCpf);
 
+        if (senha.length < 8)
+            setErrorSenha("A senha deve ter pelo menos 8 caracteres.");
+
         if (confirmarSenha !== senha)
             setErrorConfirmarSenha("As senhas não coincidem.");
     };
@@ -71,8 +78,8 @@ export default function UsuarioCadastro() {
         setCpf(formattedCpf);
     };
 
-    const handleDateChange = (date: Date) => {
-        setSelectedDate(date); // Atualizar a data selecionada
+    const handleDateChange = (date: string) => {
+        setDtNascimento(date); // Atualiza o estado da data no componente pai
     };
 
     const handleImageUpload = (url: string) => {
@@ -144,12 +151,18 @@ export default function UsuarioCadastro() {
                         onChangeText={handleCpfChange}
                         autoComplete="off"
                         returnKeyType="next"
+                        onSubmitEditing={() => dtNascimentoInputRef.current?.focus()}
                     />
                     <InputData
-                        label="Data de Nascimento:"
-                        onDateChange={handleDateChange}
                         className='mb-5'
+                        ref={dtNascimentoInputRef}
+                        label="Data de Nascimento:"
                         obrigatorio
+                        errorMessage={errorDtNascimento}
+                        maxLength={10}
+                        returnKeyType="next"
+                        onDateChange={handleDateChange}
+                        onSubmitEditing={() => senhaInputRef.current?.focus()}
                     />
                     <InputSenha
                         ref={senhaInputRef}

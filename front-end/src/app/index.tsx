@@ -1,6 +1,5 @@
-import { SafeAreaView, Image, ImageBackground, View, StyleSheet, Text, StatusBar } from 'react-native';
+import { SafeAreaView, ImageBackground, View, StyleSheet, Text, StatusBar } from 'react-native';
 
-import Constants from 'expo-constants'
 import BotaoPressable from '@/src/components/botoes/botaoPressable';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
