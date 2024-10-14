@@ -9,7 +9,7 @@ import { useRouter } from 'expo-router';
 const statusBarHeight = Constants.statusBarHeight;
 
 export default function Perfil() {
-	const user = data.user[0];
+	const user = data.user[1];
 
 	const router = useRouter()
 
@@ -124,11 +124,7 @@ export default function Perfil() {
 					subtitle="Torne-se um parceiro nosso!"
 					style="h-16 w-full rounded-2xl flex-row items-center justify-between px-4"
 					onPress={() => {
-						if (user.adm) {
-							router.replace('/(estabelecimento)')
-						} else {
-							console.log("Usuário não é administrador, ação não permitida.");
-						}
+						router.push('/(estabelecimento)/home')
 					}}
 				/>
 			</ScrollView>
