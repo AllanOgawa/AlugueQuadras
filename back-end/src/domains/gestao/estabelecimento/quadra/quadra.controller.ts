@@ -4,7 +4,7 @@ import { CreateQuadraDto } from './dto/create-quadra.dto';
 import { UpdateQuadraDto } from './dto/update-quadra.dto';
 import { Quadra } from './entities/quadra.entity';
 import { ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '@src/auth/guard/jwt-auth.guard';
+import { JwtAuthGuard } from '@src/domains/auth/guard/jwt-auth.guard';
 
 @ApiTags('Quadra')
 @UseGuards(JwtAuthGuard)

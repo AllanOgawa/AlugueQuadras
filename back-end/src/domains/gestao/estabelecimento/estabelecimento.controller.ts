@@ -1,10 +1,12 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, ValidationPipe, HttpStatus, UseGuards, Request } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+
+import { Estabelecimento } from './entities/estabelecimento.entity';
 import { EstabelecimentoService } from './estabelecimento.service';
 import { CreateEstabelecimentoDto } from './dto/create-estabelecimento.dto';
 import { UpdateEstabelecimentoDto } from './dto/update-estabelecimento.dto';
-import { Estabelecimento } from './entities/estabelecimento.entity';
-import { ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '@src/auth/guard/jwt-auth.guard';
+
+import { JwtAuthGuard } from '@src/domains/auth/guard/jwt-auth.guard';
 
 
 @ApiTags('Estabelecimento')
