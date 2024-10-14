@@ -53,7 +53,7 @@ export class AuthService {
       idkey:    usuario.idkey,
       username: usuario.username,
       email:    usuario.email,
-      tipo:     usuario.tipo.descricao 
+      tipo:     usuario.tipo
     };
 
     return {
