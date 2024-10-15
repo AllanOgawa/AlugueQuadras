@@ -45,7 +45,7 @@ export default function TelaLogin() {
 
     const handleLogin = async () => {
         try {
-            const response = await fetch('http://192.168.137.1/auth/login', {
+            const response = await fetch('http://192.168.1.54:3000/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -57,12 +57,11 @@ export default function TelaLogin() {
             });
 
             const data = await response.json();
-            console.log(data)
+
             if (response.ok) {
-                // Aqui você pode gerenciar o que fazer após o login bem-sucedido
                 console.log('Login bem-sucedido', data);
                 setLogin(true);
-                router.push('/(tabs)/inicio'); // Redirecionar após login
+                router.push('/(tabs)/inicio');
             } else {
                 console.error('Erro no login', data);
                 alert('Login falhou: ' + data.message);

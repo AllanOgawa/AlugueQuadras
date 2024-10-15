@@ -36,8 +36,7 @@ export default function UsuarioLogin() {
         if (!isValid) return;
 
         try {
-            console.log("entrou")
-            const response = await fetch(`http://192.168.137.1/auth/login`, {
+            const response = await fetch('http://192.168.1.54:3000/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -49,11 +48,10 @@ export default function UsuarioLogin() {
             });
 
             const data = await response.json();
-            console.log(data);
 
             if (response.ok) {
                 console.log('Login bem-sucedido', data);
-                // Redirecionar ou executar outra lógica de sucesso
+                router.push('/(tabs)/inicio');
             } else {
                 console.error('Erro no login', data);
                 alert('Login falhou: ' + data.message);
@@ -106,33 +104,7 @@ export default function UsuarioLogin() {
                     className='bg-primary p-4 rounded-2xl active:bg-secondary mx-4 mt-20'
                     classNameTitle='text-white text-center text-xl'
                     // onPress={handleSubmit}
-                    onPress={async () => {
-                        console.log("tset")
-                        try {
-                            const response = await fetch(`http://192.168.137.1/auth/login`, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({
-                                    login: username,
-                                    senha: senha,
-                                }),
-                            });
-                            const data = await response.json();
-                            console.log(data)
-                            if (response.ok) {
-                                console.log('Login bem-sucedido', data);
-                            } else {
-                                console.error('Erro no login', data);
-                                alert('Login falhou: ' + data.message);
-                            }
-                        } catch (error) {
-                            console.error('Erro de rede', error);
-                            alert('Erro de rede');
-                        }
-
-                    }}
+                    onPress={handleSubmit}
                 />
                 <BotaoPressable
                     title={'Registrar'}
