@@ -11,12 +11,11 @@ export function setupSwagger(app: INestApplication): void {
     )
     .setVersion('1.0')
     .addTag('Autenticação', 'Endpoints relacionados ao gerenciamento de autenticação e usuários.')
-    .addTag('Usuário', 'Endpoints para a gestão de perfis e interações dos usuários.')  
     .addTag('Estabelecimento', 'Endpoints para a gestão dos estabelecimentos.')
-    // .addTag('Quadras', 'Endpoints que lidam com operações de CRUD de quadras esportivas.')
-    // .addTag('Reservas', 'Endpoints para a gestão de reservas de quadras.')
+    .addTag('Quadra', 'Endpoints que lidam com operações de CRUD de quadras esportivas.')
+    .addTag('Storage', 'Endpoints para a gestão do bucket, controla o envio de imagens.')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api-docs', app, document);
+  SwaggerModule.setup('docs', app, document);
 }
