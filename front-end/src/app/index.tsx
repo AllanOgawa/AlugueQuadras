@@ -8,6 +8,8 @@ import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing } from '
 export default function TelaLogin() {
     const [login, setLogin] = useState(false);
     const [isAppReady, setIsAppReady] = useState(false);
+    const [username, setUsername] = useState('allanog'); // Estado para o login
+    const [password, setPassword] = useState('senha123'); // Estado para a senha
 
     const router = useRouter();
     const opacity = useSharedValue(0);
@@ -32,11 +34,44 @@ export default function TelaLogin() {
         });
 
         setTimeout(() => setIsAppReady(true), 100);
+    }, [opacity, translateY]);
 
-        if (isAppReady && login) {
-            router.push("/(tabs)/inicio");
+    useEffect(() => {
+        // Verifica se a aplicação está pronta e faz a requisição de login
+        if (isAppReady) {
+            handleLogin();
         }
-    }, [isAppReady, login, router]);
+    }, [isAppReady]);
+
+    const handleLogin = async () => {
+        try {
+            const response = await fetch('http://192.168.137.1/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    login: username,
+                    senha: password,
+                }),
+            });
+
+            const data = await response.json();
+            console.log(data)
+            if (response.ok) {
+                // Aqui você pode gerenciar o que fazer após o login bem-sucedido
+                console.log('Login bem-sucedido', data);
+                setLogin(true);
+                router.push('/(tabs)/inicio'); // Redirecionar após login
+            } else {
+                console.error('Erro no login', data);
+                alert('Login falhou: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Erro de rede', error);
+            alert('Erro de rede');
+        }
+    };
 
 
     if (!isAppReady) {
@@ -57,7 +92,6 @@ export default function TelaLogin() {
                     resizeMode="cover"
                 >
                     <View style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]} />
-
                     <View className='mt-[50%] items-center'>
                         <Animated.Image
                             source={{ uri: "https://i.postimg.cc/L847BZnX/Picsart-24-10-13-17-20-30-759.png" }}

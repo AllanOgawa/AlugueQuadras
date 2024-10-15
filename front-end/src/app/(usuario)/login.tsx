@@ -17,9 +17,51 @@ export default function UsuarioLogin() {
     const usernameInputRef = useRef<TextInput>(null);
     const senhaInputRef = useRef<TextInput>(null);
 
-    const handleSubmit = () => {
-        setErrorSenha((!senha) ? "o campo Senha é obrigatório." : "");
-        setErrorUsername((!username) ? "o campo Username/Email é obrigatório" : "");
+    const handleSubmit = async () => {
+        setErrorSenha('');
+        setErrorUsername('');
+
+        // Valida os campos
+        let isValid = true;
+        if (!username) {
+            setErrorUsername("O campo Username/Email é obrigatório");
+            isValid = false;
+        }
+        if (!senha) {
+            setErrorSenha("O campo Senha é obrigatório.");
+            isValid = false;
+        }
+
+        // Se não for válido, não faz a requisição
+        if (!isValid) return;
+
+        try {
+            console.log("entrou")
+            const response = await fetch(`http://192.168.137.1/auth/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    login: username,
+                    senha: senha,
+                }),
+            });
+
+            const data = await response.json();
+            console.log(data);
+
+            if (response.ok) {
+                console.log('Login bem-sucedido', data);
+                // Redirecionar ou executar outra lógica de sucesso
+            } else {
+                console.error('Erro no login', data);
+                alert('Login falhou: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Erro de rede', error);
+            alert('Erro de rede');
+        }
     };
 
     return (
@@ -63,7 +105,34 @@ export default function UsuarioLogin() {
                     title={'Login'}
                     className='bg-primary p-4 rounded-2xl active:bg-secondary mx-4 mt-20'
                     classNameTitle='text-white text-center text-xl'
-                    onPress={handleSubmit}
+                    // onPress={handleSubmit}
+                    onPress={async () => {
+                        console.log("tset")
+                        try {
+                            const response = await fetch(`http://192.168.137.1/auth/login`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    login: username,
+                                    senha: senha,
+                                }),
+                            });
+                            const data = await response.json();
+                            console.log(data)
+                            if (response.ok) {
+                                console.log('Login bem-sucedido', data);
+                            } else {
+                                console.error('Erro no login', data);
+                                alert('Login falhou: ' + data.message);
+                            }
+                        } catch (error) {
+                            console.error('Erro de rede', error);
+                            alert('Erro de rede');
+                        }
+
+                    }}
                 />
                 <BotaoPressable
                     title={'Registrar'}

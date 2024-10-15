@@ -13,15 +13,16 @@ import { GetProfileDto } from './dto/get-profile.dto';
 @ApiTags('Autenticação')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
-  
+  constructor(private authService: AuthService) { }
+
   @ApiBody({ description: 'Login de usuário.' })
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Request() req) {
-    try{
+    console.log("test")
+    try {
       return await this.authService.login(req.user);
-    }catch (error){
+    } catch (error) {
       console.error('Erro ao fazer login:', error);
       throw new HttpException('Erro ao fazer login', HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -30,9 +31,9 @@ export class AuthController {
   @ApiBody({ description: 'Criação de um novo usuário.' })
   @Post('register')
   async register(@Body(ValidationPipe) createProfileDto: CreateProfileDto) {
-    try{
+    try {
       return this.authService.register(createProfileDto);
-    }catch (error) {
+    } catch (error) {
       console.error('Erro ao criar usuário:', error);
       throw new HttpException('Erro ao criar usuário', HttpStatus.INTERNAL_SERVER_ERROR);
     }

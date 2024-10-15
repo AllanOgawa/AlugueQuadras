@@ -4,8 +4,6 @@ import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 import CryptoJS from 'crypto-js';
 import { encode as btoa } from 'base-64';
-import { MINIO_ACCESS_KEY, MINIO_SECRET_KEY, MINIO_URL_BASE } from '@env';
-
 
 interface UploadImagemProps {
     onImageUpload: (url: string) => void; // Callback para retornar a URL após upload
