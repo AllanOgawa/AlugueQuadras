@@ -44,32 +44,32 @@ export default function TelaLogin() {
     }, [isAppReady]);
 
     const handleLogin = async () => {
-        try {
-            const response = await fetch('http://192.168.1.54:3000/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    login: username,
-                    senha: password,
-                }),
-            });
+        // try {
+        //     const response = await fetch('http://192.168.1.54:3000/auth/login', {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //         },
+        //         body: JSON.stringify({
+        //             login: username,
+        //             senha: password,
+        //         }),
+        //     });
 
-            const data = await response.json();
+        //     const data = await response.json();
 
-            if (response.ok) {
-                console.log('Login bem-sucedido', data);
-                setLogin(true);
-                router.push('/(tabs)/inicio');
-            } else {
-                console.error('Erro no login', data);
-                alert('Login falhou: ' + data.message);
-            }
-        } catch (error) {
-            console.error('Erro de rede', error);
-            alert('Erro de rede');
-        }
+        //     if (response.ok) {
+        //         console.log('Login bem-sucedido', data);
+        //         setLogin(true);
+        //         router.push('/(tabs)/inicio');
+        //     } else {
+        //         console.error('Erro no login', data);
+        //         alert('Login falhou: ' + data.message);
+        //     }
+        // } catch (error) {
+        //     console.error('Erro de rede', error);
+        //     alert('Erro de rede');
+        // }
     };
 
 

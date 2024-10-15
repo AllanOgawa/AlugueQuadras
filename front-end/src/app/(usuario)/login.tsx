@@ -17,9 +17,9 @@ export default function UsuarioLogin() {
     const usernameInputRef = useRef<TextInput>(null);
     const senhaInputRef = useRef<TextInput>(null);
 
-    const handleSubmit = async () => {
-        setErrorSenha('');
+    async function handleSubmit() {
         setErrorUsername('');
+        setErrorSenha('');
 
         // Valida os campos
         let isValid = true;
@@ -78,8 +78,8 @@ export default function UsuarioLogin() {
                         ref={usernameInputRef}
                         label="Username/Email:"
                         obrigatorio
-                        errorMessage={errorUsername}
                         keyboardType="email-address"
+                        errorMessage={errorUsername}
                         value={username}
                         onChangeText={setUsername}
                         autoComplete="email"

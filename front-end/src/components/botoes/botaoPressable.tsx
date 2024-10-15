@@ -1,4 +1,4 @@
-import { Pressable, Text, ViewStyle } from 'react-native';
+import { Pressable, Text, View, ViewStyle } from 'react-native';
 
 interface CustomButtonProps {
     title: string;
@@ -9,12 +9,13 @@ interface CustomButtonProps {
 
 export default function BotaoPressable({ title, className, classNameTitle, onPress }: CustomButtonProps) {
     return (
-        <Pressable
-            onPress={onPress}
-            className={className}
-        >
-            <Text className={classNameTitle}>{title}</Text>
-        </Pressable>
+        <View className={className}>
+            <Pressable
+                onPress={onPress}
+            >
+                <Text className={classNameTitle}>{title}</Text>
+            </Pressable>
+        </View>
     );
 };
 
