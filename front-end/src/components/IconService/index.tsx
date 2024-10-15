@@ -41,7 +41,7 @@ export default function MultiSelect({ options, onSelectionChange }: MultiSelectP
 						color="#828282"
 					/>
 					<Text
-						className="ml-2 text-lg font-medium text-black"
+						className="ml-2 text-lg font-normal"
 						numberOfLines={1}
 					>
 						{item.label}

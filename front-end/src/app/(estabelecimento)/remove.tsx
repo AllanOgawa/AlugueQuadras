@@ -38,7 +38,6 @@ export default function RemoveEstabelecimento() {
 
 
     const confirmRemove = () => {
-        console.log('Estabelecimento removido:', selectedEstabelecimento);
         setEstabelecimentos((prevEstabelecimentos) =>
             prevEstabelecimentos.filter((item) => item.id !== selectedEstabelecimento.id)
         );
