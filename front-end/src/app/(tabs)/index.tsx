@@ -1,11 +1,10 @@
-import { Text, View, ScrollView, SafeAreaView, Pressable } from "react-native";
+import { Text, View, ScrollView, SafeAreaView, Pressable, StatusBar } from "react-native";
 import Banner from "@components/banner";
 import LastCourt from "@components/lastCourt";
 import { Feather } from '@expo/vector-icons';
 
 import Constants from 'expo-constants'
 import { FilterSport } from "@components/filterSport";
-import { StatusBar } from "expo-status-bar";
 import * as data from '@/db.json'
 import IconUsuario from "@components/iconUsuario";
 import { router } from "expo-router";
@@ -16,12 +15,12 @@ export default function Inicio() {
 	const user = data.user[0];
 	return (
 		<SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+			<StatusBar barStyle="dark-content" backgroundColor="white" />
 			<ScrollView
 				style={{ flex: 1 }}
 				className="bg-white"
 				showsVerticalScrollIndicator={false}
 			>
-				<StatusBar style="dark" translucent={true} backgroundColor="transparent" />
 				<View className="w-full px-4" style={{ marginTop: statusBarHeight }}>
 					<View className="flex-row justify-between items-center mb-4">
 						<View>

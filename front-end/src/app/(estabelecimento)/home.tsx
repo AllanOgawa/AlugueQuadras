@@ -4,7 +4,7 @@ import { CardConfig } from '@components/cardConfig';
 import CourtList, { CourtProps } from '@components/quadras';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { View, Text, SafeAreaView, FlatList } from 'react-native';
+import { View, Text, SafeAreaView, FlatList, StatusBar } from 'react-native';
 import Toast from 'react-native-toast-message';
 
 import * as data from '@/db.json';
@@ -34,33 +34,6 @@ export default function HomeEstabelecimento() {
         }
     }, []);
 
-    const getHeader = () => (
-        <View className='m-5'>
-            <CardConfig
-                icon={'add-circle-outline'}
-                title={'Nova Estabelecimento'}
-                subtitle={'Cadastrar um novo estabelecimento'}
-                style='h-16 w-full rounded-2xl flex-row items-center justify-between'
-                onPress={() => router.push('/create')}
-            />
-            <CardConfig
-                icon={'create'}
-                title={'Editar Estabelecimento'}
-                subtitle={'Editar uma quadra'}
-                style='h-16 w-full rounded-2xl flex-row items-center justify-between'
-                onPress={() => router.push('/edit')}
-            />
-            <CardConfig
-                icon={'highlight-remove'}
-                title={'Remover estabelecimento'}
-                subtitle={'Remover um estabelecimento'}
-                style='h-16 w-full rounded-2xl flex-row items-center justify-between'
-                onPress={() => router.push('/remove')}
-            />
-            <Text className='font-normal text-3xl pt-5'>Ativas</Text>
-        </View>
-    );
-
     // Rodapé da lista
     const getFooter = () => {
         if (loading) {
@@ -71,10 +44,34 @@ export default function HomeEstabelecimento() {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: 'white', marginHorizontal: 5 }}>
+            <View className='mx-3 mt-5'>
+                <StatusBar barStyle="dark-content" backgroundColor="white" />
+                <CardConfig
+                    icon={'add-circle-outline'}
+                    title={'Nova Estabelecimento'}
+                    subtitle={'Cadastrar um novo estabelecimento'}
+                    style='h-16 w-full rounded-2xl flex-row items-center justify-between'
+                    onPress={() => router.push('/create')}
+                />
+                <CardConfig
+                    icon={'create'}
+                    title={'Editar Estabelecimento'}
+                    subtitle={'Editar uma quadra'}
+                    style='h-16 w-full rounded-2xl flex-row items-center justify-between'
+                    onPress={() => router.push('/edit')}
+                />
+                <CardConfig
+                    icon={'highlight-remove'}
+                    title={'Remover estabelecimento'}
+                    subtitle={'Remover um estabelecimento'}
+                    style='h-16 w-full rounded-2xl flex-row items-center justify-between'
+                    onPress={() => router.push('/remove')}
+                />
+                <Text className='font-normal text-3xl pt-5 pb-3'>Ativas</Text>
+            </View>
             <FlatList
                 data={estabelecimentos}
                 renderItem={({ item }) => <ListaEstabelecimento data={[item]} onPress={() => { }} />}
-                ListHeaderComponent={getHeader}
                 ListFooterComponent={getFooter}
                 keyExtractor={(item) => item.id.toString()}
                 onEndReached={() => setLoading(true)}

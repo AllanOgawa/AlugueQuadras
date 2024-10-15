@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { View, Text, SafeAreaView, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, SafeAreaView, ScrollView, StyleSheet, StatusBar } from 'react-native';
 import ListaQuadrasEstabelecimento from '@/src/components/listaQuadrasEstabelecimento';
 import { useEffect, useState } from 'react';
 import Toast from 'react-native-toast-message';
@@ -39,6 +39,7 @@ export default function EditCourt() {
 
     return (
         <SafeAreaView style={styles.container}>
+            <StatusBar barStyle="dark-content" backgroundColor="white" />
             <ScrollView contentContainerStyle={styles.scrollViewContent}>
                 <View>
                     <Text style={styles.headerText}>Selecione uma quadra para editar:</Text>

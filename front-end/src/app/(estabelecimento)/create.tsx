@@ -1,4 +1,4 @@
-import { SafeAreaView, ScrollView, Text, TextInput, View } from 'react-native';
+import { SafeAreaView, ScrollView, StatusBar, Text, TextInput, View } from 'react-native';
 import Constants from 'expo-constants';
 import { useState, useRef } from 'react';
 import { router } from 'expo-router';
@@ -68,11 +68,12 @@ export default function EstabelecimentoCadastro() {
     };
 
     return (
-        <SafeAreaView className="flex-1 bg-white" style={{ marginTop: statusBarHeight + 8 }}>
+        <SafeAreaView className="flex-1 bg-white" style={{ marginTop: statusBarHeight }}>
+            <StatusBar barStyle="dark-content" backgroundColor="white" />
             <SetaVoltar />
             <ScrollView showsVerticalScrollIndicator={false}>
-                <View className="w-full px-4">
-                    <Text className="text-4xl font-semibold mt-10 mb-5">Cadastrar Estabelecimento</Text>
+                <View className="w-full px-3">
+                    <Text className="text-4xl font-semibold mt-5 mb-5">Cadastrar Estabelecimento</Text>
                     <Input
                         ref={nomeInputRef}
                         label="Nome do Estabelecimento:"

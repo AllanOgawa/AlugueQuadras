@@ -1,4 +1,4 @@
-import { ActivityIndicator, ScrollView } from 'react-native';
+import { ActivityIndicator, ScrollView, StatusBar } from 'react-native';
 import AvaliacoesEstabelecimento from '@components/avaliacoesEstabelecimento';
 import { useLocalSearchParams } from 'expo-router';
 import { EstabelecimentoProps } from '@/src/interfaces/estabelecimento';
@@ -23,6 +23,7 @@ export default function Avaliacoes() {
 
     return (
         <ScrollView className='px-4 py-4 bg-white'>
+            <StatusBar barStyle="dark-content" backgroundColor="white" />
             {isLoading ? (
                 <ActivityIndicator />
             ) : (

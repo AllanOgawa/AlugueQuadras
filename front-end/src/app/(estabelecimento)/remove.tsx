@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Modal, View, Text, SafeAreaView, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { Modal, View, Text, SafeAreaView, FlatList, StyleSheet, TouchableOpacity, StatusBar } from 'react-native';
 import { router } from 'expo-router';
 import * as data from '@/db.json';
 import SetaVoltar from '@/src/components/setaVoltar';
@@ -52,9 +52,12 @@ export default function RemoveEstabelecimento() {
     };
 
     return (
-        <SafeAreaView className='flex-1 bg-white' style={{ marginTop: statusBarHeight + 8 }}>
+        <SafeAreaView className='flex-1 mx-3' style={{ marginTop: statusBarHeight + 8 }}>
+            <StatusBar barStyle="dark-content" backgroundColor="white" />
             <SetaVoltar />
+            <Text className='text-xl mb-3 mt-2'>Selecione um estabelecimento para remover:</Text>
             <FlatList
+                showsVerticalScrollIndicator={false}
                 data={estabelecimentos}
                 renderItem={({ item }) => (
                     <ListaEstabelecimento
@@ -80,7 +83,7 @@ export default function RemoveEstabelecimento() {
                                 <Text style={styles.buttonText}>Cancelar</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.confirmButton} onPress={confirmRemove}>
-                                <Text style={styles.buttonText}>Confirmar</Text>
+                                <Text style={styles.buttonTextConfirmar}>Confirmar</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -139,7 +142,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         flex: 1,
         marginRight: 10,
-        alignItems: 'center',
+        alignItems: 'center'
     },
     confirmButton: {
         backgroundColor: '#FF7300',
@@ -149,7 +152,7 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         alignItems: 'center',
     },
-    buttonText: {
+    buttonTextConfirmar: {
         color: '#fff',
         fontWeight: 'bold',
     },

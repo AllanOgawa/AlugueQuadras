@@ -1,4 +1,4 @@
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, StatusBar, Text, View } from 'react-native';
 
 import Constants from 'expo-constants'
 
@@ -11,6 +11,7 @@ export default function Notification() {
             className="bg-white"
             showsVerticalScrollIndicator={false}
         >
+            <StatusBar barStyle="dark-content" backgroundColor="white" />
             <View className="w-full px-4" style={{ marginTop: statusBarHeight + 8 }}>
                 <Text className="text-xl font-semibold mt-3">NOTIFICATION 1</Text>
             </View>

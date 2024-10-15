@@ -49,6 +49,7 @@ const styles = StyleSheet.create({
         shadowColor: '#000',
         shadowOpacity: 0.1,
         shadowRadius: 8,
+        marginHorizontal: 5,
         elevation: 3,
     },
     name: {

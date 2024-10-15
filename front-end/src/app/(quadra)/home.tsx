@@ -4,7 +4,7 @@ import { CardConfig } from '@components/cardConfig';
 import CourtList, { CourtProps } from '@components/quadras';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { View, Text, SafeAreaView, ScrollView } from 'react-native';
+import { View, Text, SafeAreaView, ScrollView, StatusBar } from 'react-native';
 import Toast from 'react-native-toast-message';
 
 import * as data from '@/db.json' // Importa o JSON com os dados
@@ -40,6 +40,7 @@ export default function HomeQuadra() {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+            <StatusBar barStyle="dark-content" backgroundColor="white" />
             <View className="bg-white w-full px-4 flex-1 mt-1">
                 {/* Cartões de Configuração */}
                 <CardConfig

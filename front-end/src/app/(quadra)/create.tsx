@@ -1,4 +1,4 @@
-import { SafeAreaView, ScrollView, Text, TextInput, View } from 'react-native';
+import { SafeAreaView, ScrollView, StatusBar, Text, TextInput, View } from 'react-native';
 import Constants from 'expo-constants';
 import { useState, useRef } from 'react';
 import { router } from 'expo-router';
@@ -69,6 +69,7 @@ export default function QuadraCadastro() {
 
     return (
         <SafeAreaView className="flex-1 bg-white" style={{ marginTop: statusBarHeight + 8 }}>
+            <StatusBar barStyle="dark-content" backgroundColor="white" />
             <SetaVoltar />
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View className="w-full px-4">

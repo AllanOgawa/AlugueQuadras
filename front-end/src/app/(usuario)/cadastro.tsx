@@ -1,5 +1,5 @@
 import globalStyles from '@/src/styles/globalStyles';
-import { SafeAreaView, ScrollView, Text, TextInput, View } from 'react-native';
+import { SafeAreaView, ScrollView, StatusBar, Text, TextInput, View } from 'react-native';
 
 import Constants from 'expo-constants'
 import { useRef, useState } from 'react';
@@ -80,6 +80,7 @@ export default function UsuarioCadastro() {
 
     return (
         <SafeAreaView className='flex-1 bg-white' style={{ marginTop: statusBarHeight + 8 }}>
+            <StatusBar barStyle="dark-content" backgroundColor="white" />
             <SetaVoltar />
             <ScrollView
                 style={{ flex: 1 }}

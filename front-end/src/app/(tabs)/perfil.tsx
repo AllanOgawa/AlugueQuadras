@@ -1,6 +1,6 @@
 import IconUsuario from '@components/iconUsuario';
 import Constants from 'expo-constants';
-import { SafeAreaView, ScrollView, Text, View } from 'react-native';
+import { SafeAreaView, ScrollView, StatusBar, Text, View } from 'react-native';
 import * as data from '@/db.json'
 import { CardConfig } from '@components/cardConfig';
 import NotificationCard from '@components/cardNotification';
@@ -16,6 +16,7 @@ export default function Perfil() {
 	if (user.adm) {
 		return (
 			<SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+				<StatusBar barStyle="dark-content" backgroundColor="white" />
 				<ScrollView
 					style={{ flex: 1 }}
 					className="bg-white"
@@ -78,6 +79,7 @@ export default function Perfil() {
 
 	return (
 		<SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+			<StatusBar barStyle="dark-content" backgroundColor="white" />
 			<ScrollView
 				style={{ flex: 1 }}
 				className="bg-white"
