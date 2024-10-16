@@ -26,7 +26,7 @@ export class AuthController {
   async login(@Body(ValidationPipe) loginDto: LoginDto, @Request() req) {
     try{
       return await this.authService.login(req.user);
-    }catch (error){
+    } catch (error) {
       console.error('Erro ao fazer login:', error);
       throw new HttpException('Erro ao fazer login', HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -38,9 +38,9 @@ export class AuthController {
   @ApiResponse({ status: 400, description: 'Dados inválidos.' })
   @Post('register')
   async register(@Body(ValidationPipe) createProfileDto: CreateProfileDto) {
-    try{
+    try {
       return this.authService.register(createProfileDto);
-    }catch (error) {
+    } catch (error) {
       console.error('Erro ao criar usuário:', error);
       throw new HttpException('Erro ao criar usuário', HttpStatus.INTERNAL_SERVER_ERROR);
     }
