@@ -257,7 +257,7 @@ export default function EstabelecimentoCadastro() {
                         onSubmitEditing={() => ComplementoInputRef.current?.blur()}
                     />
 
-                    <Text className="text-2xl font-semibold mt-10">Informações Gerais:</Text>
+                    <Text className="text-2xl font-semibold mt-10">Acomodações:</Text>
 
                     <View>
                         <Text className="text-lg mt-4">Selecione uma ou mais opções:</Text>
