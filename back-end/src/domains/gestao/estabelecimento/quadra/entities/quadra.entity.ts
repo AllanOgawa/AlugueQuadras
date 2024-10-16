@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, ManyToMany, JoinTable } from 'typeorm';
-import { Estabelecimento } from '../../entities/estabelecimento.entity';
-import { TipoEsporte } from './tipo-esporte.entity';
+import { Estabelecimento }  from '../../entities/estabelecimento.entity';
+import { TipoEsporte }      from '../tipo-esporte/entities/tipo-esporte.entity';
 
 @Entity({ schema: 'gestao', name: 'quadra' })
 export class Quadra {
