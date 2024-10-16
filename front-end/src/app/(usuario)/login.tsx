@@ -7,6 +7,8 @@ import InputSenha from '@components/inputs/inputSenha';
 import SetaVoltar from '@components/setaVoltar';
 import BotaoPressable from '@components/botoes/botaoPressable';
 import { router } from 'expo-router';
+import Toast from 'react-native-toast-message';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function UsuarioLogin() {
     const [username, setUsername] = useState('');
@@ -16,6 +18,15 @@ export default function UsuarioLogin() {
 
     const usernameInputRef = useRef<TextInput>(null);
     const senhaInputRef = useRef<TextInput>(null);
+
+    async function storeData(access_token: string) {
+        try {
+            await AsyncStorage.setItem("access_token", access_token);
+            console.log('Dados armazenados no localStorage com sucesso');
+        } catch (e) {
+            console.error('Erro ao salvar dados', e);
+        }
+    };
 
     async function handleSubmit() {
         setErrorUsername('');
@@ -50,15 +61,28 @@ export default function UsuarioLogin() {
             const data = await response.json();
 
             if (response.ok) {
-                console.log('Login bem-sucedido', data);
+                storeData(data.access_token)
+                console.log(data);
+                Toast.show({
+                    type: 'success',
+                    text1: "Login Bem-Sucedido",
+                });
                 router.push('/(tabs)/inicio');
             } else {
                 console.error('Erro no login', data);
-                alert('Login falhou: ' + data.message);
+                Toast.show({
+                    type: 'error',
+                    text1: "Login Falhou",
+                    text2: data.message,
+                });
             }
         } catch (error) {
             console.error('Erro de rede', error);
-            alert('Erro de rede');
+            Toast.show({
+                type: 'error',
+                text1: "Erro de Rede",
+                text2: String(error),
+            });
         }
     };
 

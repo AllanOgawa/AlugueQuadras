@@ -4,12 +4,12 @@ import BotaoPressable from '@/src/components/botoes/botaoPressable';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing } from 'react-native-reanimated';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-toast-message';
 
 export default function TelaLogin() {
     const [login, setLogin] = useState(false);
     const [isAppReady, setIsAppReady] = useState(false);
-    const [username, setUsername] = useState('allanog'); // Estado para o login
-    const [password, setPassword] = useState('senha123'); // Estado para a senha
 
     const router = useRouter();
     const opacity = useSharedValue(0);
@@ -39,37 +39,59 @@ export default function TelaLogin() {
     useEffect(() => {
         // Verifica se a aplicação está pronta e faz a requisição de login
         if (isAppReady) {
-            handleLogin();
+            getData();
         }
     }, [isAppReady]);
 
-    const handleLogin = async () => {
-        // try {
-        //     const response = await fetch('http://192.168.1.54:3000/auth/login', {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/json',
-        //         },
-        //         body: JSON.stringify({
-        //             login: username,
-        //             senha: password,
-        //         }),
-        //     });
+    async function getData() {
+        try {
+            const value = await AsyncStorage.getItem("access_token");
+            if (value !== null) {
+                console.log(value);
+                handleLogin(value);
+            }
+        } catch (e) {
+            console.error('Erro ao obter dados', e);
+        }
+    };
 
-        //     const data = await response.json();
+    const handleLogin = async (access_token: string) => {
+        try {
+            console.log(access_token)
+            const response = await fetch('http://192.168.1.54:3000/auth/profile', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${access_token}`,
+                },
+            });
 
-        //     if (response.ok) {
-        //         console.log('Login bem-sucedido', data);
-        //         setLogin(true);
-        //         router.push('/(tabs)/inicio');
-        //     } else {
-        //         console.error('Erro no login', data);
-        //         alert('Login falhou: ' + data.message);
-        //     }
-        // } catch (error) {
-        //     console.error('Erro de rede', error);
-        //     alert('Erro de rede');
-        // }
+            const data = await response.json();
+
+            if (response.ok) {
+                console.log('Login bem-sucedido', data);
+                setLogin(true);
+                router.push('/(tabs)/inicio');
+                Toast.show({
+                    type: 'success',
+                    text1: "Login Bem-Sucedido",
+                });
+            } else {
+                console.error('Erro no login', data);
+                Toast.show({
+                    type: 'error',
+                    text1: "Login Falhou",
+                    text2: data.message,
+                });
+            }
+        } catch (error) {
+            console.error('Erro de rede', error);
+            Toast.show({
+                type: 'error',
+                text1: "Erro de Rede",
+                text2: String(error),
+            });
+        }
     };
 
 
