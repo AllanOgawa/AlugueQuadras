@@ -12,9 +12,6 @@ const UploadImage: React.FC<UploadImageProps> = ({ onImageUpload }) => {
     const [image, setImage] = useState<string | null>(null);
     const [uploading, setUploading] = useState(false);
 
-    // Credenciais do MinIO
-    const accessKey = 'mVU2hsSiAhPKtGQYiU7q';
-    const secretKey = 'hZTKOredv0Lf0rvag1HoWounAlksakjns7BIzWnH';
     const region = 'sa-east-1';
     const service = 's3';
     const endpoint = 's3.aluguequadras.com.br';

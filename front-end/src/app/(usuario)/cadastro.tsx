@@ -6,18 +6,10 @@ import { useRef, useState } from 'react';
 import Input from '@components/inputs/input';
 import InputSenha from '@components/inputs/inputSenha';
 import BotaoTouchableOpacity from '@components/botoes/botaoTouchableOpacity';
-<<<<<<< HEAD
-import SetaVoltar from '@/src/components/setaVoltar';
-import InputData from '@/src/components/inputs/inputData';
-import { router } from 'expo-router';
-
-const statusBarHeight = Constants.statusBarHeight;
-=======
 import SetaVoltar from '@components/setaVoltar';
 import InputData from '@components/inputs/inputData';
 import UploadImagem from '@components/UploadImagem';
 import UploadImage from '@components/UploadImagem';
->>>>>>> b4d22786443517f9afbe6acec72ba8667fe6ebaf
 
 export default function UsuarioCadastro() {
     const [nome, setNome] = useState('');
@@ -98,11 +90,7 @@ export default function UsuarioCadastro() {
     };
 
     return (
-<<<<<<< HEAD
-        <SafeAreaView className='flex-1 bg-white' style={{ marginTop: statusBarHeight + 8 }}>
-=======
         <SafeAreaView className='flex-1 bg-white' style={{ marginTop: Constants.statusBarHeight }}>
->>>>>>> b4d22786443517f9afbe6acec72ba8667fe6ebaf
             <StatusBar barStyle="dark-content" backgroundColor="white" />
             <SetaVoltar />
             <ScrollView

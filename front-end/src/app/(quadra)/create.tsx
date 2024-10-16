@@ -7,6 +7,8 @@ import BotaoTouchableOpacity from '@components/botoes/botaoTouchableOpacity';
 import MultiSelect from '@/src/components/IconService';
 import { MaterialIcons } from '@expo/vector-icons';
 import SetaVoltar from '@/src/components/setaVoltar';
+import BotaoPressable from '@/src/components/botoes/botaoPressable';
+import globalStyles from '@/src/styles/globalStyles';
 
 const statusBarHeight = Constants.statusBarHeight;
 
@@ -66,6 +68,10 @@ export default function QuadraCadastro() {
             console.log("Erro: Preencha todos os campos obrigatórios.");
         }
     };
+
+    function confirmCreate(): void {
+        throw new Error('Function not implemented.');
+    }
 
     return (
         <SafeAreaView className="flex-1 bg-white" style={{ marginTop: statusBarHeight + 8 }}>
@@ -141,20 +147,12 @@ export default function QuadraCadastro() {
                     </View>
                 </View>
             </ScrollView>
-<<<<<<< HEAD
-            <View style={{ padding: 16 }}>
-                <BotaoTouchableOpacity
-                    title={'Cadastrar Quadra'}
-                    className='bg-primary p-4 rounded-2xl active:bg-secondary'
-                    onPress={handleSubmit}
-=======
             <View style={globalStyles.buttonContainer}>
                 <BotaoPressable
                     title={'Cadastrar'}
                     className='bg-primary p-4 rounded-2xl active:bg-secondary mx-4'
                     classNameTitle="text-white text-center text-xl"
                     onPress={confirmCreate} // Chama a função que exibe o toast e navega
->>>>>>> b4d22786443517f9afbe6acec72ba8667fe6ebaf
                 />
             </View>
         </SafeAreaView>

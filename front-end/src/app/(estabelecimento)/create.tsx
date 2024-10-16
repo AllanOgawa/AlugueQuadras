@@ -277,8 +277,7 @@ export default function EstabelecimentoCadastro() {
                 <BotaoTouchableOpacity
                     title={'Cadastrar Estabelecimento'}
                     className='bg-primary p-4 rounded-2xl active:bg-secondary'
-                    onPress={handleSubmit}
-                />
+                    onPress={handleSubmit} classNameTitle={''} />
             </View>
         </SafeAreaView>
     );
