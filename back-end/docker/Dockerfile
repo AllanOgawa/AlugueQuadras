@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 3000
 
 # Comando para instalar as dependências e iniciar a aplicação
-CMD ["npm", "install", "&&", "npm", "run", "run", "&&", "npm", "run", "prod"]
+CMD ["npm", "install", "&&", "npm", "run", "build", "&&", "npm", "run", "prod"]

@@ -30,7 +30,6 @@ export class AuthService {
 
   async validateUser(login: string, senha: string): Promise<any> {
     let usuario;
-
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const isEmail = emailRegex.test(login);
 
@@ -60,7 +59,6 @@ export class AuthService {
       access_token: this.jwtService.sign(payload),
     };
   }
-
 
   async changePassword(idkey: number, changePasswordDTO: ChangePasswordDTO): Promise<void> {
     const { senhaAtual, senhaNova } = changePasswordDTO;

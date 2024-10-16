@@ -7,10 +7,15 @@ import { DomainsModule } from './domains/domains.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath:  process.env.NODE_ENV === 'production' ? '.env.prod'
-        : process.env.NODE_ENV === 'test' ? '.env.test' 
-        : '.env',
-      isGlobal: true, 
+      envFilePath: [ 
+        'env/common.env',
+        process.env.NODE_ENV === 'production' 
+          ? 'env/.env.prod'
+          : process.env.NODE_ENV === 'test' 
+          ? 'env/.env.test' 
+          : 'env/.env.dev',
+      ],
+      isGlobal: true,
     }),
     DatabaseModule,
     DomainsModule,

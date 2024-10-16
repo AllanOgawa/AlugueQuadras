@@ -16,6 +16,9 @@ cnpj: string;
 razaoSocial: string
 
 @Column({type: 'text', nullable: false})
+nome: string
+
+@Column({type: 'text', nullable: false})
 telefone: string
 
 @Column({ type: 'text', nullable: false, unique: true })
