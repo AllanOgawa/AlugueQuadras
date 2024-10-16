@@ -1,11 +1,15 @@
-import { UsuarioTipo } from '@src/auth/usuario/tipo/entities/tipo.entity';
-import { Usuario } from '@src/auth/usuario/entities/usuario.entity';
-import { Estabelecimento } from '@src/domains/gestao/estabelecimento/entities/estabelecimento.entity';
+import { Usuario }            from '@domains/auth/usuario/entities/usuario.entity';
+import { Estabelecimento }    from '@domains/gestao/estabelecimento/entities/estabelecimento.entity';
+import { Quadra }             from '@domains/gestao/estabelecimento/quadra/entities/quadra.entity';
+import { TipoEsporte }        from '@domains/gestao/estabelecimento/quadra/entities/tipo-esporte.entity';
+import { Imagem }             from '@domains/storage/entities/imagem.entity';
 
 // Adicionar todas as entities aqui para ser lido pelo TypeORM
 
 export const entities = [
   Usuario,
-  UsuarioTipo,
-  Estabelecimento
+  Estabelecimento,
+  Quadra,
+  TipoEsporte,
+  Imagem
 ];

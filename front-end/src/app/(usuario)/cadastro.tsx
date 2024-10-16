@@ -6,11 +6,18 @@ import { useRef, useState } from 'react';
 import Input from '@components/inputs/input';
 import InputSenha from '@components/inputs/inputSenha';
 import BotaoTouchableOpacity from '@components/botoes/botaoTouchableOpacity';
+<<<<<<< HEAD
 import SetaVoltar from '@/src/components/setaVoltar';
 import InputData from '@/src/components/inputs/inputData';
 import { router } from 'expo-router';
 
 const statusBarHeight = Constants.statusBarHeight;
+=======
+import SetaVoltar from '@components/setaVoltar';
+import InputData from '@components/inputs/inputData';
+import UploadImagem from '@components/UploadImagem';
+import UploadImage from '@components/UploadImagem';
+>>>>>>> b4d22786443517f9afbe6acec72ba8667fe6ebaf
 
 export default function UsuarioCadastro() {
     const [nome, setNome] = useState('');
@@ -18,7 +25,6 @@ export default function UsuarioCadastro() {
     const [email, setEmail] = useState('');
     const [cpf, setCpf] = useState('');
     const [dtNascimento, setDtNascimento] = useState('');
-    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
     const [senha, setSenha] = useState('');
     const [confirmarSenha, setConfirmarSenha] = useState('');
@@ -27,13 +33,18 @@ export default function UsuarioCadastro() {
     const [errorUsername, setErrorUsername] = useState('');
     const [errorEmail, setErrorEmail] = useState('');
     const [errorCpf, setErrorCpf] = useState('');
+    const [errorDtNascimento, setErrorDtNascimento] = useState('');
+
     const [errorSenha, setErrorSenha] = useState('');
     const [errorConfirmarSenha, setErrorConfirmarSenha] = useState('');
+
 
     const nomeInputRef = useRef<TextInput>(null);
     const usernameInputRef = useRef<TextInput>(null);
     const emailInputRef = useRef<TextInput>(null);
     const cpfInputRef = useRef<TextInput>(null);
+    const dtNascimentoInputRef = useRef<TextInput>(null);
+
     const senhaInputRef = useRef<TextInput>(null);
     const confirmarSenhaInputRef = useRef<TextInput>(null);
 
@@ -55,6 +66,9 @@ export default function UsuarioCadastro() {
         else if (cpf.length < 14) erroCpf = "CPF Inválido.";
         setErrorCpf(erroCpf);
 
+        if (senha.length < 8)
+            setErrorSenha("A senha deve ter pelo menos 8 caracteres.");
+
         if (confirmarSenha !== senha)
             setErrorConfirmarSenha("As senhas não coincidem.");
 
@@ -74,12 +88,21 @@ export default function UsuarioCadastro() {
         setCpf(formattedCpf);
     };
 
-    const handleDateChange = (date: Date) => {
-        setSelectedDate(date); // Atualizar a data selecionada
+    const handleDateChange = (date: string) => {
+        setDtNascimento(date); // Atualiza o estado da data no componente pai
+    };
+
+    const handleImageUpload = (url: string) => {
+        console.log('Imagem enviada para:', url);
+        // Aqui você pode realizar outras ações como salvar a URL no banco de dados
     };
 
     return (
+<<<<<<< HEAD
         <SafeAreaView className='flex-1 bg-white' style={{ marginTop: statusBarHeight + 8 }}>
+=======
+        <SafeAreaView className='flex-1 bg-white' style={{ marginTop: Constants.statusBarHeight }}>
+>>>>>>> b4d22786443517f9afbe6acec72ba8667fe6ebaf
             <StatusBar barStyle="dark-content" backgroundColor="white" />
             <SetaVoltar />
             <ScrollView
@@ -88,6 +111,10 @@ export default function UsuarioCadastro() {
             >
                 <View className="w-full px-4">
                     <Text className="text-4xl font-semibold mt-10 mb-5">Criar conta</Text>
+
+                    <UploadImage
+                        onImageUpload={handleDateChange}
+                    />
 
                     <Input
                         className='mb-5'
@@ -138,12 +165,18 @@ export default function UsuarioCadastro() {
                         onChangeText={handleCpfChange}
                         autoComplete="off"
                         returnKeyType="next"
+                        onSubmitEditing={() => dtNascimentoInputRef.current?.focus()}
                     />
                     <InputData
-                        label="Data de Nascimento:"
-                        onDateChange={handleDateChange}
                         className='mb-5'
+                        ref={dtNascimentoInputRef}
+                        label="Data de Nascimento:"
                         obrigatorio
+                        errorMessage={errorDtNascimento}
+                        maxLength={10}
+                        returnKeyType="next"
+                        onDateChange={handleDateChange}
+                        onSubmitEditing={() => senhaInputRef.current?.focus()}
                     />
                     <InputSenha
                         ref={senhaInputRef}
@@ -178,6 +211,7 @@ export default function UsuarioCadastro() {
                 <BotaoTouchableOpacity
                     title={'Cadastrar'}
                     className='bg-primary p-4 rounded-2xl active:bg-secondary mx-4'
+                    classNameTitle="text-white text-center text-xl"
                     onPress={handleSubmit}
                 />
             </View>

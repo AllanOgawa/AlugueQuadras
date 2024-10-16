@@ -125,7 +125,8 @@ export default function Estabelecimento() {
 			<View style={globalStyles.buttonContainer}>
 				<BotaoPressable
 					title={'Alugar Quadra'}
-					style='bg-primary p-4 rounded-2xl active:bg-secondary mx-4'
+					className='bg-primary p-4 rounded-2xl active:bg-secondary mx-4'
+					classNameTitle="text-white text-center text-xl"
 					onPress={() => { }}
 				/>
 			</View>

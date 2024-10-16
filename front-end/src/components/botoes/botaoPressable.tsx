@@ -1,21 +1,21 @@
-import { Pressable, Text, ViewStyle } from 'react-native';
+import { Pressable, Text, View, ViewStyle } from 'react-native';
 
 interface CustomButtonProps {
     title: string;
-    style?: string; // ClassName do Tailwind
+    className: string;
+    classNameTitle: string;
     onPress: () => void;
-    customStyles?: ViewStyle; // Estilos personalizados para sombra ou outras propriedades
 }
 
-export default function BotaoPressable({ title, style, onPress, customStyles }: CustomButtonProps) {
+export default function BotaoPressable({ title, className, classNameTitle, onPress }: CustomButtonProps) {
     return (
-        <Pressable
-            onPress={onPress}
-            className={style}
-            style={customStyles} // Passando o estilo para o Pressable
-        >
-            <Text className="text-white text-center text-xl">{title}</Text>
-        </Pressable>
+        <View className={className}>
+            <Pressable
+                onPress={onPress}
+            >
+                <Text className={classNameTitle}>{title}</Text>
+            </Pressable>
+        </View>
     );
 };
 

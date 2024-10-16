@@ -141,11 +141,20 @@ export default function QuadraCadastro() {
                     </View>
                 </View>
             </ScrollView>
+<<<<<<< HEAD
             <View style={{ padding: 16 }}>
                 <BotaoTouchableOpacity
                     title={'Cadastrar Quadra'}
                     className='bg-primary p-4 rounded-2xl active:bg-secondary'
                     onPress={handleSubmit}
+=======
+            <View style={globalStyles.buttonContainer}>
+                <BotaoPressable
+                    title={'Cadastrar'}
+                    className='bg-primary p-4 rounded-2xl active:bg-secondary mx-4'
+                    classNameTitle="text-white text-center text-xl"
+                    onPress={confirmCreate} // Chama a função que exibe o toast e navega
+>>>>>>> b4d22786443517f9afbe6acec72ba8667fe6ebaf
                 />
             </View>
         </SafeAreaView>
