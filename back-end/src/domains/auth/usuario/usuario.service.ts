@@ -27,9 +27,14 @@ export class UsuarioService {
   }
 
   async findByEmail(email: string): Promise<Usuario> {
-    return await this.usuarioRepository.findOne({ 
-      where: { email }
-    });
+    try{
+      return await this.usuarioRepository.findOne({ 
+        where: { email }
+      });
+    } catch (error) { 
+      console.log(error);
+      throw new BadRequestException('Erro ao buscar usuário por email.');
+    }
   }
 
   async findByUsername(username: string): Promise<Usuario> {

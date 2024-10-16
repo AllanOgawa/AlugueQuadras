@@ -4,6 +4,7 @@ import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 
 import { Estabelecimento }          from "./entities/estabelecimento.entity";
 import { CreateEstabelecimentoDto } from "./dto/create-estabelecimento.dto";
+import { UpdateEstabelecimentoDto } from "./dto/update-estabelecimento.dto";
 import { Usuario }                  from "@domains/auth/usuario/entities/usuario.entity";
 import { UsuarioService }           from "@domains/auth/usuario/usuario.service";
 
@@ -41,15 +42,23 @@ export class EstabelecimentoService{
   }
 
   async findByIdkey(idkey: number): Promise<Estabelecimento>{
-    return await this.estabelecimentoRepository.findOne({
-      where:{ idkey },
-      relations: ['quadras']
-    });
+    try{
+      return await this.estabelecimentoRepository.findOne({
+        where:{ idkey },
+        relations: ['quadras']
+      });
+    } catch (error) {
+      throw new HttpException('Erro ao buscar estabelecimento', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
-  async update(idkey: number, updateData: Partial<Estabelecimento>): Promise<Estabelecimento>{
-    await this.estabelecimentoRepository.update(idkey, updateData);
-    return this.findByIdkey(idkey);
+  async update(idkey: number, updateEstabelecimentoDto: UpdateEstabelecimentoDto): Promise<Estabelecimento>{
+    try{
+      await this.estabelecimentoRepository.update(idkey, updateEstabelecimentoDto);
+      return this.findByIdkey(idkey);
+    }catch(error){
+      throw new HttpException('Erro ao atualizar estabelecimento', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async remove(idkey: number, usuario: Usuario): Promise<void>{
