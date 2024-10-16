@@ -5,7 +5,7 @@ type TabName = "Inicio" | "Buscar" | "Mapa" | "Reservas" | "Perfil";
 type IconName = "home" | "home-outline" | "search" | "search-outline" | "map" | "map-outline" | "calendar" | "calendar-outline" | "person" | "person-outline";
 
 const tabData: { route: string, name: TabName, iconFocused: IconName, iconUnfocused: IconName }[] = [{
-	route: "index",
+	route: "inicio",
 	name: "Inicio",
 	iconFocused: "home",
 	iconUnfocused: "home-outline"

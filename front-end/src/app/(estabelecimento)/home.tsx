@@ -1,25 +1,23 @@
-import ListaQuadrasEstabelecimento from '@/src/components/listaQuadrasEstabelecimento';
+import ListaEstabelecimento from '@/src/components/listaEstabelecimento';
 import { EstabelecimentoProps } from '@/src/interfaces/estabelecimento';
 import { CardConfig } from '@components/cardConfig';
 import CourtList, { CourtProps } from '@components/quadras';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { View, Text, SafeAreaView, ScrollView, StatusBar } from 'react-native';
+import { View, Text, SafeAreaView, FlatList, StatusBar } from 'react-native';
 import Toast from 'react-native-toast-message';
 
-import * as data from '@/db.json' // Importa o JSON com os dados
-import { QuadraProps } from '@/src/interfaces/quadra';
+import * as data from '@/db.json';
 
-export default function HomeQuadra() {
-    const [estabelecimento, setEstabelecimento] = useState<EstabelecimentoProps | null>(null);
+export default function HomeEstabelecimento() {
+    const [estabelecimentos, setEstabelecimentos] = useState<EstabelecimentoProps[]>([]);
     const { message } = useLocalSearchParams();
+    const [loading, setLoading] = useState(false);
 
-    // Função para lidar com o clique em uma quadra
     function handleCourtPress(court: CourtProps): void {
         console.log(`Você clicou na quadra ${court.local} localizada em ${court.endereco}`);
     }
 
-    // Exibir toast com a mensagem, se disponível
     useEffect(() => {
         if (message) {
             const toastMessage = Array.isArray(message) ? message.join(', ') : message;
@@ -30,51 +28,55 @@ export default function HomeQuadra() {
         }
     }, [message]);
 
-    // Carrega os dados do JSON ao montar o componente
     useEffect(() => {
         if (data.estabelecimento && data.estabelecimento.length > 0) {
-            // Defina o primeiro estabelecimento (ou outro critério de escolha)
-            setEstabelecimento(data.estabelecimento[1]);
+            setEstabelecimentos(data.estabelecimento);
         }
     }, []);
 
+    // Rodapé da lista
+    const getFooter = () => {
+        if (loading) {
+            return <Text>Carregando...</Text>;
+        }
+        return null;
+    };
+
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
-            <StatusBar barStyle="dark-content" backgroundColor="white" />
-            <View className="bg-white w-full px-4 flex-1 mt-1">
-                {/* Cartões de Configuração */}
+        <SafeAreaView style={{ flex: 1, backgroundColor: 'white', marginHorizontal: 5 }}>
+            <View className='mx-3 mt-5'>
+                <StatusBar barStyle="dark-content" backgroundColor="white" />
                 <CardConfig
                     icon={'add-circle-outline'}
-                    title={'Nova quadra'}
-                    subtitle={'Cadastrar uma nova quadra'}
+                    title={'Nova Estabelecimento'}
+                    subtitle={'Cadastrar um novo estabelecimento'}
                     style='h-16 w-full rounded-2xl flex-row items-center justify-between'
                     onPress={() => router.push('/create')}
                 />
                 <CardConfig
                     icon={'create'}
-                    title={'Editar quadra'}
+                    title={'Editar Estabelecimento'}
                     subtitle={'Editar uma quadra'}
                     style='h-16 w-full rounded-2xl flex-row items-center justify-between'
                     onPress={() => router.push('/edit')}
                 />
                 <CardConfig
                     icon={'highlight-remove'}
-                    title={'Remover quadra'}
-                    subtitle={'Remover uma quadra'}
+                    title={'Remover estabelecimento'}
+                    subtitle={'Remover um estabelecimento'}
                     style='h-16 w-full rounded-2xl flex-row items-center justify-between'
                     onPress={() => router.push('/remove')}
                 />
-
-                {/* Título para quadras ativas */}
-                <Text className='font-normal text-3xl py-5'>Ativas</Text>
-
-                <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-                    {/* Renderização condicional da lista de quadras */}
-                    {estabelecimento?.quadras && (
-                        <ListaQuadrasEstabelecimento quadras={estabelecimento.quadras} onClick={() => { }} />
-                    )}
-                </ScrollView>
+                <Text className='font-normal text-3xl pt-5 pb-3'>Ativas</Text>
             </View>
+            <FlatList
+                data={estabelecimentos}
+                renderItem={({ item }) => <ListaEstabelecimento data={[item]} onPress={() => { }} />}
+                ListFooterComponent={getFooter}
+                keyExtractor={(item) => item.id.toString()}
+                onEndReached={() => setLoading(true)}
+                onEndReachedThreshold={0.1}
+            />
         </SafeAreaView>
     );
 }
