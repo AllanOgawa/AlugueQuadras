@@ -30,18 +30,15 @@ const DateInput = forwardRef<TextInput, DateInputProps>(
         };
 
         const handleInputChange = (text: string) => {
-            // Permite que o usuário digite manualmente a data
             let cleaned = text.replace(/\D/g, '');
 
-            // Formata o texto no padrão dd/mm/aaaa
             if (cleaned.length >= 5) {
                 cleaned = cleaned.replace(/(\d{2})(\d{2})(\d{0,4})/, '$1/$2/$3');
             } else if (cleaned.length >= 3) {
                 cleaned = cleaned.replace(/(\d{2})(\d{0,2})/, '$1/$2');
             }
-
             setInputValue(cleaned);
-            onDateChange(cleaned); // Passa o valor manualmente inserido para o componente pai
+            onDateChange(cleaned);
         };
 
         return (
@@ -49,9 +46,10 @@ const DateInput = forwardRef<TextInput, DateInputProps>(
                 <Text className='text-lg'>
                     {label} {obrigatorio && <Text className='color-red-500'>*</Text>}
                 </Text>
-                <View className='flex-row items-center'>
+
+                <SafeAreaView className={`h-14 border rounded-xl items-center flex-row justify-between ${errorMessage ? "border-red-500" : "border-secondary"}`}>
                     <TextInput
-                        className={`flex-1 h-14 rounded-xl border pl-3 text-lg ${errorMessage ? "border-red-500" : "border-secondary"}`}
+                        className='ml-3 text-lg w-[85%]'
                         ref={ref}
                         value={inputValue} // O valor é o que o usuário digitou ou selecionou
                         onChangeText={handleInputChange} // Permite editar manualmente
@@ -59,10 +57,15 @@ const DateInput = forwardRef<TextInput, DateInputProps>(
                         keyboardType="numeric" // Teclado numérico para facilitar a inserção de datas
                         {...textInputProps}
                     />
-                    <Pressable onPress={() => setShowPicker(true)} className='ml-2 p-2'>
-                        <Ionicons name="calendar-outline" size={24} color="black" />
+                    <Pressable onPress={() => setShowPicker(true)}>
+                        <Ionicons
+                            name="calendar-outline"
+                            size={24}
+                            className='mr-3'
+                            color="gray"
+                        />
                     </Pressable>
-                </View>
+                </SafeAreaView>
 
                 {errorMessage && <Text className='color-red-600 text-sm'>{errorMessage}</Text>}
 

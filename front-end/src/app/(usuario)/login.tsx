@@ -1,16 +1,17 @@
-import { SafeAreaView, ScrollView, StatusBar, Text, TextInput, View } from 'react-native';
-
-import Constants from 'expo-constants'
+import { ActivityIndicator, SafeAreaView, ScrollView, StatusBar, Text, TextInput, View } from 'react-native';
 import { useRef, useState } from 'react';
+import Constants from 'expo-constants'
+import { router } from 'expo-router';
 import Input from '@components/inputs/input';
 import InputSenha from '@components/inputs/inputSenha';
 import SetaVoltar from '@components/setaVoltar';
 import BotaoPressable from '@components/botoes/botaoPressable';
-import { router } from 'expo-router';
+import Loading from '@components/loading';
 import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function UsuarioLogin() {
+    const [loading, setLoading] = useState(false);
     const [username, setUsername] = useState('');
     const [senha, setSenha] = useState('');
     const [errorUsername, setErrorUsername] = useState('');
@@ -29,10 +30,10 @@ export default function UsuarioLogin() {
     };
 
     async function handleSubmit() {
+        setLoading(true);
         setErrorUsername('');
         setErrorSenha('');
 
-        // Valida os campos
         let isValid = true;
         if (!username) {
             setErrorUsername("O campo Username/Email é obrigatório");
@@ -43,11 +44,10 @@ export default function UsuarioLogin() {
             isValid = false;
         }
 
-        // Se não for válido, não faz a requisição
         if (!isValid) return;
 
         try {
-            const response = await fetch('http://192.168.1.54:3000/auth/login', {
+            const response = await fetch('http://192.168.137.1:3000/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -67,7 +67,7 @@ export default function UsuarioLogin() {
                     type: 'success',
                     text1: "Login Bem-Sucedido",
                 });
-                router.push('/(tabs)/inicio');
+                router.replace('/(tabs)/inicio');
             } else {
                 console.error('Erro no login', data);
                 Toast.show({
@@ -83,6 +83,8 @@ export default function UsuarioLogin() {
                 text1: "Erro de Rede",
                 text2: String(error),
             });
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -137,7 +139,7 @@ export default function UsuarioLogin() {
                     onPress={() => { router.push('/(usuario)/cadastro') }}
                 />
             </ScrollView>
-
+            {loading && <Loading />}
         </SafeAreaView>
     );
 }

@@ -1,8 +1,7 @@
-import { SafeAreaView, ImageBackground, View, StyleSheet, Text, StatusBar } from 'react-native';
-
-import BotaoPressable from '@/src/components/botoes/botaoPressable';
+import { SafeAreaView, ImageBackground, View, StyleSheet, Text, StatusBar, ActivityIndicator } from 'react-native';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'expo-router';
+import { router } from 'expo-router';
+import BotaoPressable from '@components/botoes/botaoPressable';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing } from 'react-native-reanimated';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
@@ -11,7 +10,6 @@ export default function TelaLogin() {
     const [login, setLogin] = useState(false);
     const [isAppReady, setIsAppReady] = useState(false);
 
-    const router = useRouter();
     const opacity = useSharedValue(0);
     const translateY = useSharedValue(50);
 
@@ -33,22 +31,16 @@ export default function TelaLogin() {
             easing: Easing.out(Easing.exp),
         });
 
-        setTimeout(() => setIsAppReady(true), 100);
+        getData();
     }, [opacity, translateY]);
 
-    useEffect(() => {
-        // Verifica se a aplicação está pronta e faz a requisição de login
-        if (isAppReady) {
-            getData();
-        }
-    }, [isAppReady]);
 
     async function getData() {
         try {
             const value = await AsyncStorage.getItem("access_token");
-            if (value !== null) {
+            if (value !== null && value !== "") {
                 console.log(value);
-                handleLogin(value);
+                handleLogin("value");
             }
         } catch (e) {
             console.error('Erro ao obter dados', e);
@@ -57,8 +49,7 @@ export default function TelaLogin() {
 
     const handleLogin = async (access_token: string) => {
         try {
-            console.log(access_token)
-            const response = await fetch('http://192.168.1.54:3000/auth/profile', {
+            const response = await fetch('http://192.168.137.1:3000/auth/profile', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -69,20 +60,9 @@ export default function TelaLogin() {
             const data = await response.json();
 
             if (response.ok) {
-                console.log('Login bem-sucedido', data);
+                console.log(data);
                 setLogin(true);
-                router.push('/(tabs)/inicio');
-                Toast.show({
-                    type: 'success',
-                    text1: "Login Bem-Sucedido",
-                });
-            } else {
-                console.error('Erro no login', data);
-                Toast.show({
-                    type: 'error',
-                    text1: "Login Falhou",
-                    text2: data.message,
-                });
+                router.replace('/(tabs)/inicio');
             }
         } catch (error) {
             console.error('Erro de rede', error);
@@ -91,15 +71,17 @@ export default function TelaLogin() {
                 text1: "Erro de Rede",
                 text2: String(error),
             });
+        } finally {
+            setIsAppReady(true);
         }
     };
 
 
     if (!isAppReady) {
         return (
-            <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Text>Carregando...</Text>
-            </SafeAreaView>
+            <View className='rounded-2xl flex-1 justify-center items-center'>
+                <ActivityIndicator size="large" className='color-primary' />
+            </View>
         );
     }
 
