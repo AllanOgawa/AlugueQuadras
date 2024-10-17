@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 
 import { DatabaseModule } from './database/database.module';
 import { DomainsModule } from './domains/domains.module';
+import { HealthModule } from './common/health/health.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { DomainsModule } from './domains/domains.module';
     }),
     DatabaseModule,
     DomainsModule,
+    HealthModule
   ],
   controllers: [],
   providers: [],

@@ -1,18 +1,18 @@
 version: '3.8'
 
 services:
-  api-aluguequadras-test:
+  api-aluguequadras-homologation:
     build:
       context: ..
       dockerfile: docker/Dockerfile
-    image: api-aluguequadras:test
-    container_name: api-aluguequadras-test
+    image: api-aluguequadras:homologation
+    container_name: api-aluguequadras-homologation
     restart: unless-stopped
     env_file:
       - ../env/common.env
-      - ../env/test.env
+      - ../env/homologation.env
     ports:
-      - "3002:3000"
+      - "3001:3000"
     networks:
       - nginx_proxy
 
