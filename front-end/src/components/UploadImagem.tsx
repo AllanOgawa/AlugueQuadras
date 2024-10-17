@@ -3,6 +3,7 @@ import { Button, Image, View, Platform, StyleSheet, ActivityIndicator, Alert } f
 import * as ImagePicker from 'expo-image-picker';
 import CryptoJS from 'crypto-js';
 import { Buffer } from 'buffer';
+import Toast from 'react-native-toast-message';
 
 interface UploadImageProps {
     onImageUpload: (url: string) => void; // Callback para lidar com a URL da imagem
@@ -36,10 +37,51 @@ const UploadImage: React.FC<UploadImageProps> = ({ onImageUpload }) => {
 
         if (!result.cancelled) {
             setImage(result.assets[0].uri);
-            // Iniciar upload
-            await uploadImage(result);
+            await getUploadUrl(result.assets[0]);
         }
     };
+
+    async function getUploadUrl(result: ImagePicker.ImageInfo) {
+        console.log(result)
+        try {
+            const response = await fetch('http://192.168.137.1:3000/storage/upload-url', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    pathName: "usuario",
+                    fileName: result.fileName,
+                    mimeType: result.mimeType
+                }),
+            });
+
+            const data = await response.json();
+            console.log(data);
+
+            if (response.ok) {
+                console.log(data);
+            }
+        } catch (error) {
+            console.error('Erro de rede', error);
+            Toast.show({
+                type: 'error',
+                text1: "Erro de Rede",
+                text2: String(error),
+            });
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
 
     // Função para gerar assinatura AWS Signature v4
     const generateSignature = (method, path, queryParams, headers, body) => {
