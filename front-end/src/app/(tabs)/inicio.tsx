@@ -21,7 +21,7 @@ export default function Inicio() {
 				className="bg-white"
 				showsVerticalScrollIndicator={false}
 			>
-				<View className="w-full px-4" style={{ marginTop: statusBarHeight }}>
+				<View className="w-full px-4" style={{ marginTop: statusBarHeight + 8 }}>
 					<View className="flex-row justify-between items-center mb-4">
 						<View>
 							<Text className="text-xl font-semibold">Olá {user.name}</Text>

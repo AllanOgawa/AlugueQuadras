@@ -6,16 +6,16 @@ export default function MainLayout() {
 		<SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
 			<Stack>
 				{/* Tela de Perfil */}
-				<Stack.Screen name="home" options={{ headerShown: true, headerTitle: "Quadras" }} />
+				<Stack.Screen name="menu" options={{ headerShown: false, headerTitle: "Quadras" }} />
 
 				{/* Tela de Criar */}
-				<Stack.Screen name="create" options={{ headerShown: false, headerTitle: "Nova quadra", animation: 'ios', headerTintColor: "#000000" }} />
+				<Stack.Screen name="cadastrar" options={{ headerShown: false, headerTitle: "Nova quadra", animation: 'ios', headerTintColor: "#000000" }} />
 
 				{/* Tela de Editar */}
-				<Stack.Screen name="edit" options={{ headerShown: true, headerTitle: "Editar", animation: 'ios', headerTintColor: "#000000" }} />
+				<Stack.Screen name="editar" options={{ headerShown: false, headerTitle: "Editar", animation: 'ios', headerTintColor: "#000000" }} />
 
 				{/* Tela de Remover */}
-				<Stack.Screen name="remove" options={{ headerShown: true, headerTitle: "Remover", animation: 'ios', headerTintColor: "#000000" }} />
+				<Stack.Screen name="remover" options={{ headerShown: false, headerTitle: "Remover", animation: 'ios', headerTintColor: "#000000" }} />
 			</Stack>
 		</SafeAreaView>
 	);

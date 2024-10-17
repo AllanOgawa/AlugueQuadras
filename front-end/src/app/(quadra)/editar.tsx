@@ -15,7 +15,7 @@ export default function EditCourt() {
     // Função para lidar com o clique em uma quadra
     function handleCourtPress(quadra: QuadraProps): void {
         // console.log(`Você clicou na quadra ${quadra.name}, ID: ${quadra.id}`);
-        router.push('/create')
+        router.push('/cadastrar')
     }
 
     // Exibir toast com a mensagem, se disponível
