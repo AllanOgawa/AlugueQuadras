@@ -29,7 +29,7 @@ export default function RemoveCourt() {
         setModalVisible(false);
         setTimeout(() => {
             router.replace({
-                pathname: '/home',
+                pathname: '/menu',
                 params: { message: "Quadra removida com sucesso!" }
             });
         }, 600);
