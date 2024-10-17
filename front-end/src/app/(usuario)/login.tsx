@@ -10,6 +10,8 @@ import Loading from '@components/loading';
 import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+const { apiUrl } = Constants.expoConfig.extra;
+
 export default function UsuarioLogin() {
     const [loading, setLoading] = useState(false);
     const [username, setUsername] = useState('');
@@ -47,7 +49,7 @@ export default function UsuarioLogin() {
         if (!isValid) return;
 
         try {
-            const response = await fetch('http://192.168.137.1:3000/auth/login', {
+            const response = await fetch(`${apiUrl}/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
