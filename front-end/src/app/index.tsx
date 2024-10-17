@@ -67,7 +67,10 @@ export default function TelaLogin() {
             if (response.ok) {
                 console.log(data);
                 setLogin(true);
-                router.replace('/(tabs)/inicio');
+                router.replace({
+                    pathname: '/(tabs)/inicio',
+                    params: { userData: JSON.stringify(data) }, // Envia os dados como parâmetro
+                });
             }
         } catch (error) {
             console.error('Erro de rede', error);

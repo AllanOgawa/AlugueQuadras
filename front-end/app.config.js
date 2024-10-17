@@ -10,7 +10,8 @@ export default {
     scheme: "myapp",
     userInterfaceStyle: "automatic",
     extra: {
-      apiUrl: process.env.API_URL_BACKEND
+      apiUrl: process.env.API_URL_BACKEND,
+      bucketUrl: process.env.API_URL_BUCKET
     },
     splash: {
       image: "./assets/images/splash.png",

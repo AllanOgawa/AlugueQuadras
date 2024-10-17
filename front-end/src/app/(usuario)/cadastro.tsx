@@ -164,6 +164,7 @@ export default function UsuarioCadastro() {
                     cpf: cpf,
                     dataNascimento: dataNascimento,
                     senha: senha,
+                    imagensToAdd: ["public-storage/usuario/usuario.png"]
                 }),
             });
 
