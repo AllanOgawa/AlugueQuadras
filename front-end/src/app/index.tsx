@@ -5,6 +5,9 @@ import BotaoPressable from '@components/botoes/botaoPressable';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing } from 'react-native-reanimated';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
+import Constants from 'expo-constants';
+
+const { apiUrl } = Constants.expoConfig.extra;
 
 export default function TelaLogin() {
     const [login, setLogin] = useState(false);
@@ -40,7 +43,9 @@ export default function TelaLogin() {
             const value = await AsyncStorage.getItem("access_token");
             if (value !== null && value !== "") {
                 console.log(value);
-                handleLogin("value");
+                handleLogin(value);
+            } else {
+                setIsAppReady(true);
             }
         } catch (e) {
             console.error('Erro ao obter dados', e);
@@ -49,7 +54,7 @@ export default function TelaLogin() {
 
     const handleLogin = async (access_token: string) => {
         try {
-            const response = await fetch('http://192.168.137.1:3000/auth/profile', {
+            const response = await fetch(`${apiUrl}/auth/profile`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
