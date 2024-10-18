@@ -2,7 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, OneToMan
 
 import { UsuarioTipoEnum }  from '../enums/usuario-tipo.enum';
 import { Estabelecimento }  from '@domains/gestao/estabelecimento/entities/estabelecimento.entity';
-import { Imagem }           from '@src/domains/storage/entities/imagem.entity';
+import { Imagem }           from '@src/domains/storage/imagem/entities/imagem.entity';
 
 @Entity({ schema: 'auth', name: 'usuario' })
 export class Usuario {

@@ -33,7 +33,7 @@ export class CreateProfileDto {
   })
   @IsString({ message: 'O campo senha deve ser uma string.' })
   @IsNotEmpty({ message: 'O campo senha não pode estar vazio.' })
-  @MinLength(6, { message: 'A senha deve ter pelo menos 6 caracteres.' })
+  @MinLength(8, { message: 'A senha deve ter pelo menos 8 caracteres.' })
   senha: string;
 
   @ApiProperty({ 

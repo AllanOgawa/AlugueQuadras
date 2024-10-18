@@ -32,13 +32,22 @@ export class EstabelecimentoService{
   }
 
   async findAll(): Promise<Estabelecimento[]>{
-    return await this.estabelecimentoRepository.find();
+    try{
+      return await this.estabelecimentoRepository.find();
+    }catch(error){
+      throw new HttpException('Erro ao buscar estabelecimentos', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async findAllByUser(usuario: Usuario): Promise<Estabelecimento[]>{
-    return await this.estabelecimentoRepository.find({
-      where: { usuario : { idkey: usuario.idkey } },
-    });
+    try{
+      return await this.estabelecimentoRepository.find({
+        where: { usuario : { idkey: usuario.idkey } },
+      });
+    }
+    catch(error){
+      throw new HttpException('Erro ao buscar estabelecimentos', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async findByIdkey(idkey: number): Promise<Estabelecimento>{

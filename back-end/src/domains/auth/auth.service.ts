@@ -7,7 +7,7 @@ import { UsuarioService }     from './usuario/usuario.service';
 import { ChangePasswordDTO }  from './dto/change-password.dto';
 import { GetProfileDto }      from './dto/get-profile.dto';
 import { UpdateProfileDto }   from './dto/update-profile.dto';
-import { CreateProfileDto } from './dto/create-profile.dto';
+import { CreateProfileDto }   from './dto/create-profile.dto';
 
 @Injectable()
 export class AuthService {

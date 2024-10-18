@@ -28,7 +28,6 @@ export class StorageService {
     this.urlExpiration  = parseInt(this.configService.get<string>('AWS_S3_URL_EXPIRATION'), 10);
   }
 
-
   private generateHashedFileName(username: string, originalName: string): string {
     const hash = crypto.createHash('sha256')
       .update(`${username}-${originalName}-${uuidv4()}`)

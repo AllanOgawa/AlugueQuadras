@@ -6,7 +6,7 @@ import { QuadraModule }           from './estabelecimento/quadra/quadra.module';
 @Module({
   imports: [
     EstabelecimentoModule,
-    QuadraModule,
+    QuadraModule
   ]
 })
 export class GestaoModule { }
