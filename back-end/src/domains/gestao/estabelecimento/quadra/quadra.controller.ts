@@ -14,7 +14,7 @@ export class QuadraController {
   
   @Post('new')
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Criar uma nova quadra' })
   @ApiResponse({ status: 201, description: 'Quadra criada com sucesso', type: Quadra })
   @ApiResponse({ status: 500, description: 'Erro ao criar quadra' })
@@ -57,7 +57,7 @@ export class QuadraController {
 
   @Patch('edit/:idkey')
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Atualizar uma quadra existente por ID' })
   @ApiParam({ name: 'idkey', description: 'ID da quadra a ser atualizada', example: 1 })
   @ApiResponse({ status: 200, description: 'Quadra atualizada com sucesso', type: Quadra })
@@ -80,7 +80,7 @@ export class QuadraController {
   }
 
   @Delete('remove/:idkey')
-  @ApiBearerAuth()
+  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Remover uma quadra por ID' })
   @ApiParam({ name: 'idkey', description: 'ID da quadra a ser removida', example: 1 })
   @ApiResponse({ status: 200, description: 'Quadra removida com sucesso' })
