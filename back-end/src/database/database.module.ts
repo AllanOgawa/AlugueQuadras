@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import * as pg from 'pg';
@@ -10,18 +10,12 @@ pg.types.setTypeParser(20, (val) => parseInt(val, 10));
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      envFilePath: process.env.NODE_ENV === 'production' ? '.env.prod'
-      : process.env.NODE_ENV === 'test' ? '.env.test' 
-      : '.env',
-      isGlobal: true, 
-    }),
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
+      inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         type: 'postgres',
-        host: configService.get<string>('DB_HOST'),
-        port: configService.get<number>('DB_PORT'),
+        host:     configService.get<string>('DB_HOST'),
+        port:     configService.get<number>('DB_PORT'),
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
@@ -29,7 +23,6 @@ pg.types.setTypeParser(20, (val) => parseInt(val, 10));
         synchronize: true,  // Cria as tabelas automaticamente
         logging: false,
       }),
-      inject: [ConfigService],
     }),
   ],
 })

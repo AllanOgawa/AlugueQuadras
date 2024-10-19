@@ -1,8 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, JoinColumn, ManyToMany, JoinTable } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, UpdateDateColumn, OneToMany, ManyToOne, JoinColumn, ManyToMany, JoinTable, OneToOne } from "typeorm";
 import { Quadra } from "../quadra/entities/quadra.entity";
 
 import { Usuario }  from "@src/domains/auth/usuario/entities/usuario.entity";
 import { Imagem }   from "@src/domains/storage/imagem/entities/imagem.entity";
+import { Endereco } from "@src/domains/geral/endereco/entities/endereco.entity";
 
 @Entity({schema:'gestao', name:'estabelecimento'})
 export class Estabelecimento {
@@ -34,7 +35,11 @@ dataCadastro: Date;
 @UpdateDateColumn({ type: 'timestamp', name: 'data_atualizacao' })
 dataAtualizacao: Date;
 
-@OneToMany(() => Quadra, quadra => quadra.estabelecimento)
+@OneToOne(() => Endereco, endereco => endereco.estabelecimento, { eager: true, nullable: false, cascade: true })
+@JoinColumn({ name: 'idkey_endereco' })
+endereco: Endereco;
+
+@OneToMany(() => Quadra, quadra => quadra.estabelecimento, { eager: true, nullable: true, cascade: true })
 quadras: Quadra[];
 
 @ManyToOne(() => Usuario, usuario => usuario.estabelecimentos)
