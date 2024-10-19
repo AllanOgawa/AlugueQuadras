@@ -23,7 +23,6 @@ export class EstabelecimentoService{
     let novasImagens = [];
 
     try {
-
       estabelecimento = this.estabelecimentoRepository.create({
         ...createEstabelecimentoDto,
         usuario,
@@ -93,7 +92,7 @@ export class EstabelecimentoService{
     if (telefone) updateData.telefone = telefone;
     if (email)    updateData.email    = email;
     if (alvara)   updateData.alvara   = alvara;
-    
+
     try {
       await this.estabelecimentoRepository.update(idkey, updateData);
     } catch (error) {
@@ -140,7 +139,17 @@ export class EstabelecimentoService{
         console.log(error);
         throw new BadRequestException('Erro ao remover imagens do estabelecimento.');
       }
-    }
+  }
+
+  async update(idkey: number, updateEstabelecimentoDto: UpdateEstabelecimentoDto): Promise<Estabelecimento> {
+    await this.updateFields(idkey, updateEstabelecimentoDto);
+
+    const estabelecimento = await this.findByIdkey(idkey);
+
+    const { imagensToAdd, imagensToRemove } = updateEstabelecimentoDto;
+    await this.manageImages(estabelecimento, imagensToAdd, imagensToRemove);
+
+    return this.findByIdkey(idkey);
   }
 
   async update(idkey: number, updateEstabelecimentoDto: UpdateEstabelecimentoDto): Promise<Estabelecimento> {

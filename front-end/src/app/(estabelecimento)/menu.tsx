@@ -8,6 +8,10 @@ import { View, Text, SafeAreaView, FlatList, StatusBar } from 'react-native';
 import Toast from 'react-native-toast-message';
 
 import * as data from '@/db.json';
+import Constants from 'expo-constants';
+import SetaVoltar from '@/src/components/setaVoltar';
+
+const statusBarHeight = Constants.statusBarHeight;
 
 export default function HomeEstabelecimento() {
     const [estabelecimentos, setEstabelecimentos] = useState<EstabelecimentoProps[]>([]);
@@ -43,35 +47,39 @@ export default function HomeEstabelecimento() {
     };
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: 'white', marginHorizontal: 5 }}>
-            <View className='mx-3 mt-5'>
+        <SafeAreaView className="flex-1 bg-white" style={{ marginTop: statusBarHeight }}>
+            <SetaVoltar />
+            <View className='mx-3'>
                 <StatusBar barStyle="dark-content" backgroundColor="white" />
                 <CardConfig
                     icon={'add-circle-outline'}
                     title={'Nova Estabelecimento'}
                     subtitle={'Cadastrar um novo estabelecimento'}
                     style='h-16 w-full rounded-2xl flex-row items-center justify-between'
-                    onPress={() => router.push('/create')}
+                    onPress={() => router.push('/cadastrar')}
                 />
                 <CardConfig
                     icon={'create'}
                     title={'Editar Estabelecimento'}
-                    subtitle={'Editar uma quadra'}
+                    subtitle={'Editar uma estabelecimento'}
                     style='h-16 w-full rounded-2xl flex-row items-center justify-between'
-                    onPress={() => router.push('/edit')}
+                    onPress={() => router.push('/editar')}
                 />
                 <CardConfig
                     icon={'highlight-remove'}
                     title={'Remover estabelecimento'}
                     subtitle={'Remover um estabelecimento'}
                     style='h-16 w-full rounded-2xl flex-row items-center justify-between'
-                    onPress={() => router.push('/remove')}
+                    onPress={() => router.push('/remover')}
                 />
                 <Text className='font-normal text-3xl pt-5 pb-3'>Ativas</Text>
             </View>
             <FlatList
                 data={estabelecimentos}
-                renderItem={({ item }) => <ListaEstabelecimento data={[item]} onPress={() => { }} />}
+                renderItem={({ item }) => <ListaEstabelecimento data={[item]} onPress={() => router.push({
+                    pathname: '/(estabelecimento)/menu/[id]',
+                    params: { id: item.id }
+                })} />}
                 ListFooterComponent={getFooter}
                 keyExtractor={(item) => item.id.toString()}
                 onEndReached={() => setLoading(true)}

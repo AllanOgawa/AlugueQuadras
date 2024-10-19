@@ -60,7 +60,7 @@ export default function QuadraCadastro() {
         if (!hasError) {
             setTimeout(() => {
                 router.replace({
-                    pathname: '/home',
+                    pathname: '/menu',
                     params: { message: "Cadastro de quadra realizado com sucesso!" }
                 });
             }, 600);
@@ -74,14 +74,15 @@ export default function QuadraCadastro() {
     }
 
     return (
-        <SafeAreaView className="flex-1 bg-white" style={{ marginTop: statusBarHeight + 8 }}>
+        <SafeAreaView className="flex-1 bg-white" style={{ marginTop: statusBarHeight }}>
             <StatusBar barStyle="dark-content" backgroundColor="white" />
             <SetaVoltar />
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View className="w-full px-4">
-                    <Text className="text-4xl font-semibold mt-10 mb-5">Cadastrar Quadra</Text>
+                    <Text className="text-4xl font-semibold mt-5 mb-5">Cadastrar Quadra</Text>
 
                     <Input
+                        className='mt-5'
                         ref={nomeInputRef}
                         label="Nome da Quadra:"
                         obrigatorio
@@ -92,6 +93,7 @@ export default function QuadraCadastro() {
                         onSubmitEditing={() => valorInputRef.current?.focus()}
                     />
                     <Input
+                        className='mt-5'
                         ref={valorInputRef}
                         label="Valor por Hora:"
                         obrigatorio
@@ -103,6 +105,7 @@ export default function QuadraCadastro() {
                         onSubmitEditing={() => comprimentoInputRef.current?.focus()}
                     />
                     <Input
+                        className='mt-5'
                         ref={comprimentoInputRef}
                         label="Comprimento (m):"
                         obrigatorio
@@ -114,6 +117,7 @@ export default function QuadraCadastro() {
                         onSubmitEditing={() => larguraInputRef.current?.focus()}
                     />
                     <Input
+                        className='mt-5'
                         ref={larguraInputRef}
                         label="Largura (m):"
                         obrigatorio
@@ -124,6 +128,7 @@ export default function QuadraCadastro() {
                         returnKeyType="done"
                     />
                     <Input
+                        className='mt-5'
                         ref={InformacoesInputRef}
                         label="Informações adicionais:"
                         errorMessage={""}

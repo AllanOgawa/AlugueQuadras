@@ -1,3 +1,4 @@
+
 import { IsNotEmpty, IsString, IsEmail, Length, IsArray, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { CreateEnderecoDto } from '@src/domains/geral/endereco/dto/create-endereco.dto';

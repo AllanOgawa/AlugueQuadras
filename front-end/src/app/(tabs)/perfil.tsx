@@ -57,7 +57,7 @@ export default function Perfil() {
 						style="h-16 w-full rounded-2xl flex-row items-center justify-between px-4"
 						onPress={() => {
 							if (user.adm) {
-								router.push('/(quadra)/home')
+								router.push('/(quadra)/menu')
 							} else {
 								console.log("Usuário não é administrador, ação não permitida.");
 							}
@@ -97,7 +97,7 @@ export default function Perfil() {
 					title="Minha conta"
 					subtitle="Meus dados"
 					style='h-16 w-full rounded-2xl flex-row items-center justify-between px-4'
-					onPress={() => console.log("Clicou em Minha conta")}
+					onPress={() => router.push('/(usuario)/cadastro')}
 				/>
 				<CardConfig
 					icon="wallet"
@@ -123,10 +123,10 @@ export default function Perfil() {
 				<CardConfig
 					icon="sports-tennis"
 					title="Tenho um negócio"
-					subtitle="Torne-se um parceiro nosso!"
+					subtitle="Torne-se um parceiro!"
 					style="h-16 w-full rounded-2xl flex-row items-center justify-between px-4"
 					onPress={() => {
-						router.push('/(estabelecimento)/home')
+						router.push('/(estabelecimento)/menu')
 					}}
 				/>
 			</ScrollView>
