@@ -1,5 +1,7 @@
-import { IsString, IsEmail, IsOptional, IsArray }  from 'class-validator';
+import { IsString, IsEmail, IsOptional, IsArray, ValidateNested }  from 'class-validator';
 import { ApiPropertyOptional }            from '@nestjs/swagger';
+import { UpdateEnderecoDto } from '@src/domains/geral/endereco/dto/update-endereco.dto';
+import { Type } from 'class-transformer';
 
 export class UpdateEstabelecimentoDto {
   @ApiPropertyOptional({
@@ -37,6 +39,15 @@ export class UpdateEstabelecimentoDto {
   @IsString({ message: 'O campo alvará deve ser uma string.' })
   @IsOptional()
   alvara?: string;
+
+  @ApiPropertyOptional({
+    description: 'Endereço do estabelecimento',
+    type: UpdateEnderecoDto
+  })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => UpdateEnderecoDto)
+  endereco?: UpdateEnderecoDto;
   
   @ApiPropertyOptional({ 
     description: 'Lista de imagens para adicionar.', 

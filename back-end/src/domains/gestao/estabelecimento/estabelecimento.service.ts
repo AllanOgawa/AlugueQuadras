@@ -7,6 +7,7 @@ import { CreateEstabelecimentoDto } from "./dto/create-estabelecimento.dto";
 import { UpdateEstabelecimentoDto } from "./dto/update-estabelecimento.dto";
 import { Usuario }                  from "@src/domains/auth/usuario/entities/usuario.entity";
 import { ImagemService }            from "@src/domains/storage/imagem/imagem.service";
+import { EnderecoService }          from "@src/domains/geral/endereco/endereco.service";
 
 @Injectable()
 export class EstabelecimentoService{
@@ -14,6 +15,7 @@ export class EstabelecimentoService{
     @InjectRepository(Estabelecimento)
     private readonly estabelecimentoRepository: Repository<Estabelecimento>,
     private imagemService: ImagemService,
+    private enderecoService: EnderecoService,
   ){}
 
   async create(createEstabelecimentoDto: CreateEstabelecimentoDto, usuario: Usuario): Promise<Estabelecimento> {
@@ -21,7 +23,12 @@ export class EstabelecimentoService{
     let novasImagens = [];
 
     try {
-      estabelecimento = this.estabelecimentoRepository.create({ ...createEstabelecimentoDto, usuario });
+
+      estabelecimento = this.estabelecimentoRepository.create({
+        ...createEstabelecimentoDto,
+        usuario,
+      });
+
       estabelecimento = await this.estabelecimentoRepository.save(estabelecimento);
     } catch (error) {
       console.log(error);
@@ -71,8 +78,7 @@ export class EstabelecimentoService{
   async findByIdkey(idkey: number): Promise<Estabelecimento>{
     try{
       return await this.estabelecimentoRepository.findOne({
-        where:{ idkey },
-        relations: ['quadras']
+        where:{ idkey }
       });
     } catch (error) {
       throw new HttpException('Erro ao buscar estabelecimento', HttpStatus.INTERNAL_SERVER_ERROR);
@@ -83,11 +89,11 @@ export class EstabelecimentoService{
     const { nome, telefone, email, alvara } = updateEstabelecimentoDto;
 
     const updateData: Partial<Estabelecimento> = {};
-    if (nome)     updateData.nome = nome;
+    if (nome)     updateData.nome     = nome;
     if (telefone) updateData.telefone = telefone;
-    if (email)    updateData.email = email;
-    if (alvara)   updateData.alvara = alvara;
-
+    if (email)    updateData.email    = email;
+    if (alvara)   updateData.alvara   = alvara;
+    
     try {
       await this.estabelecimentoRepository.update(idkey, updateData);
     } catch (error) {
@@ -145,16 +151,27 @@ export class EstabelecimentoService{
     const { imagensToAdd, imagensToRemove } = updateEstabelecimentoDto;
     await this.manageImages(estabelecimento, imagensToAdd, imagensToRemove);
 
+    if (updateEstabelecimentoDto.endereco) {
+      await this.enderecoService.update(estabelecimento.endereco.idkey, updateEstabelecimentoDto.endereco);
+    }
+
     return this.findByIdkey(idkey);
   }
 
-  async remove(idkey: number, usuario: Usuario): Promise<void>{
+  async remove(idkey: number, usuario: Usuario): Promise<void> {
     const estabelecimento = await this.findByIdkey(idkey);
 
-    // const tipoUsuarioNew = await this.usuarioTipoService.findByIdkey(1);
-    // await this.usuarioService.update(usuario.idkey, 
-    //   { tipo :  tipoUsuarioNew  });
+    // Remove as imagens associadas
+    if (estabelecimento.imagens && estabelecimento.imagens.length > 0) {
+      const caminhosImagens = estabelecimento.imagens.map(imagem => imagem.path);
+      await this.imagemService.removeImagens(caminhosImagens);
+    }
 
-    await this.estabelecimentoRepository.remove(estabelecimento);
+    try {
+      await this.estabelecimentoRepository.remove(estabelecimento);
+    } catch (error) {
+      console.error(error);
+      throw new HttpException('Erro ao remover estabelecimento.', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }
