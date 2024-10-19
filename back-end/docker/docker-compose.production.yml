@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  api-aluguequadras-production:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: api-aluguequadras:production
+    container_name: api-aluguequadras-production
+    restart: unless-stopped
+    env_file:
+      - ../env/common.env
+      - ../env/production.env
+    ports:
+      - "3000:3000"
+    networks:
+      - nginx_proxy
+
+networks:
+  nginx_proxy:
+    external: true

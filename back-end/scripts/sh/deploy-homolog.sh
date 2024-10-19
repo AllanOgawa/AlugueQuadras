@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Diretório da aplicação
-APP_DIR=/caminho/para/seu-app
+APP_DIR=/home/opc/servers/AlugueQuadras
 
 # Navegar até o diretório da aplicação
 cd $APP_DIR || { echo "Diretório não encontrado: $APP_DIR"; exit 1; }
