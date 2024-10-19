@@ -7,12 +7,14 @@ import { EstabelecimentoController } from './estabelecimento.controller';
 
 import { UsuarioModule } from '@src/domains/auth/usuario/usuario.module';
 import { QuadraModule } from './quadra/quadra.module';
+import { AcomodacaoModule } from './acomodacao/acomodacao.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Estabelecimento]), 
     QuadraModule,
-    UsuarioModule
+    UsuarioModule,
+    AcomodacaoModule
   ], 
   controllers: [EstabelecimentoController],
   providers: [EstabelecimentoService],
