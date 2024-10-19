@@ -10,6 +10,7 @@ import { UsuarioModule }  from '@src/domains/auth/usuario/usuario.module';
 import { ImagemModule }   from '@src/domains/storage/imagem/imagem.module';
 import { EnderecoModule } from '@src/domains/geral/endereco/endereco.module';
 
+
 @Module({
   imports: [
     TypeOrmModule.forFeature([Estabelecimento]), 

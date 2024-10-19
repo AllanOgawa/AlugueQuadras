@@ -1,23 +1,26 @@
 import globalStyles from '@/src/styles/globalStyles';
-import { SafeAreaView, ScrollView, StatusBar, Text, TextInput, View } from 'react-native';
-
-import Constants from 'expo-constants'
+import { ActivityIndicator, SafeAreaView, ScrollView, StatusBar, Text, TextInput, View } from 'react-native';
 import { useRef, useState } from 'react';
+import Constants from 'expo-constants'
+import SetaVoltar from '@components/setaVoltar';
+import Loading from '@components/loading';
 import Input from '@components/inputs/input';
 import InputSenha from '@components/inputs/inputSenha';
-import BotaoTouchableOpacity from '@components/botoes/botaoTouchableOpacity';
-import SetaVoltar from '@components/setaVoltar';
 import InputData from '@components/inputs/inputData';
-import UploadImagem from '@components/UploadImagem';
-import UploadImage from '@components/UploadImagem';
+import BotaoTouchableOpacity from '@components/botoes/botaoTouchableOpacity';
+import Toast from 'react-native-toast-message';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router } from 'expo-router';
+
+const { apiUrl } = Constants.expoConfig.extra;
 
 export default function UsuarioCadastro() {
+    const [loading, setLoading] = useState(false);
     const [nome, setNome] = useState('');
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [cpf, setCpf] = useState('');
     const [dtNascimento, setDtNascimento] = useState('');
-
     const [senha, setSenha] = useState('');
     const [confirmarSenha, setConfirmarSenha] = useState('');
 
@@ -26,48 +29,93 @@ export default function UsuarioCadastro() {
     const [errorEmail, setErrorEmail] = useState('');
     const [errorCpf, setErrorCpf] = useState('');
     const [errorDtNascimento, setErrorDtNascimento] = useState('');
-
     const [errorSenha, setErrorSenha] = useState('');
     const [errorConfirmarSenha, setErrorConfirmarSenha] = useState('');
-
 
     const nomeInputRef = useRef<TextInput>(null);
     const usernameInputRef = useRef<TextInput>(null);
     const emailInputRef = useRef<TextInput>(null);
     const cpfInputRef = useRef<TextInput>(null);
     const dtNascimentoInputRef = useRef<TextInput>(null);
-
     const senhaInputRef = useRef<TextInput>(null);
     const confirmarSenhaInputRef = useRef<TextInput>(null);
 
-    const handleSubmit = () => {
+    function handleSubmit() {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        let erroEmail = "";
-        let erroCpf = "";
+        let isValid = true;
 
-        setErrorNome((!nome) ? "o campo Nome é obrigatório." : "");
-        setErrorSenha((!senha) ? "o campo Senha é obrigatório." : "");
-        setErrorConfirmarSenha((!confirmarSenha) ? "a confirmação de Senha é obrigatório." : "");
-        setErrorUsername((!username) ? "o campo Username é obrigatório" : "");
+        setErrorNome("");
+        setErrorUsername("");
+        setErrorEmail("");
+        setErrorCpf("");
+        setErrorDtNascimento("");
+        setErrorSenha("");
+        setErrorConfirmarSenha("");
 
-        if (!email) erroEmail = "o campo Email é obrigatório.";
-        else if (!emailRegex.test(email)) erroEmail = "Formato de Email Inválido.";
-        setErrorEmail(erroEmail);
+        if (!nome) {
+            setErrorNome("o campo Nome é obrigatório.");
+            isValid = false;
+        }
+        if (!username) {
+            setErrorUsername("o campo Username é obrigatório.");
+            isValid = false;
+        }
+        if (!emailRegex.test(email)) {
+            setErrorEmail("Formato de Email Inválido.");
+            isValid = false;
+        }
+        if (!email) {
+            setErrorEmail("o campo Email é obrigatório.");
+            isValid = false;
+        }
+        if (cpf.length < 14) {
+            setErrorCpf("CPF Inválido.");
+            isValid = false;
+        }
+        if (!senha) {
+            setErrorCpf("o campo CPF é obrigatório.");
+            isValid = false;
+        }
+        if (!dtNascimento) {
+            setErrorDtNascimento("o campo Data de Nascimento é obrigatório.");
+            isValid = false;
+        }
+        if (dtNascimento) {
+            const [dia, mes, ano] = dtNascimento.split('/');
+            if (Number(dia) > 31 || Number(dia) < 1) {
+                setErrorDtNascimento("verifique o Dia da data de nascimento.");
+                isValid = false;
+            } else
+                if (Number(mes) > 12 || Number(mes) < 1) {
+                    setErrorDtNascimento("verifique o Mês da data de nascimento.");
+                    isValid = false;
+                } else
+                    if (Number(ano) > (new Date().getFullYear() - 13) || Number(ano) < 1900) {
+                        setErrorDtNascimento("verifique o Ano da data de nascimento.");
+                        isValid = false;
+                    }
+        }
+        if (senha.length < 6) {
+            setErrorSenha("a senha deve ter pelo menos 6 caracteres.");
+            isValid = false;
+        }
+        if (!senha) {
+            setErrorSenha("o campo Senha é obrigatório.");
+            isValid = false;
+        }
+        if (confirmarSenha !== senha) {
+            setErrorConfirmarSenha("as senhas não coincidem.");
+            isValid = false;
+        }
+        if (!confirmarSenha) {
+            setErrorConfirmarSenha("a confirmação de Senha é obrigatório.");
+            isValid = false;
+        }
 
-        if (!cpf) erroCpf = "o campo CPF é obrigatório.";
-        else if (cpf.length < 14) erroCpf = "CPF Inválido.";
-        setErrorCpf(erroCpf);
-
-        if (senha.length < 8)
-            setErrorSenha("A senha deve ter pelo menos 8 caracteres.");
-
-        if (confirmarSenha !== senha)
-            setErrorConfirmarSenha("As senhas não coincidem.");
-
-        console.log(nome)
+        if (isValid) cadastrar();
     };
 
-    const handleCpfChange = (text: string) => {
+    function handleCpfChange(text: string) {
         let formattedCpf = text.replace(/\D/g, ''); //remove ponto e hífen
         if (formattedCpf.length > 14)
             formattedCpf = formattedCpf.substring(0, 14);
@@ -80,13 +128,118 @@ export default function UsuarioCadastro() {
         setCpf(formattedCpf);
     };
 
-    const handleDateChange = (date: string) => {
-        setDtNascimento(date); // Atualiza o estado da data no componente pai
+    function handleDateChange(date: string) {
+        setDtNascimento(date);
     };
 
-    const handleImageUpload = (url: string) => {
-        console.log('Imagem enviada para:', url);
-        // Aqui você pode realizar outras ações como salvar a URL no banco de dados
+    function transformarData(data: string) {
+        const [dia, mes, ano] = data.split('/');
+        return `${ano}-${mes}-${dia}`;
+    }
+
+    async function storeData(access_token: string) {
+        try {
+            await AsyncStorage.setItem("access_token", access_token);
+            console.log('Dados armazenados no localStorage com sucesso');
+        } catch (e) {
+            console.error('Erro ao salvar dados', e);
+        }
+    };
+
+    async function cadastrar() {
+        const dataNascimento = transformarData(dtNascimento);
+        let success = false;
+        setLoading(true);
+
+        try {
+            const response = await fetch(`${apiUrl}/auth/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    nome: nome,
+                    username: username,
+                    email: email,
+                    cpf: cpf,
+                    dataNascimento: dataNascimento,
+                    senha: senha,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                console.log(data)
+                Toast.show({
+                    type: 'success',
+                    text1: "Cadastro Realizado com Sucesso",
+                    text2: "Bem-vindo ao AlugueQuadras!",
+                });
+                success = true;
+            } else {
+                console.error('Erro no cadastro', data);
+                Toast.show({
+                    type: 'error',
+                    text1: "Cadastro Falhou",
+                    text2: data.message,
+                });
+            }
+        } catch (error) {
+            console.error('Erro de rede', error);
+            Toast.show({
+                type: 'error',
+                text1: "Erro de Rede",
+                text2: String(error),
+            });
+        } finally {
+            if (success) {
+                login();
+            }
+        }
+    }
+
+    async function login() {
+        try {
+            const response = await fetch(`${apiUrl}/auth/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    login: username,
+                    senha: senha,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                storeData(data.access_token)
+                console.log(data);
+                Toast.show({
+                    type: 'success',
+                    text1: "Login Bem-Sucedido",
+                });
+                router.replace('/(tabs)/inicio');
+            } else {
+                console.error('Erro no login', data);
+                Toast.show({
+                    type: 'error',
+                    text1: "Login Falhou",
+                    text2: data.message,
+                });
+            }
+        } catch (error) {
+            console.error('Erro de rede', error);
+            Toast.show({
+                type: 'error',
+                text1: "Erro de Rede",
+                text2: String(error),
+            });
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -99,10 +252,6 @@ export default function UsuarioCadastro() {
             >
                 <View className="w-full px-4">
                     <Text className="text-4xl font-semibold mt-10 mb-5">Criar conta</Text>
-
-                    <UploadImage
-                        onImageUpload={handleDateChange}
-                    />
 
                     <Input
                         className='mb-5'
@@ -156,10 +305,10 @@ export default function UsuarioCadastro() {
                         onSubmitEditing={() => dtNascimentoInputRef.current?.focus()}
                     />
                     <InputData
-                        className='mb-5'
                         ref={dtNascimentoInputRef}
                         label="Data de Nascimento:"
-                        obrigatorio
+                        className='mb-5'
+                        obrigatorio={true}
                         errorMessage={errorDtNascimento}
                         maxLength={10}
                         returnKeyType="next"
@@ -178,7 +327,7 @@ export default function UsuarioCadastro() {
                         onSubmitEditing={() => confirmarSenhaInputRef.current?.focus()}
                     />
                     <Text className='mb-5 text-sm color-gray-600'>
-                        A senha deve ter pelo menos 8 caracteres.
+                        A senha deve ter pelo menos 6 caracteres.
                     </Text>
                     <InputSenha
                         className='mb-5'
@@ -203,7 +352,7 @@ export default function UsuarioCadastro() {
                     onPress={handleSubmit}
                 />
             </View>
-
+            {loading && <Loading />}
         </SafeAreaView>
     );
 }
