@@ -139,17 +139,7 @@ export class EstabelecimentoService{
         console.log(error);
         throw new BadRequestException('Erro ao remover imagens do estabelecimento.');
       }
-  }
-
-  async update(idkey: number, updateEstabelecimentoDto: UpdateEstabelecimentoDto): Promise<Estabelecimento> {
-    await this.updateFields(idkey, updateEstabelecimentoDto);
-
-    const estabelecimento = await this.findByIdkey(idkey);
-
-    const { imagensToAdd, imagensToRemove } = updateEstabelecimentoDto;
-    await this.manageImages(estabelecimento, imagensToAdd, imagensToRemove);
-
-    return this.findByIdkey(idkey);
+    }
   }
 
   async update(idkey: number, updateEstabelecimentoDto: UpdateEstabelecimentoDto): Promise<Estabelecimento> {
