@@ -47,7 +47,7 @@ export class AuthController {
   }
 
 
-  @ApiBearerAuth()
+  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Alteração de senha.' })
   @ApiBody({ type: ChangePasswordDTO })
   @ApiResponse({ status: 200, description: 'Senha atualizada com sucesso.' })
@@ -68,7 +68,7 @@ export class AuthController {
     }
   }
 
-  @ApiBearerAuth()
+  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Retorna perfil completo do usuário.' })
   @ApiResponse({ status: 200, description: 'Perfil obtido com sucesso.', type: GetProfileDto })
   @ApiResponse({ status: 401, description: 'Não autorizado.' })
@@ -80,7 +80,7 @@ export class AuthController {
   }
 
 
-  @ApiBearerAuth()
+  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Atualização de dados do usuário.' })
   @ApiBody({ type: UpdateProfileDto })
   @ApiResponse({ status: 200, description: 'Perfil atualizado com sucesso.', type: GetProfileDto })

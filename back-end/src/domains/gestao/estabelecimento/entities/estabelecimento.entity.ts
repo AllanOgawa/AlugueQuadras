@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, JoinColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, JoinColumn, ManyToMany, JoinTable } from "typeorm";
 import { Quadra } from "../quadra/entities/quadra.entity";
 
-import { Usuario } from "@src/domains/auth/usuario/entities/usuario.entity";
+import { Usuario }  from "@src/domains/auth/usuario/entities/usuario.entity";
+import { Imagem }   from "@src/domains/storage/imagem/entities/imagem.entity";
 
 @Entity({schema:'gestao', name:'estabelecimento'})
 export class Estabelecimento {
@@ -39,4 +40,12 @@ quadras: Quadra[];
 @ManyToOne(() => Usuario, usuario => usuario.estabelecimentos)
 @JoinColumn({ name: 'idkey_usuario' })
 usuario: Usuario;
+
+@ManyToMany(() => Imagem, { eager: true, nullable: true, cascade: true})
+@JoinTable({
+  name: 'rel_estabelecimento_imagem',
+  joinColumn: { name: 'idkey_estabelecimento', referencedColumnName: 'idkey' },
+  inverseJoinColumn: { name: 'idkey_imagem', referencedColumnName: 'idkey' }
+})
+imagens: Imagem[];
 }

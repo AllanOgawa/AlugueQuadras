@@ -75,7 +75,7 @@ export class UsuarioService {
 
     return novoUsuario;
   }
-
+  
   async update(idkey: number, updateProfileDto: UpdateProfileDto): Promise<Usuario> {
     const { nome, imagensToAdd, imagensToRemove } = updateProfileDto;
     const usuario                                 = await this.findByIdkey(idkey);
