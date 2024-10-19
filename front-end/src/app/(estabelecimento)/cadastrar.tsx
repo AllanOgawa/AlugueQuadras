@@ -91,7 +91,7 @@ export default function EstabelecimentoCadastro() {
         if (!hasError) {
             setTimeout(() => {
                 router.replace({
-                    pathname: '/home',
+                    pathname: '/menu',
                     params: { message: "Estabelecimento cadastrado!" }
                 });
             }, 600);
@@ -106,7 +106,7 @@ export default function EstabelecimentoCadastro() {
             <SetaVoltar />
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View className="w-full px-3">
-                    <Text className="text-4xl font-semibold mt-5 mb-5">Cadastrar Estabelecimento</Text>
+                    <Text className="text-4xl font-semibold mt-5 mb-5">Cadastro Estabelecimento</Text>
                     <Text className="text-2xl font-semibold">Informações Operacionais:</Text>
                     <Input
                         className='mt-5'

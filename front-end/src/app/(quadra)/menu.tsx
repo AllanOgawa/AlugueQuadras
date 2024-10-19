@@ -9,6 +9,10 @@ import Toast from 'react-native-toast-message';
 
 import * as data from '@/db.json' // Importa o JSON com os dados
 import { QuadraProps } from '@/src/interfaces/quadra';
+import Constants from 'expo-constants';
+import SetaVoltar from '@/src/components/setaVoltar';
+
+const statusBarHeight = Constants.statusBarHeight;
 
 export default function HomeQuadra() {
     const [estabelecimento, setEstabelecimento] = useState<EstabelecimentoProps | null>(null);
@@ -39,7 +43,8 @@ export default function HomeQuadra() {
     }, []);
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+        <SafeAreaView className="flex-1 bg-white" style={{ marginTop: statusBarHeight }}>
+            <SetaVoltar />
             <StatusBar barStyle="dark-content" backgroundColor="white" />
             <View className="bg-white w-full px-4 flex-1 mt-1">
                 {/* Cartões de Configuração */}
@@ -48,21 +53,21 @@ export default function HomeQuadra() {
                     title={'Nova quadra'}
                     subtitle={'Cadastrar uma nova quadra'}
                     style='h-16 w-full rounded-2xl flex-row items-center justify-between'
-                    onPress={() => router.push('/create')}
+                    onPress={() => router.push('/cadastrar')}
                 />
                 <CardConfig
                     icon={'create'}
                     title={'Editar quadra'}
                     subtitle={'Editar uma quadra'}
                     style='h-16 w-full rounded-2xl flex-row items-center justify-between'
-                    onPress={() => router.push('/edit')}
+                    onPress={() => router.push('/editar')}
                 />
                 <CardConfig
                     icon={'highlight-remove'}
                     title={'Remover quadra'}
                     subtitle={'Remover uma quadra'}
                     style='h-16 w-full rounded-2xl flex-row items-center justify-between'
-                    onPress={() => router.push('/remove')}
+                    onPress={() => router.push('/remover')}
                 />
 
                 {/* Título para quadras ativas */}

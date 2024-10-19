@@ -1,4 +1,4 @@
-import { IsString, IsEmail, IsOptional }  from 'class-validator';
+import { IsString, IsEmail, IsOptional, IsArray }  from 'class-validator';
 import { ApiPropertyOptional }            from '@nestjs/swagger';
 
 export class UpdateEstabelecimentoDto {
@@ -37,4 +37,23 @@ export class UpdateEstabelecimentoDto {
   @IsString({ message: 'O campo alvará deve ser uma string.' })
   @IsOptional()
   alvara?: string;
+  
+  @ApiPropertyOptional({ 
+    description: 'Lista de imagens para adicionar.', 
+    example: ['estabelecimento/imagem3.jpg'], required: false 
+  })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  imagensToAdd?: string[];
+
+  @ApiPropertyOptional({ 
+    description: 'Lista de imagens para remover.', 
+    example: ['estabelecimento/imagem1.jpg'], 
+    required: false 
+  })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  imagensToRemove?: string[];
 }

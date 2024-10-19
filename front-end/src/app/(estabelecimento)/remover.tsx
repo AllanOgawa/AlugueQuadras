@@ -44,7 +44,7 @@ export default function RemoveEstabelecimento() {
         setModalVisible(false);
         setTimeout(() => {
             router.replace({
-                pathname: '/home',
+                pathname: '/menu',
                 params: { message: "Estabelecimento removido com sucesso!" }
             });
         }, 600);
@@ -64,7 +64,6 @@ export default function RemoveEstabelecimento() {
                         onPress={() => handleRemove(item)} // Passa a função onPress
                     />
                 )}
-                keyExtractor={(item) => item.id.toString()} // Supondo que cada estabelecimento tenha um ID único
                 onEndReached={() => setLoading(true)} // Carrega mais dados quando atinge o final da lista
                 onEndReachedThreshold={0.1} // Define o limite para carregar mais dados
             />
@@ -79,7 +78,7 @@ export default function RemoveEstabelecimento() {
                         <Text style={styles.modalText}>Tem certeza que deseja remover esse estabelecimento?</Text>
                         <View style={styles.modalButtons}>
                             <TouchableOpacity style={styles.cancelButton} onPress={() => setModalVisible(false)}>
-                                <Text style={styles.buttonText}>Cancelar</Text>
+                                <Text style={styles.buttonTextCancelar}>Cancelar</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.confirmButton} onPress={confirmRemove}>
                                 <Text style={styles.buttonTextConfirmar}>Confirmar</Text>
@@ -155,4 +154,7 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontWeight: 'bold',
     },
+    buttonTextCancelar: {
+        fontWeight: 'bold',
+    }
 });
