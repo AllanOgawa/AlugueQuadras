@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  back-end-aluguequadras-${NODE_ENV}:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      args:
+        NODE_ENV: ${NODE_ENV}
+    image: back-end-aluguequadras:${NODE_ENV}
+    container_name: back-end-aluguequadras-${NODE_ENV}
+    restart: unless-stopped
+    env_file:
+      - ../env/common.env
+      - ../env/${NODE_ENV}.env
+    networks:
+      - nginx_proxy
+
+networks:
+  nginx_proxy:
+    external: true

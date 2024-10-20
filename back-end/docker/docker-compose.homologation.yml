@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  back-end-aluguequadras-homologation:
+    ports:
+      - "3001:3000"
+    command: ["node", "dist/main"]
+
+networks:
+  nginx_proxy:
+    external: true

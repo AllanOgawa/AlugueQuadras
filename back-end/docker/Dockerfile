@@ -1,5 +1,5 @@
 # -----------------------------------------------------
-# Stage 1: Construir a aplicação
+# Stage 1: Build the application
 # -----------------------------------------------------
   FROM node:18-alpine AS builder
 
@@ -15,8 +15,14 @@
   # Copiar o restante do código da aplicação
   COPY . .
   
-  # Compilar a aplicação NestJS
-  RUN npm run build
+  # Definir argumento de build para NODE_ENV (padrão: production)
+  ARG NODE_ENV=production
+  
+  # Exportar NODE_ENV como variável de ambiente
+  ENV NODE_ENV=${NODE_ENV}
+  
+  # Executar o script de build correspondente
+  RUN npm run build:${NODE_ENV}
   
   # -----------------------------------------------------
   # Stage 2: Runtime Image
@@ -48,7 +54,7 @@
   EXPOSE 3000
   
   # Definir variáveis de ambiente específicas (serão sobrescritas pelo Docker Compose)
-  ENV NODE_ENV=production
+  ENV NODE_ENV=${NODE_ENV}
   
   # (Opcional) Define um healthcheck para monitorar a saúde da aplicação
   HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
