@@ -1,4 +1,4 @@
-import { SafeAreaView, ScrollView, Text, View } from 'react-native'
+import { SafeAreaView, ScrollView, StatusBar, Text, View } from 'react-native'
 import { ReservasList } from '@components/reservas'
 import Constants from 'expo-constants'
 
@@ -7,6 +7,7 @@ const statusBarHeight = Constants.statusBarHeight;
 export default function Reserva() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+      <StatusBar barStyle="dark-content" backgroundColor="white" />
       <ScrollView
         style={{ flex: 1 }}
         showsVerticalScrollIndicator={false}

@@ -8,7 +8,7 @@ module.exports = {
             colors: {
                 primary: '#FF7300', // Cor primária
                 secondary: '#FF9238', // Cor secundária
-                // accent: '#28a745', // Cor de destaque
+                roxo: '#22002d',
             },
         },
     },

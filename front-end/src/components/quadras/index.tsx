@@ -1,5 +1,5 @@
+import globalStyles from '@src/styles/globalStyles';
 import { FlatList, Pressable, SafeAreaView, Text, Image, View } from 'react-native';
-import { estilo } from '@src/styles/style';
 import CourtItem from './courtItem';
 import * as data from '@/db.json';
 import { useEffect, useState } from 'react';
@@ -34,7 +34,7 @@ export default function CourtList({ onPress }: CourtListProps) {
     function cardQuadra() {
         return (
             <Pressable
-                style={estilo.box}
+                style={globalStyles.box}
                 className='
                 flex flex-row-reverse items-center 
                 justify-between px-2 rounded-2xl w-[99%] h-40 bg-white'

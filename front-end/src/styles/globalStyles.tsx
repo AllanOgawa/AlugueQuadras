@@ -13,6 +13,25 @@ const globalStyles = StyleSheet.create({
     secondaryBackground: {
         backgroundColor: '#FF9238',  // Cor de fundo secundária
     },
+    box: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.5,
+        shadowRadius: 2,
+        elevation: 3,
+    },
+    box2: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.5,
+        shadowRadius: 2,
+        elevation: 7,
+    },
+    buttonContainer: {
+        backgroundColor: '#',
+        paddingVertical: 8,
+        justifyContent: 'flex-end',
+    },
 });
 
 export default globalStyles;

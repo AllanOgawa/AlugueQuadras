@@ -9,6 +9,9 @@ export default {
     icon: "./assets/images/icon.png",
     scheme: "myapp",
     userInterfaceStyle: "automatic",
+    extra: {
+      apiUrl: process.env.API_URL_BACKEND
+    },
     splash: {
       image: "./assets/images/splash.png",
       resizeMode: "contain",
