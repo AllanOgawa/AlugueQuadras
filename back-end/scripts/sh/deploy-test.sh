@@ -9,7 +9,7 @@ cd $APP_DIR || { echo "Diretório não encontrado: $APP_DIR"; exit 1; }
 git pull origin test
 
 # Construir os containers Docker
-docker compose -f ./docker/test/docker-compose.test.yml up -d --build
+sudo docker compose -f ./docker/test/docker-compose.test.yml up -d --build
 
 # Verificar o status dos containers 
-docker compose -f ./docker/test/docker-compose.test.yml ps
+sudo docker compose -f ./docker/test/docker-compose.test.yml ps
