@@ -8,9 +8,7 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start:production": "NODE_ENV=production nest start",
-    "start:test": "NODE_ENV=test nest start --watch",
-    "start:homologation": "NODE_ENV=homologation nest start --watch",
+    "start": "NODE_ENV=production nest start",
     "start:init": "ts-node -r tsconfig-paths/register src/scripts/init.ts",
     "start:dev": "NODE_ENV=development nest start --watch",
     "start:debug": "nest start --debug --watch",
