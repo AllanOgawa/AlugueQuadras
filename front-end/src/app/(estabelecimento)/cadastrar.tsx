@@ -1,25 +1,36 @@
-import { SafeAreaView, ScrollView, StatusBar, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, SafeAreaView, ScrollView, StatusBar, Text, TextInput, View } from 'react-native';
 import Constants from 'expo-constants';
 import { useState, useRef } from 'react';
 import { router } from 'expo-router';
 import Input from '@components/inputs/input';
 import BotaoTouchableOpacity from '@components/botoes/botaoTouchableOpacity';
-import MultiSelect from '@/src/components/IconService';
 import { MaterialIcons } from '@expo/vector-icons';
 import SetaVoltar from '@/src/components/setaVoltar';
+import Loading from '@/src/components/loading';
+import globalStyles from '@/src/styles/globalStyles';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-toast-message';
+import MultiSelect from '@/src/components/IconService';
 
 const statusBarHeight = Constants.statusBarHeight;
 
-export default function EstabelecimentoCadastro() {
+const { apiUrl } = Constants.expoConfig.extra;
 
-    //estabelecimento
+export default function EstabelecimentoCadastro() {
+    const [loading, setLoading] = useState(false);
+    const [isAppReady, setIsAppReady] = useState(true);
+
+    // estabelecimento
     const [nome, setNome] = useState('');
     const [cnpj, setCnpj] = useState('');
     const [nomeResponsavel, setNomeResponsavel] = useState('');
     const [telefone, setTelefone] = useState('');
     const [informacoes, setInformacoes] = useState('');
+    const [razaoSocial, setRazaoSocial] = useState('');
+    const [email, setEmail] = useState('');
+    const [alvara, setAlvara] = useState('');
 
-    //endereco
+    // endereco
     const [cep, SetCep] = useState('');
     const [estado, SetEstado] = useState('');
     const [cidade, SetCidade] = useState('');
@@ -28,12 +39,15 @@ export default function EstabelecimentoCadastro() {
     const [numero, SetNumero] = useState('');
     const [complemento, SetComplemento] = useState('');
 
-
+    // validation errors
     const [errorNome, setErrorNome] = useState('');
     const [errorCnpj, setErrorCnpj] = useState('');
     const [errorNomeResponsavel, setErrorNomeResponsavel] = useState('');
     const [errorTelefone, setErrorTelefone] = useState('');
     const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
+    const [errorRazaoSocial, setErrorRazaoSocial] = useState('');
+    const [errorEmail, setErrorEmail] = useState('');
+    const [errorAlvara, setErrorAlvara] = useState('');
 
     const [errorCep, setErrorCep] = useState('');
     const [errorEstado, setErrorEstado] = useState('');
@@ -47,6 +61,8 @@ export default function EstabelecimentoCadastro() {
     const cnpjInputRef = useRef<TextInput>(null);
     const telefoneInputRef = useRef<TextInput>(null);
     const InformacoesInputRef = useRef<TextInput>(null);
+    const razaoSocialInputRef = useRef<TextInput>(null);
+    const emailInputRef = useRef<TextInput>(null);
 
     const CepInputRef = useRef<TextInput>(null);
     const EstadoInputRef = useRef<TextInput>(null);
@@ -70,35 +86,119 @@ export default function EstabelecimentoCadastro() {
     ];
 
     const handleSubmit = () => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         let hasError = false;
 
         // Validações dos campos
         setErrorNome(!nome ? "O campo Nome é obrigatório." : "");
         setErrorCnpj(!cnpj ? "O campo CNPJ é obrigatório." : "");
-        setErrorNomeResponsavel(!nomeResponsavel ? "O campo Nome do responsável é obrigatório." : "");
         setErrorTelefone(!telefone ? "O campo Telefone é obrigatório." : "");
-        setErrorCep(!cep ? "Informe um CEP" : "")
-        setErrorEstado(!estado ? "Informe um Estado" : "")
-        setErrorCidade(!cidade ? "Informe uma Cidade" : "")
-        setErrorBairro(!bairro ? "Informe um Bairro" : "")
-        setErrorLogradouro(!logradouro ? "Informe um Logradouro" : "")
-        SetErrorNumero(!numero ? "Informe o número do local" : "")
+        setErrorCep(!cep ? "Informe um CEP" : "");
+        setErrorAlvara(!alvara ? "O campo Alvará é obrigatório" : "");
+        setErrorEmail(!email ? "O campo Email é obrigatório" : "");
+        setErrorRazaoSocial(!razaoSocial ? "O campo Razão Social é obrigatório." : "");
 
-        if (!nome || !cnpj || !nomeResponsavel || !telefone || !cep || !estado || !cidade || !bairro || !logradouro || !numero) {
+        if (!nome || !cnpj || !telefone || !cep || !alvara || !email || !razaoSocial) {
             hasError = true;
         }
 
         if (!hasError) {
-            setTimeout(() => {
-                router.replace({
-                    pathname: '/menu',
-                    params: { message: "Estabelecimento cadastrado!" }
-                });
-            }, 600);
+            getData();
         } else {
             console.log("Erro: Preencha todos os campos obrigatórios.");
         }
     };
+
+    function formatCNPJ(value: string) {
+        return value
+            .replace(/\D/g, '') // Remove tudo que não for dígito
+            .replace(/(\d{2})(\d)/, '$1.$2') // Coloca o primeiro ponto
+            .replace(/(\d{3})(\d)/, '$1.$2') // Coloca o segundo ponto
+            .replace(/(\d{3})(\d)/, '$1/$2') // Coloca a barra
+            .replace(/(\d{4})(\d)/, '$1-$2') // Coloca o hífen
+            .replace(/(-\d{2})\d+?$/, '$1'); // Limita a 14 dígitos
+    }
+
+    const handleCNPJChange = (value: string) => {
+        const formattedCNPJ = formatCNPJ(value);
+        setCnpj(formattedCNPJ); // Atualiza o estado com o CNPJ formatado
+    };
+
+    async function getData() {
+        try {
+            const value = await AsyncStorage.getItem("access_token");
+            if (value !== null && value !== "") {
+                // If the access token exists, continue to cadastro logic
+                setIsAppReady(true)
+                cadastrar(value);
+            } else {
+                // If no access token, allow the app to render the screen
+                setIsAppReady(true);
+            }
+        } catch (e) {
+            console.error('Erro ao obter dados', e);
+            // In case of an error, allow the app to render the screen
+            setIsAppReady(true);
+        }
+    };
+
+    const estabelecimento = {
+        cnpj: cnpj,
+        nome: nome,
+        razaoSocial: razaoSocial,
+        telefone: telefone,
+        email: email,
+        alvara: alvara
+    }
+
+    async function cadastrar(access_token: string) {
+        setLoading(true);
+        try {
+            const response = await fetch(`${apiUrl}/estabelecimento/new`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${access_token}`,
+                },
+                body: JSON.stringify(estabelecimento)
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                Toast.show({
+                    type: 'success',
+                    text1: "Cadastro Realizado com Sucesso",
+                    text2: "Bem-vindo ao AlugueQuadras!",
+                });
+                router.replace('/menu');
+            } else {
+                Toast.show({
+                    type: 'error',
+                    text1: "Cadastro Falhou",
+                    text2: data.message,
+                });
+            }
+        } catch (error) {
+            console.log('Erro no cadastro', error);
+            Toast.show({
+                type: 'error',
+                text1: "Cadastro falhou",
+                text2: String(error),
+            });
+        } finally {
+            setLoading(false);  // Stop showing the loading indicator
+            setIsAppReady(true);  // Ensure the app is marked as ready
+        }
+    }
+
+    if (!isAppReady) {
+        return (
+            <View className='rounded-2xl flex-1 justify-center items-center'>
+                <ActivityIndicator size="large" className='color-primary' />
+            </View>
+        );
+    }
 
     return (
         <SafeAreaView className="flex-1 bg-white" style={{ marginTop: statusBarHeight }}>
@@ -116,8 +216,6 @@ export default function EstabelecimentoCadastro() {
                         errorMessage={errorNome}
                         value={nome}
                         onChangeText={setNome}
-                        returnKeyType="next"
-                        onSubmitEditing={() => nomeResponsavelInputRef.current?.focus()}
                     />
                     <Input
                         className='mt-5'
@@ -126,159 +224,124 @@ export default function EstabelecimentoCadastro() {
                         obrigatorio
                         errorMessage={errorCnpj}
                         value={cnpj}
-                        onChangeText={setCnpj}
-                        returnKeyType="next"
-                        onSubmitEditing={() => nomeResponsavelInputRef.current?.focus()}
-                    />
-                    <Input
-                        className='mt-5'
-                        ref={nomeResponsavelInputRef}
-                        label="Nome do Resposável:"
-                        obrigatorio
-                        errorMessage={errorNomeResponsavel}
-                        value={nomeResponsavel}
-                        onChangeText={setNomeResponsavel}
-                        returnKeyType="next"
-                        onSubmitEditing={() => cnpjInputRef.current?.focus()}
+                        keyboardType="numeric"
+                        onChangeText={handleCNPJChange}
+                        maxLength={18}
                     />
                     <Input
                         className='mt-5'
                         ref={telefoneInputRef}
-                        label="Telefone para Contato:"
+                        label="Telefone:"
                         obrigatorio
                         errorMessage={errorTelefone}
-                        keyboardType="numeric"
                         value={telefone}
+                        keyboardType="phone-pad"
                         onChangeText={setTelefone}
-                        returnKeyType="next"
-                        onSubmitEditing={() => { InformacoesInputRef.current?.focus() }}
+                    />
+                    <Input
+                        className='mt-5'
+                        ref={razaoSocialInputRef}
+                        label="Razão Social:"
+                        obrigatorio
+                        errorMessage={errorRazaoSocial}
+                        value={razaoSocial}
+                        onChangeText={setRazaoSocial}
+                    />
+                    <Input
+                        className='mt-5'
+                        ref={emailInputRef}
+                        label="Email:"
+                        obrigatorio
+                        errorMessage={errorEmail}
+                        value={email}
+                        keyboardType="email-address"
+                        onChangeText={setEmail}
                     />
                     <Input
                         className='mt-5'
                         ref={InformacoesInputRef}
-                        label="Informações adicionais:"
-                        errorMessage={""}
-                        value={informacoes}
-                        onChangeText={setInformacoes}
-                        returnKeyType="done"
-                        onSubmitEditing={() => CepInputRef.current?.focus()}
+                        label="Alvará de Funcionamento:"
+                        obrigatorio
+                        errorMessage={errorAlvara}
+                        value={alvara}
+                        onChangeText={setAlvara}
+                    />
+                    <MultiSelect
+                        options={options}
+                        selectedItems={selectedOptions}
+                        onSelectionChange={handleSelectionChange}
+                        icon={<MaterialIcons name="check-box" size={24} color="black" />}
                     />
 
-                    <Text className="text-2xl font-semibold mt-10">Informações de Endereço:</Text>
+                    <Text className="text-2xl font-semibold mt-6">Endereço:</Text>
 
                     <Input
-                        className='mt-5'
                         ref={CepInputRef}
-                        label="CEP"
-                        obrigatorio={true}
+                        label="CEP:"
+                        obrigatorio
                         errorMessage={errorCep}
-                        keyboardType='numeric'
                         value={cep}
+                        keyboardType="numeric"
                         onChangeText={SetCep}
-                        returnKeyType="done"
-                        onSubmitEditing={() => EstadoInputRef.current?.focus()}
                     />
-
-                    <Input
-                        className='mt-5'
+                    {/* <Input
                         ref={EstadoInputRef}
-                        label="Estado"
-                        obrigatorio={true}
+                        label="Estado:"
+                        obrigatorio
                         errorMessage={errorEstado}
-                        keyboardType='default'
                         value={estado}
                         onChangeText={SetEstado}
-                        returnKeyType="done"
-                        onSubmitEditing={() => CidadeInputRef.current?.focus()}
                     />
-
                     <Input
-                        className='mt-5'
                         ref={CidadeInputRef}
-                        label="Cidade"
-                        obrigatorio={true}
+                        label="Cidade:"
+                        obrigatorio
                         errorMessage={errorCidade}
-                        keyboardType='default'
                         value={cidade}
                         onChangeText={SetCidade}
-                        returnKeyType="done"
-                        onSubmitEditing={() => BairroInputRef.current?.focus()}
                     />
-
                     <Input
-                        className='mt-5'
                         ref={BairroInputRef}
-                        label="Bairro"
-                        obrigatorio={true}
+                        label="Bairro:"
+                        obrigatorio
                         errorMessage={errorBairro}
-                        keyboardType='default'
                         value={bairro}
                         onChangeText={SetBairro}
-                        returnKeyType="done"
-                        onSubmitEditing={() => LogradouroInputRef.current?.focus()}
                     />
-
                     <Input
-                        className='mt-5'
                         ref={LogradouroInputRef}
-                        label="Logradouro"
-                        obrigatorio={true}
+                        label="Logradouro:"
+                        obrigatorio
                         errorMessage={errorLogradouro}
-                        keyboardType='default'
                         value={logradouro}
                         onChangeText={SetLogradouro}
-                        returnKeyType="done"
-                        onSubmitEditing={() => NumeroInputRef.current?.focus()}
                     />
-
                     <Input
-                        className='mt-5'
                         ref={NumeroInputRef}
-                        label="Número"
-                        obrigatorio={true}
+                        label="Número:"
+                        obrigatorio
                         errorMessage={errorNumero}
-                        keyboardType='numeric'
                         value={numero}
+                        keyboardType="numeric"
                         onChangeText={SetNumero}
-                        returnKeyType="done"
-                        onSubmitEditing={() => ComplementoInputRef.current?.focus()}
                     />
-
                     <Input
-                        className='mt-5'
                         ref={ComplementoInputRef}
-                        label="Complemento"
-                        obrigatorio={false}
-                        errorMessage={""}
-                        keyboardType='default'
+                        label="Complemento:"
                         value={complemento}
                         onChangeText={SetComplemento}
-                        returnKeyType="done"
-                        onSubmitEditing={() => ComplementoInputRef.current?.blur()}
-                    />
-
-                    <Text className="text-2xl font-semibold mt-10">Acomodações:</Text>
-
-                    <View>
-                        <Text className="text-lg mt-4">Selecione uma ou mais opções:</Text>
-                        <MultiSelect options={options} onSelectionChange={handleSelectionChange} />
-                    </View>
-
-                    <View>
-                        <Text className='h-14 text-lg mt-4'>Insira algumas fotos do local:</Text>
-                        <View className='bg-slate-400 items-center rounded-xl p-2'>
-                            <MaterialIcons name="upload" size={20} color="#ffff" />
-                            <Text className='color-white'>Upload</Text>
-                        </View>
-                    </View>
+                    /> */}
                 </View>
             </ScrollView>
-            <View style={{ padding: 16 }}>
+            <View style={globalStyles.buttonContainer}>
                 <BotaoTouchableOpacity
-                    title={'Cadastrar Estabelecimento'}
-                    className='bg-primary p-4 rounded-2xl active:bg-secondary'
-                    onPress={handleSubmit} classNameTitle={''} />
+                    title={'Cadastrar'}
+                    className='bg-primary p-4 rounded-2xl active:bg-secondary mx-4'
+                    classNameTitle="text-white text-center text-xl"
+                    onPress={handleSubmit}
+                />
             </View>
+            {loading && <Loading />}
         </SafeAreaView>
     );
 }

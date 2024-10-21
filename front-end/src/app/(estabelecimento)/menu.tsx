@@ -76,10 +76,19 @@ export default function HomeEstabelecimento() {
             </View>
             <FlatList
                 data={estabelecimentos}
-                renderItem={({ item }) => <ListaEstabelecimento data={[item]} onPress={() => router.push({
-                    pathname: '/(estabelecimento)/menu/[id]',
-                    params: { id: item.id }
-                })} />}
+                renderItem={({ item }) => <ListaEstabelecimento
+                    data={[item]}
+                    onPress={() => router.push({
+                        pathname: '/(estabelecimento)/menu/[id]',
+                        params: { id: item.id }
+                    })}
+                    options={{
+                        showImage: true,
+                        showAvaliacao: true,
+                        showPreco: false,
+                        showAcomodacoes: true,
+                    }}
+                />}
                 ListFooterComponent={getFooter}
                 keyExtractor={(item) => item.id.toString()}
                 onEndReached={() => setLoading(true)}

@@ -52,8 +52,14 @@ export default function EditEstablishment() {
                 }
                 renderItem={({ item }) => (
                     <ListaEstabelecimento
-                        data={[item]} // Passa cada item individualmente
+                        data={[item]}
                         onPress={handleEstablishmentPress}
+                        options={{
+                            showImage: true,
+                            showAvaliacao: true,
+                            showPreco: false,
+                            showAcomodacoes: false,
+                        }}
                     />
                 )}
                 ListEmptyComponent={

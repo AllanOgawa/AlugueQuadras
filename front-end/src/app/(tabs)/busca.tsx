@@ -36,7 +36,15 @@ export default function Busca() {
             <SearchBar search={search} setSearch={setSearch} />
             {/* Lista de estabelecimentos */}
             <ScrollView>
-                <ListaEstabelecimento data={filteredEstabelecimentos} onPress={handleEstablishmentPress} />
+                <ListaEstabelecimento
+                    data={filteredEstabelecimentos}
+                    onPress={handleEstablishmentPress}
+                    options={{
+                        showImage: true,
+                        showAvaliacao: true,
+                        showPreco: true,
+                        showAcomodacoes: true,
+                    }} />
             </ScrollView>
         </View>
     );
