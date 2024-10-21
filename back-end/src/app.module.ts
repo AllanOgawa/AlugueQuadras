@@ -9,8 +9,7 @@ import { HealthModule } from './common/health/health.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: [ 
-        'env/common.env',
+      envFilePath: [
         process.env.NODE_ENV === 'production' 
           ? 'env/production.env'
           : process.env.NODE_ENV === 'test' 

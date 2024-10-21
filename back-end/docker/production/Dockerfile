@@ -15,14 +15,8 @@
   # Copiar o restante do código da aplicação
   COPY . .
   
-  # Definir argumento de build para NODE_ENV (padrão: production)
-  ARG NODE_ENV=production
-  
-  # Exportar NODE_ENV como variável de ambiente
-  ENV NODE_ENV=${NODE_ENV}
-  
-  # Executar o script de build correspondente
-  RUN npm run build:${NODE_ENV}
+  # Buildar a aplicação NestJS para produção
+  RUN npm run build
   
   # -----------------------------------------------------
   # Stage 2: Runtime Image
@@ -38,6 +32,8 @@
   # Copiar os arquivos de dependências novamente
   COPY package*.json ./
   
+  COPY env/production.env env/production.env
+
   # Instalar apenas as dependências de produção
   RUN npm ci --only=production
   
@@ -53,13 +49,8 @@
   # Expor a porta que a aplicação irá utilizar
   EXPOSE 3000
   
-  # Definir variáveis de ambiente específicas (serão sobrescritas pelo Docker Compose)
-  ENV NODE_ENV=${NODE_ENV}
-  
   # (Opcional) Define um healthcheck para monitorar a saúde da aplicação
   HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:3000/health || exit 1
-  
-  # Comando para iniciar a aplicação
-  CMD ["node", "dist/main"]
-  
+    CMD curl -f http://back-end-aluguequadras-production:3000/health || exit 1
+
+  CMD ["node", "-r", "dotenv/config", "dist/src/main.js", "dotenv_config_path=env/production.env"]
