@@ -22,10 +22,8 @@ import { GeneratePresignedUrlDto } from './dto/generate-presigned-url.dto';
 export class StorageController {
   constructor(private readonly storageService: StorageService) {}
 
-  @Post('upload-url')
+  @ApiBearerAuth('access-token')
   @UseGuards(JwtAuthGuard)
-  @UsePipes(new ValidationPipe({ whitelist: true }))
-  @ApiBearerAuth()
   @ApiOperation({ summary: 'Gerar URL pré-assinada para upload de imagem' })
   @ApiResponse({
     status: 201,
@@ -42,6 +40,8 @@ export class StorageController {
     },
   })
   @ApiBody({ type: GeneratePresignedUrlDto })
+  @UsePipes(new ValidationPipe({ whitelist: true }))
+  @Post('upload-url')
   async getUploadUrl(@Request() req, @Body() dto: GeneratePresignedUrlDto): Promise<{ url: string; fields: any }> {
     
     const usuario = req.user;
