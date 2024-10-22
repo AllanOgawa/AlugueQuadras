@@ -48,15 +48,6 @@ export class UpdateQuadraDto {
   comprimento?: number;
 
   @ApiPropertyOptional({
-    description: 'Imagem (path do bucket) associada à quadra',
-    example: 'path/to/new-quadra-imagem.jpg',
-    type: String,
-  })
-  @IsString({ message: 'O campo imagem deve ser uma string.' })
-  @IsOptional()
-  imagem?: string;
-
-  @ApiPropertyOptional({
     description: 'Array com IDs dos tipos de esporte a adicionar à quadra',
     example: [1, 2],
     type: [Number],
@@ -75,4 +66,23 @@ export class UpdateQuadraDto {
   @IsArray({ message: 'O campo tipoEsporteToRemove deve ser um array de IDs.' })
   @ArrayUnique({ message: 'O campo tipoEsporteToRemove deve conter apenas valores únicos.' })
   tipoEsporteToRemove?: number[];
+
+  @ApiPropertyOptional({ 
+    description: 'Lista de imagens para adicionar.', 
+    example: ['estabelecimento/imagem3.jpg'], required: false 
+  })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  imagensToAdd?: string[];
+
+  @ApiPropertyOptional({ 
+    description: 'Lista de imagens para remover.', 
+    example: ['estabelecimento/imagem1.jpg'], 
+    required: false 
+  })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  imagensToRemove?: string[];
 }
