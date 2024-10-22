@@ -32,7 +32,7 @@ export default function MultiSelect({ options, onSelectionChange }: MultiSelectP
 			{options.map((item) => (
 				<Pressable
 					key={item.id}
-					className="flex flex-row items-center justify-start mb-4"
+					className="flex flex-row items-center justify-start mb-4 px-4"
 					onPress={() => toggleOption(item.id)}
 				>
 					<MaterialIcons
@@ -41,7 +41,7 @@ export default function MultiSelect({ options, onSelectionChange }: MultiSelectP
 						color="#828282"
 					/>
 					<Text
-						className="ml-2 text-lg font-medium text-black"
+						className="ml-2 text-lg font-normal"
 						numberOfLines={1}
 					>
 						{item.label}

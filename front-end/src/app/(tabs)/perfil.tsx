@@ -1,6 +1,6 @@
 import IconUsuario from '@components/iconUsuario';
 import Constants from 'expo-constants';
-import { SafeAreaView, ScrollView, Text, View } from 'react-native';
+import { SafeAreaView, ScrollView, StatusBar, Text, View } from 'react-native';
 import * as data from '@/db.json'
 import { CardConfig } from '@components/cardConfig';
 import NotificationCard from '@components/cardNotification';
@@ -9,13 +9,14 @@ import { useRouter } from 'expo-router';
 const statusBarHeight = Constants.statusBarHeight;
 
 export default function Perfil() {
-	const user = data.user[0];
+	const user = data.user[1];
 
 	const router = useRouter()
 
 	if (user.adm) {
 		return (
 			<SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+				<StatusBar barStyle="dark-content" backgroundColor="white" />
 				<ScrollView
 					style={{ flex: 1 }}
 					className="bg-white"
@@ -56,7 +57,11 @@ export default function Perfil() {
 						style="h-16 w-full rounded-2xl flex-row items-center justify-between px-4"
 						onPress={() => {
 							if (user.adm) {
+<<<<<<< HEAD
 								router.push('/(estabelecimento)/home')
+=======
+								router.push('/(quadra)/menu')
+>>>>>>> 2cef1aa93ebd66ae32746187fd6ec38bf08de022
 							} else {
 								console.log("Usuário não é administrador, ação não permitida.");
 							}
@@ -78,6 +83,7 @@ export default function Perfil() {
 
 	return (
 		<SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+			<StatusBar barStyle="dark-content" backgroundColor="white" />
 			<ScrollView
 				style={{ flex: 1 }}
 				className="bg-white"
@@ -95,7 +101,7 @@ export default function Perfil() {
 					title="Minha conta"
 					subtitle="Meus dados"
 					style='h-16 w-full rounded-2xl flex-row items-center justify-between px-4'
-					onPress={() => console.log("Clicou em Minha conta")}
+					onPress={() => router.push('/(usuario)/cadastro')}
 				/>
 				<CardConfig
 					icon="wallet"
@@ -121,14 +127,18 @@ export default function Perfil() {
 				<CardConfig
 					icon="sports-tennis"
 					title="Tenho um negócio"
-					subtitle="Torne-se um parceiro nosso!"
+					subtitle="Torne-se um parceiro!"
 					style="h-16 w-full rounded-2xl flex-row items-center justify-between px-4"
 					onPress={() => {
+<<<<<<< HEAD
 						if (!user.adm) {
 							router.push('/(quadra)/home')
 						} else {
 							console.log("Usuário não é administrador, ação não permitida.");
 						}
+=======
+						router.push('/(estabelecimento)/menu')
+>>>>>>> 2cef1aa93ebd66ae32746187fd6ec38bf08de022
 					}}
 				/>
 			</ScrollView>
