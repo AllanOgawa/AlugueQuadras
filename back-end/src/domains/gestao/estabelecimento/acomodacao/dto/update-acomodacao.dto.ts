@@ -1,10 +1,9 @@
-import { ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateAcomodacaoDto {
-    @ApiPropertyOptional({
-        description: 'Nome da acomodação',
-        exemple: 'Estacionamento para clientes',
-    })
-    acomodacao: string;
-
+  @ApiPropertyOptional({
+    description: 'Nome da acomodação',
+    example: 'Estacionamento para clientes',
+  })
+  descricao: string;
 }
