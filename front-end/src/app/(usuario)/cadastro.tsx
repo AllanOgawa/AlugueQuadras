@@ -1,5 +1,5 @@
 import globalStyles from '@/src/styles/globalStyles';
-import { ActivityIndicator, SafeAreaView, ScrollView, StatusBar, Text, TextInput, View } from 'react-native';
+import { SafeAreaView, ScrollView, StatusBar, Text, TextInput, View } from 'react-native';
 import { useRef, useState } from 'react';
 import Constants from 'expo-constants'
 import SetaVoltar from '@components/setaVoltar';
@@ -12,7 +12,7 @@ import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 
-const { apiUrl } = Constants.expoConfig.extra;
+const { apiUrl, userDefaultImage } = Constants.expoConfig.extra;
 
 export default function UsuarioCadastro() {
     const [loading, setLoading] = useState(false);
@@ -58,6 +58,10 @@ export default function UsuarioCadastro() {
         }
         if (!username) {
             setErrorUsername("o campo Username é obrigatório.");
+            isValid = false;
+        }
+        if (username && username.length < 6) {
+            setErrorUsername("o campo Username deve ter pelo menos 6 caracteres.");
             isValid = false;
         }
         if (!emailRegex.test(email)) {
@@ -164,6 +168,7 @@ export default function UsuarioCadastro() {
                     cpf: cpf,
                     dataNascimento: dataNascimento,
                     senha: senha,
+                    imagensToAdd: [userDefaultImage]
                 }),
             });
 
@@ -221,7 +226,10 @@ export default function UsuarioCadastro() {
                     type: 'success',
                     text1: "Login Bem-Sucedido",
                 });
-                router.replace('/(tabs)/inicio');
+                router.replace({
+                    pathname: '/(tabs)/inicio',
+                    params: { userData: JSON.stringify(data) },
+                });
             } else {
                 console.error('Erro no login', data);
                 Toast.show({

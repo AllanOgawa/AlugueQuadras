@@ -2,10 +2,13 @@ import "@src/styles/global.css"
 import { Stack } from 'expo-router';
 import { StatusBar } from "react-native";
 import Toast from "react-native-toast-message";
+import { UsuarioProvider } from '@context/usuarioContext';
+
 
 export default function RootLayout() {
+
   return (
-    <>
+    <UsuarioProvider>
       <StatusBar barStyle="dark-content" backgroundColor="white" />
       <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />
@@ -17,6 +20,6 @@ export default function RootLayout() {
         <Stack.Screen name="+not-found" />
       </Stack>
       <Toast />
-    </>
+    </UsuarioProvider>
   );
 }  
