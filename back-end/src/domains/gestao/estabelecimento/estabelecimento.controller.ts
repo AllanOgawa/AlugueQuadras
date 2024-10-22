@@ -15,7 +15,7 @@ export class EstabelecimentoController {
 
   @Post('new')
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Criar um novo estabelecimento' })
   @ApiResponse({ status: 201, description: 'Estabelecimento criado com sucesso', type: Estabelecimento })
   @ApiResponse({ status: 500, description: 'Erro ao criar o estabelecimento' })
@@ -54,7 +54,7 @@ export class EstabelecimentoController {
 
   @Get('usuario')
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Listar todos os estabelecimentos do usuário' })
   @ApiResponse({ status: 200, description: 'Lista de estabelecimentos retornada com sucesso', type: [Estabelecimento] })
   @ApiResponse({ status: 500, description: 'Erro ao buscar todos os estabelecimentos' })
@@ -69,7 +69,7 @@ export class EstabelecimentoController {
 
   @Patch('edit/:idkey')
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Atualizar um estabelecimento existente por ID' })
   @ApiParam({ name: 'idkey', description: 'ID do estabelecimento a ser atualizado', example: 1 })
   @ApiResponse({ status: 200, description: 'Estabelecimento atualizado com sucesso', type: Estabelecimento })
@@ -90,7 +90,7 @@ export class EstabelecimentoController {
 
   @Delete('remove/:idkey')
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Remover um estabelecimento por ID' })
   @ApiParam({ name: 'idkey', description: 'ID do estabelecimento a ser removido', example: 1 })
   @ApiResponse({ status: 200, description: 'Estabelecimento removido com sucesso' })

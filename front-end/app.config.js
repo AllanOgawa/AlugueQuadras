@@ -11,7 +11,8 @@ export default {
     userInterfaceStyle: "automatic",
     extra: {
       apiUrl: process.env.API_URL_BACKEND,
-      bucketUrl: process.env.API_URL_BUCKET
+      bucketUrl: process.env.API_URL_BUCKET,
+      userDefaultImage: process.env.USER_DEFAULT_IMAGE,
     },
     splash: {
       image: "./assets/images/splash.png",

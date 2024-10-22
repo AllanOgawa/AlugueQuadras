@@ -69,7 +69,10 @@ export default function UsuarioLogin() {
                     type: 'success',
                     text1: "Login Bem-Sucedido",
                 });
-                router.replace('/(tabs)/inicio');
+                router.replace({
+                    pathname: '/(tabs)/inicio',
+                    params: { userData: JSON.stringify(data) },
+                });
             } else {
                 console.error('Erro no login', data);
                 Toast.show({

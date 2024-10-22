@@ -12,7 +12,7 @@ export class TipoEsporteController {
   constructor(private readonly tipoEsporteService: TipoEsporteService) {}
 
   @Get('list')
-  @ApiBearerAuth()
+  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Buscar todos Tipos Esportes' })
   @ApiResponse({ status: 200, description: 'Tipos Esportes encontrado', type: TipoEsporte, isArray: true })
   @ApiResponse({ status: 500, description: 'Erro ao buscar Tipo Esporte' })

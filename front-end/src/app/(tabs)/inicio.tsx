@@ -8,25 +8,34 @@ import { FilterSport } from "@components/filterSport";
 import IconUsuario from "@components/iconUsuario";
 import Loading from '@components/loading';
 import { useLocalSearchParams, router } from "expo-router";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { UsuarioContext } from '@context/usuarioContext';
 
 const statusBarHeight = Constants.statusBarHeight;
-const { bucketUrl } = Constants.expoConfig.extra;
+const { bucketUrl, userDefaultImage } = Constants.expoConfig.extra;
 
 export default function Inicio() {
-	const { userData } = useLocalSearchParams();
 	const [loading, setLoading] = useState(false);
-	const [user, setUser] = useState(null);
+	const [nome, setNome] = useState("Bem-vindo!");
+	const [imagem, setImagem] = useState(userDefaultImage);
+
+	const context = useContext(UsuarioContext);
+	if (!context) {
+		throw new Error("YourComponent must be used within an ArrayProvider");
+	}
+	const { usuario, setUsuario } = context;
 
 	useEffect(() => {
-		setLoading(true);
-		if (userData) {
-			const parsedUserData = JSON.parse(userData);
-			setUser(parsedUserData);
-			console.log(user);
+		if (usuario != null && usuario[0] !== null) {
+			if (usuario[0].nome) {
+				setNome("Olá! " + usuario[0].nome);
+			}
+			if (usuario[0].imagens && usuario[0].imagens[0].path) {
+				setImagem(usuario[0].imagens[0].path);
+			}
 		}
 		setLoading(false);
-	}, [userData]);
+	}, [usuario]);
 
 	return (
 		<SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
@@ -39,14 +48,14 @@ export default function Inicio() {
 				<View className="w-full px-4" style={{ marginTop: statusBarHeight + 8 }}>
 					<View className="flex-row justify-between items-center mb-4">
 						<View>
-							<Text className="text-xl font-semibold">Olá { }</Text>
+							<Text className="text-xl font-semibold">{nome}</Text>
 							<Text className="text-xl">Vamos Jogar hoje?</Text>
 						</View>
 						<View className="relative mb-2">
 							<Pressable
 								onPress={() => router.push('/')}
 							>
-								<IconUsuario image={`${bucketUrl}/public-storage/usuario/usuario.png`} style="w-16 h-16 rounded-full border-2 border-black" />
+								<IconUsuario image={`${bucketUrl}/${imagem}`} style="w-16 h-16 rounded-full border-2 border-black" />
 								<Feather
 									name="bell"
 									size={16}
