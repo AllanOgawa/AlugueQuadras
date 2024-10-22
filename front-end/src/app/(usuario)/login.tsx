@@ -10,7 +10,7 @@ import Loading from '@components/loading';
 import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const { apiUrl } = Constants.expoConfig.extra;
+const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
 
 export default function UsuarioLogin() {
     const [loading, setLoading] = useState(false);

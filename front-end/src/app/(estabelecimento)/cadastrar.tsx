@@ -14,7 +14,7 @@ import MultiSelect from '@/src/components/IconService';
 
 const statusBarHeight = Constants.statusBarHeight;
 
-const { apiUrl } = Constants.expoConfig.extra;
+const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
 
 export default function EstabelecimentoCadastro() {
     const [loading, setLoading] = useState(false);

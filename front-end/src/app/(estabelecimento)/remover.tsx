@@ -1,72 +1,95 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Modal, View, Text, SafeAreaView, FlatList, StyleSheet, TouchableOpacity, StatusBar } from 'react-native';
 import { router } from 'expo-router';
-import * as data from '@/db.json';
 import SetaVoltar from '@/src/components/setaVoltar';
 import Constants from 'expo-constants';
 import ListaEstabelecimento from '@/src/components/listaEstabelecimento';
+import Toast from 'react-native-toast-message';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { EstabelecimentoProps } from '@/src/interfaces/estabelecimento';
 
 const statusBarHeight = Constants.statusBarHeight;
+const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
 
 export default function RemoveEstabelecimento() {
-    const [estabelecimentos, setEstabelecimentos] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
-    const [selectedEstabelecimento, setSelectedEstabelecimento] = useState(null);
+    const [selectedEstabelecimento, setSelectedEstabelecimento] = useState<EstabelecimentoProps | null>(null);
     const [loading, setLoading] = useState(false);
+    const [estabelecimentos, setEstabelecimentos] = useState<{ idkey: number }[]>([]);
 
     // Função para remover estabelecimento
-    const handleRemove = (estabelecimento) => {
+    const handleRemove = (estabelecimento: EstabelecimentoProps) => {
         setSelectedEstabelecimento(estabelecimento);
         setModalVisible(true); // Abre o modal de confirmação
     };
 
-    useEffect(() => {
-        if (data.estabelecimento && data.estabelecimento.length > 0) {
-            setEstabelecimentos(data.estabelecimento);  // Carrega todos os estabelecimentos
-        } else {
-            console.error('Nenhum estabelecimento encontrado.');
-        }
-    }, []);
+    const confirmRemove = async () => {
+        if (!selectedEstabelecimento) return;
 
-    // Rodapé da lista
-    const getFooter = () => {
-        if (loading) {
-            return <Text>Carregando...</Text>;
-        }
-        return null;
-    };
+        setLoading(true);
 
-
-    const confirmRemove = () => {
-        setEstabelecimentos((prevEstabelecimentos) =>
-            prevEstabelecimentos.filter((item) => item.id !== selectedEstabelecimento.id)
-        );
-        setModalVisible(false);
-        setTimeout(() => {
-            router.replace({
-                pathname: '/menu',
-                params: { message: "Estabelecimento removido com sucesso!" }
+        try {
+            const access_token = await AsyncStorage.getItem('access_token');
+            const response = await fetch(`${apiUrl}/estabelecimento/remove/${selectedEstabelecimento.idkey.toString()}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${access_token}`,
+                },
             });
-        }, 600);
+
+            if (!response.ok) {
+                throw new Error('Erro ao remover estabelecimento');
+            }
+
+            // Sucesso: remove o estabelecimento da lista atual
+            setEstabelecimentos((prevEstabelecimentos) =>
+                prevEstabelecimentos.filter((item) => item.idkey !== selectedEstabelecimento.idkey)
+            );
+
+            // Exibe mensagem de sucesso
+            Toast.show({
+                type: 'success',
+                text1: 'Estabelecimento removido com sucesso',
+            });
+
+            setModalVisible(false);
+
+            // Redireciona após uma pequena espera
+            setTimeout(() => {
+                router.replace({
+                    pathname: '/menu',
+                    params: { message: "Estabelecimento removido com sucesso!" },
+                });
+            }, 600);
+        } catch (error) {
+            console.error(error);
+            Toast.show({
+                type: 'error',
+                text1: 'Erro ao remover o estabelecimento',
+            });
+        } finally {
+            setLoading(false);
+        }
     };
+
 
     return (
         <SafeAreaView className='flex-1 mx-3' style={{ marginTop: statusBarHeight + 8 }}>
             <StatusBar barStyle="dark-content" backgroundColor="white" />
             <SetaVoltar />
             <Text className='text-xl mb-3 mt-2'>Selecione um estabelecimento para remover:</Text>
-            <FlatList
-                showsVerticalScrollIndicator={false}
-                data={estabelecimentos}
-                renderItem={({ item }) => (
-                    <ListaEstabelecimento
-                        data={[item]}
-                        onPress={() => handleRemove(item)} // Passa a função onPress
-                    />
-                )}
-                onEndReached={() => setLoading(true)} // Carrega mais dados quando atinge o final da lista
-                onEndReachedThreshold={0.1} // Define o limite para carregar mais dados
+
+            {/* Renderizando ListaEstabelecimento que já carrega dados da API */}
+            <ListaEstabelecimento
+                onPress={handleRemove} // Passa a função para lidar com a remoção
+                options={{
+                    showImage: true,
+                    showAvaliacao: false,
+                    showPreco: false,
+                }}
             />
+
+            {/* Modal de confirmação */}
             <Modal
                 animationType="fade"
                 transparent={true}
@@ -92,26 +115,6 @@ export default function RemoveEstabelecimento() {
 }
 
 const styles = StyleSheet.create({
-    flatListContent: {
-        paddingHorizontal: 12,
-        paddingBottom: 12,
-    },
-    estabelecimentoItem: {
-        padding: 16,
-        backgroundColor: '#f5f5f5',
-        marginVertical: 8,
-        borderRadius: 8,
-    },
-    estabelecimentoText: {
-        fontSize: 18,
-        color: '#333',
-    },
-    noDataText: {
-        fontSize: 16,
-        color: '#999',
-        textAlign: 'center',
-        marginTop: 20,
-    },
     modalOverlay: {
         flex: 1,
         justifyContent: 'center',
