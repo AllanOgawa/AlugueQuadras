@@ -23,9 +23,7 @@ export default function EstabelecimentoCadastro() {
     // estabelecimento
     const [nome, setNome] = useState('');
     const [cnpj, setCnpj] = useState('');
-    const [nomeResponsavel, setNomeResponsavel] = useState('');
     const [telefone, setTelefone] = useState('');
-    const [informacoes, setInformacoes] = useState('');
     const [razaoSocial, setRazaoSocial] = useState('');
     const [email, setEmail] = useState('');
     const [alvara, setAlvara] = useState('');
@@ -42,20 +40,23 @@ export default function EstabelecimentoCadastro() {
     // validation errors
     const [errorNome, setErrorNome] = useState('');
     const [errorCnpj, setErrorCnpj] = useState('');
-    const [errorNomeResponsavel, setErrorNomeResponsavel] = useState('');
     const [errorTelefone, setErrorTelefone] = useState('');
     const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
     const [errorRazaoSocial, setErrorRazaoSocial] = useState('');
     const [errorEmail, setErrorEmail] = useState('');
     const [errorAlvara, setErrorAlvara] = useState('');
 
+
+    // erros endereco
+    const [errorEndereco, setErrorEndereco] = useState('');
     const [errorCep, setErrorCep] = useState('');
     const [errorEstado, setErrorEstado] = useState('');
     const [errorCidade, setErrorCidade] = useState('');
     const [errorBairro, setErrorBairro] = useState('');
     const [errorLogradouro, setErrorLogradouro] = useState('');
-    const [errorNumero, SetErrorNumero] = useState('');
+    const [errorNumero, setErrorNumero] = useState('');
 
+    // refs
     const nomeInputRef = useRef<TextInput>(null);
     const nomeResponsavelInputRef = useRef<TextInput>(null);
     const cnpjInputRef = useRef<TextInput>(null);
@@ -64,6 +65,7 @@ export default function EstabelecimentoCadastro() {
     const razaoSocialInputRef = useRef<TextInput>(null);
     const emailInputRef = useRef<TextInput>(null);
 
+    const EnderecoInputRef = useRef<TextInput>(null);
     const CepInputRef = useRef<TextInput>(null);
     const EstadoInputRef = useRef<TextInput>(null);
     const CidadeInputRef = useRef<TextInput>(null);
@@ -86,6 +88,7 @@ export default function EstabelecimentoCadastro() {
     ];
 
     const handleSubmit = () => {
+        console.log(estabelecimento);
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         let hasError = false;
 
@@ -98,7 +101,15 @@ export default function EstabelecimentoCadastro() {
         setErrorEmail(!email ? "O campo Email é obrigatório" : "");
         setErrorRazaoSocial(!razaoSocial ? "O campo Razão Social é obrigatório." : "");
 
-        if (!nome || !cnpj || !telefone || !cep || !alvara || !email || !razaoSocial) {
+
+        setErrorCidade(!cidade ? "O campo Cidade é obrigatório." : "");
+        setErrorBairro(!bairro ? "O campo Bairro é obrigatório." : "");
+        setErrorLogradouro(!logradouro ? "O campo Logradouro é obrigatório." : "");
+        setErrorNumero(!numero ? "O campo Número é obrigatório." : "");
+        setErrorEstado(!estado ? "O campo Estado é obrigatório." : "");
+
+
+        if (!nome || !cnpj || !telefone || !cep || !alvara || !email || !razaoSocial || !cidade || !bairro || !logradouro || !numero || !estado) {
             hasError = true;
         }
 
@@ -118,6 +129,31 @@ export default function EstabelecimentoCadastro() {
             .replace(/(\d{4})(\d)/, '$1-$2') // Coloca o hífen
             .replace(/(-\d{2})\d+?$/, '$1'); // Limita a 14 dígitos
     }
+
+    function formatCEP(value: string) {
+        return value
+            .replace(/\D/g, '') // Remove tudo que não for dígito
+            .replace(/(\d{5})(\d)/, '$1-$2') // Coloca o hífen
+            .replace(/(-\d{3})\d+?$/, '$1'); // Limita a 9 dígitos
+    }
+
+    function formatTelefone(value: string) {
+        return value
+            .replace(/\D/g, '') // Remove tudo que não for dígito
+            .replace(/(\d{2})(\d)/, '($1) $2') // Coloca o DDD
+            .replace(/(\d{5})(\d)/, '$1-$2') // Coloca o hífen
+            .replace(/(-\d{4})\d+?$/, '$1'); // Limita a 14 dígitos
+    }
+
+    const handleTelefoneChange = (value: string) => {
+        const formattedTelefone = formatTelefone(value);
+        setTelefone(formattedTelefone); // Atualiza o estado com o telefone formatado
+    }
+
+    const handleCEPChange = (value: string) => {
+        const formattedCEP = formatCEP(value);
+        SetCep(formattedCEP); // Atualiza o estado com o CEP formatado
+    };
 
     const handleCNPJChange = (value: string) => {
         const formattedCNPJ = formatCNPJ(value);
@@ -143,12 +179,25 @@ export default function EstabelecimentoCadastro() {
     };
 
     const estabelecimento = {
-        cnpj: cnpj,
+        cnpj: cnpj.replace(/\D/g, ''),
         nome: nome,
         razaoSocial: razaoSocial,
-        telefone: telefone,
+        telefone: telefone.replace(/\D/g, ''),
         email: email,
-        alvara: alvara
+        alvara: alvara,
+        endereco: {
+            cep: cep.replace(/\D/g, ''),
+            estado: estado,
+            cidade: cidade,
+            bairro: bairro,
+            logradouro: logradouro,
+            numero: numero,
+            complemento: complemento
+        },
+        imagensToAdd: [
+            "estabelecimento/imagem1.jpg",
+            "estabelecimento/imagem2.png"
+        ]
     }
 
     async function cadastrar(access_token: string) {
@@ -216,6 +265,7 @@ export default function EstabelecimentoCadastro() {
                         errorMessage={errorNome}
                         value={nome}
                         onChangeText={setNome}
+
                     />
                     <Input
                         className='mt-5'
@@ -236,7 +286,7 @@ export default function EstabelecimentoCadastro() {
                         errorMessage={errorTelefone}
                         value={telefone}
                         keyboardType="phone-pad"
-                        onChangeText={setTelefone}
+                        onChangeText={handleTelefoneChange}
                     />
                     <Input
                         className='mt-5'
@@ -246,6 +296,7 @@ export default function EstabelecimentoCadastro() {
                         errorMessage={errorRazaoSocial}
                         value={razaoSocial}
                         onChangeText={setRazaoSocial}
+                        autoCapitalize='none'
                     />
                     <Input
                         className='mt-5'
@@ -256,6 +307,7 @@ export default function EstabelecimentoCadastro() {
                         value={email}
                         keyboardType="email-address"
                         onChangeText={setEmail}
+                        autoCapitalize='none'
                     />
                     <Input
                         className='mt-5'
@@ -265,34 +317,33 @@ export default function EstabelecimentoCadastro() {
                         errorMessage={errorAlvara}
                         value={alvara}
                         onChangeText={setAlvara}
-                    />
-                    <MultiSelect
-                        options={options}
-                        selectedItems={selectedOptions}
-                        onSelectionChange={handleSelectionChange}
-                        icon={<MaterialIcons name="check-box" size={24} color="black" />}
+                        autoCapitalize='none'
                     />
 
                     <Text className="text-2xl font-semibold mt-6">Endereço:</Text>
 
                     <Input
+                        className='mt-5'
                         ref={CepInputRef}
                         label="CEP:"
                         obrigatorio
                         errorMessage={errorCep}
                         value={cep}
                         keyboardType="numeric"
-                        onChangeText={SetCep}
+                        onChangeText={handleCEPChange}
                     />
-                    {/* <Input
+                    <Input
+                        className='mt-5'
                         ref={EstadoInputRef}
-                        label="Estado:"
+                        label="Estado(Sigla):"
                         obrigatorio
                         errorMessage={errorEstado}
                         value={estado}
                         onChangeText={SetEstado}
+                        maxLength={2}
                     />
                     <Input
+                        className='mt-5'
                         ref={CidadeInputRef}
                         label="Cidade:"
                         obrigatorio
@@ -301,6 +352,7 @@ export default function EstabelecimentoCadastro() {
                         onChangeText={SetCidade}
                     />
                     <Input
+                        className='mt-5'
                         ref={BairroInputRef}
                         label="Bairro:"
                         obrigatorio
@@ -309,6 +361,7 @@ export default function EstabelecimentoCadastro() {
                         onChangeText={SetBairro}
                     />
                     <Input
+                        className='mt-5'
                         ref={LogradouroInputRef}
                         label="Logradouro:"
                         obrigatorio
@@ -317,6 +370,7 @@ export default function EstabelecimentoCadastro() {
                         onChangeText={SetLogradouro}
                     />
                     <Input
+                        className='mt-5'
                         ref={NumeroInputRef}
                         label="Número:"
                         obrigatorio
@@ -326,11 +380,20 @@ export default function EstabelecimentoCadastro() {
                         onChangeText={SetNumero}
                     />
                     <Input
+                        className='mt-5'
                         ref={ComplementoInputRef}
                         label="Complemento:"
                         value={complemento}
                         onChangeText={SetComplemento}
-                    /> */}
+                    />
+
+                    <Text className="text-2xl font-semibold mt-6">Acomocações:</Text>
+                    <MultiSelect
+                        options={options}
+                        selectedOptions={selectedOptions}
+                        onSelectionChange={handleSelectionChange}
+                        icon={<MaterialIcons name="check-box" size={24} color="black" />}
+                    />
                 </View>
             </ScrollView>
             <View style={globalStyles.buttonContainer}>

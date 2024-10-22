@@ -12,6 +12,8 @@ import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 
+const { apiUrl } = Constants.expoConfig.extra;
+
 export default function UsuarioCadastro() {
     const [loading, setLoading] = useState(false);
     const [nome, setNome] = useState('');
@@ -150,7 +152,7 @@ export default function UsuarioCadastro() {
         setLoading(true);
 
         try {
-            const response = await fetch('http://192.168.137.1:3000/auth/register', {
+            const response = await fetch(`${apiUrl}/auth/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -199,7 +201,7 @@ export default function UsuarioCadastro() {
 
     async function login() {
         try {
-            const response = await fetch('http://192.168.137.1:3000/auth/login', {
+            const response = await fetch(`${apiUrl}/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -1,7 +1,11 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { EstabelecimentoProps } from '../interfaces/estabelecimento';
 import { MaterialIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
+
+const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
 
 interface RenderOptions {
     showImage?: boolean;
@@ -11,53 +15,71 @@ interface RenderOptions {
 }
 
 interface Props {
-    data: EstabelecimentoProps[];
     onPress: (estabelecimento: EstabelecimentoProps) => void;
-    options?: RenderOptions; // Nova prop para definir o que exibir
+    options?: RenderOptions;
 }
 
-const ListaEstabelecimento: React.FC<Props> = ({ data, onPress, options = {} }) => {
+const ListaEstabelecimento: React.FC<Props> = ({ onPress, options = {} }) => {
+    const [data, setData] = useState<EstabelecimentoProps[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
 
-    const renderAcomodacoes = (acomodacoes: any[]) => {
-        if (!acomodacoes || acomodacoes.length === 0) return null;
+    useEffect(() => {
+        const fetchEstabelecimentos = async () => {
+            try {
+                const access_token = await AsyncStorage.getItem('access_token');
+                const response = await fetch(`${apiUrl}/estabelecimento/usuario`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${access_token}`,
+                    },
+                });
 
-        return (
-            <View style={styles.acomodacoesContainer}>
-                {acomodacoes.map((acomodacao, index) => (
-                    <View key={index} style={styles.acomodacaoItem}>
-                        {acomodacao.icon && (
-                            <MaterialIcons
-                                name={acomodacao.icon}
-                                size={20}
-                                color="#FF6600"
-                                style={styles.icon}
-                            />
-                        )}
-                        <Text style={styles.acomodacaoText}>{acomodacao.name}</Text>
-                    </View>
-                ))}
-            </View>
-        );
-    };
+                if (!response.ok) {
+                    throw new Error('Erro ao buscar os dados.');
+                }
+
+                const jsonData = await response.json();
+                setData(jsonData);
+                setLoading(false);
+            } catch (err) {
+                console.log(err);
+                setError('Erro ao carregar os dados.');
+                setLoading(false);
+            }
+        };
+
+        fetchEstabelecimentos();
+    }, []);
 
     const renderEstabelecimento = (item: EstabelecimentoProps) => (
-        <TouchableOpacity style={styles.card} onPress={() => onPress(item)} key={item.id}>
-            {options.showImage && item.image && item.image.length > 0 && (
-                <Image source={{ uri: item.image[0].image }} style={styles.image} />
+        <TouchableOpacity style={styles.card} onPress={() => onPress(item)} key={item.idkey}>
+            {options.showImage && item.imagens && item.imagens.length > 0 && (
+                <Image source={{ uri: `${apiUrl}/${item.imagens[0].path}` }} style={styles.image} />
             )}
             <View style={styles.infoContainer}>
-                <Text style={styles.name}>{item.name}</Text>
-                <Text style={styles.endereco}>{item.endereco}</Text>
+                <Text style={styles.name}>{item.nome}</Text>
+                <Text style={styles.endereco}>
+                    {item.endereco.logradouro}, {item.endereco.numero} - {item.endereco.bairro}, {item.endereco.cidade} - {item.endereco.estado}
+                </Text>
                 {options.showAvaliacao && (
-                    <Text style={styles.avaliacao}>Avaliação: {item.avaliacao.toFixed(1)} ⭐</Text>
+                    <Text style={styles.avaliacao}>Avaliação: N/A</Text>
                 )}
                 {options.showPreco && (
-                    <Text style={styles.preco}>{item.horario[0].valor}</Text>
+                    <Text style={styles.preco}>Preço: N/A</Text>
                 )}
-                {options.showAcomodacoes && renderAcomodacoes(item.acomodacoes)}
             </View>
         </TouchableOpacity>
     );
+
+    if (loading) {
+        return <ActivityIndicator size="large" color="#FF6600" />;
+    }
+
+    if (error) {
+        return <Text>{error}</Text>;
+    }
 
     return (
         <View>
@@ -103,24 +125,6 @@ const styles = StyleSheet.create({
     avaliacao: {
         fontSize: 14,
         marginBottom: 12,
-    },
-    acomodacoesContainer: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        marginTop: 8,
-    },
-    acomodacaoItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginRight: 16,
-    },
-    icon: {
-        marginTop: 2,
-        marginRight: 2,
-    },
-    acomodacaoText: {
-        fontSize: 12,
-        color: '#666',
     },
     preco: {
         fontWeight: 'bold',
