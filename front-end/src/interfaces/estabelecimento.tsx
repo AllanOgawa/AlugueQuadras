@@ -1,20 +1,40 @@
 import { AcomodacoesProps } from "./acomodacoes";
 import { AvaliacaoProps } from "./avaliacao";
 import { HorarioProps } from "./horario";
-import { ImagemProps } from "./image";
 import { QuadraProps } from "./quadra";
 
-export interface EstabelecimentoProps {
-    id: string;
-    name: string;
-    endereco: string;
-    latitude: number;
-    longitude: number;
-    sobre: string;
-    avaliacao: number;
-    image: ImagemProps[];
-    acomodacoes: AcomodacoesProps[];
-    quadras: QuadraProps[];
-    horario: HorarioProps[];
-    avaliacoes: AvaliacaoProps[];
+export interface EnderecoProps {
+    idkey: number;
+    logradouro: string;
+    numero: string;
+    complemento: string;
+    bairro: string;
+    cidade: string;
+    estado: string;
+    cep: string;
+    dataCadastro: string;
+    dataAtualizacao: string;
 }
+
+
+export interface ImagemProps {
+    idkey: number;
+    path: string;
+    dataCadastro: string;
+}
+
+export interface EstabelecimentoProps {
+    idkey: number;               // Usando o campo "idkey" diretamente
+    cnpj: string;                // "cnpj"
+    razaoSocial: string;         // "razaoSocial"
+    nome: string;                // "nome"
+    telefone: string;            // "telefone"
+    email: string;               // "email"
+    alvara: string;              // "alvara"
+    dataCadastro: string;        // "dataCadastro" (ISO string format)
+    dataAtualizacao: string;     // "dataAtualizacao" (ISO string format)
+    endereco: EnderecoProps;     // Objeto de endereço, conforme detalhado
+    imagens: ImagemProps[];      // Lista de imagens
+    quadras: QuadraProps[];      // Array vazio por enquanto
+}
+

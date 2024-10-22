@@ -1,51 +1,85 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { EstabelecimentoProps } from '../interfaces/estabelecimento';
 import { MaterialIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
 
-interface Props {
-    data: EstabelecimentoProps[];
-    onPress: (estabelecimento: EstabelecimentoProps) => void;
+const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
+
+interface RenderOptions {
+    showImage?: boolean;
+    showAvaliacao?: boolean;
+    showPreco?: boolean;
+    showAcomodacoes?: boolean;
 }
 
-const ListaEstabelecimento: React.FC<Props> = ({ data, onPress }) => {
+interface Props {
+    onPress: (estabelecimento: EstabelecimentoProps) => void;
+    options?: RenderOptions;
+}
 
-    const renderAcomodacoes = (acomodacoes: any[]) => {
-        if (!acomodacoes || acomodacoes.length === 0) return null;
+const ListaEstabelecimento: React.FC<Props> = ({ onPress, options = {} }) => {
+    const [data, setData] = useState<EstabelecimentoProps[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
 
-        return (
-            <View>
-                <View style={styles.iconsContainer}>
-                    {acomodacoes.map((acomodacao, index) => (
-                        acomodacao.icon ? ( // Verifique se o ícone existe
-                            <MaterialIcons
-                                key={index}
-                                name={acomodacao.icon}
-                                size={20}
-                                color="#FF6600"
-                                style={styles.icon}
-                            />
-                        ) : null // Não renderiza nada se o ícone não existir
-                    ))}
-                </View>
-            </View>
-        );
-    };
+    useEffect(() => {
+        const fetchEstabelecimentos = async () => {
+            try {
+                const access_token = await AsyncStorage.getItem('access_token');
+                const response = await fetch(`${apiUrl}/estabelecimento/usuario`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${access_token}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erro ao buscar os dados.');
+                }
+
+                const jsonData = await response.json();
+                setData(jsonData);
+                setLoading(false);
+            } catch (err) {
+                console.log(err);
+                setError('Erro ao carregar os dados.');
+                setLoading(false);
+            }
+        };
+
+        fetchEstabelecimentos();
+    }, []);
 
     const renderEstabelecimento = (item: EstabelecimentoProps) => (
-        <TouchableOpacity style={styles.card} onPress={() => onPress(item)} key={item.id}>
-            {item.image && item.image.length > 0 && (
-                <Image source={{ uri: item.image[0].image }} style={styles.image} />
+        <TouchableOpacity style={styles.card} onPress={() => onPress(item)} key={item.idkey}>
+            {options.showImage && item.imagens && item.imagens.length > 0 && (
+                <Image source={{ uri: `${apiUrl}/${item.imagens[0].path}` }} style={styles.image} />
             )}
             <View style={styles.infoContainer}>
-                <Text style={styles.name}>{item.name}</Text>
-                <Text style={styles.endereco}>{item.endereco}</Text>
-                <Text style={styles.avaliacao}>Avaliação: {item.avaliacao.toFixed(1)} ⭐</Text>
-                <Text style={styles.preco}>{item.horario[0].valor}</Text>
-                {renderAcomodacoes(item.acomodacoes)}
+                <Text style={styles.name}>{item.nome}</Text>
+                <Text style={styles.endereco}>
+                    {item.endereco.logradouro}, {item.endereco.numero} - {item.endereco.bairro}, {item.endereco.cidade} - {item.endereco.estado}
+                </Text>
+                {options.showAvaliacao && (
+                    <Text style={styles.avaliacao}>Avaliação: N/A</Text>
+                )}
+                {options.showPreco && (
+                    <Text style={styles.preco}>Preço: N/A</Text>
+                )}
             </View>
         </TouchableOpacity>
     );
+
+    if (loading) {
+        return <ActivityIndicator size="large" color="#FF6600" />;
+    }
+
+    if (error) {
+        return <Text>{error}</Text>;
+    }
 
     return (
         <View>
@@ -92,22 +126,9 @@ const styles = StyleSheet.create({
         fontSize: 14,
         marginBottom: 12,
     },
-    acomodacoes: {
-        fontSize: 12,
-        color: '#666',
-        marginBottom: 4,
-    },
-    iconsContainer: {
-        flexDirection: 'row',
-        marginTop: 8,
-    },
-    icon: {
-        justifyContent: 'space-between',
-        marginRight: 10,
-    },
     preco: {
-        fontWeight: 'bold'
-    }
+        fontWeight: 'bold',
+    },
 });
 
 export default ListaEstabelecimento;
