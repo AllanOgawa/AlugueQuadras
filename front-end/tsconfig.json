@@ -16,6 +16,9 @@
       ],
       "@components/*": [
         "src/components/*"
+      ],
+      "@context/*": [
+        "src/context/*"
       ]
     }
   },
