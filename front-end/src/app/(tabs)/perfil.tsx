@@ -78,11 +78,7 @@ export default function Perfil() {
 						style="h-16 w-full rounded-2xl flex-row items-center justify-between px-4"
 						onPress={() => {
 							if (user.adm) {
-<<<<<<< HEAD
 								router.push('/(estabelecimento)/home')
-=======
-								router.push('/(quadra)/menu')
->>>>>>> 2cef1aa93ebd66ae32746187fd6ec38bf08de022
 							} else {
 								console.log("Usuário não é administrador, ação não permitida.");
 							}
@@ -152,15 +148,11 @@ export default function Perfil() {
 					subtitle="Torne-se um parceiro!"
 					style="h-16 w-full rounded-2xl flex-row items-center justify-between px-4"
 					onPress={() => {
-<<<<<<< HEAD
 						if (!user.adm) {
 							router.push('/(quadra)/home')
 						} else {
 							console.log("Usuário não é administrador, ação não permitida.");
 						}
-=======
-						router.push('/(estabelecimento)/menu')
->>>>>>> 2cef1aa93ebd66ae32746187fd6ec38bf08de022
 					}}
 				/>
 			</ScrollView>
