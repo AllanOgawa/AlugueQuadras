@@ -1,34 +1,29 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Request, UseGuards, HttpException, HttpStatus } from '@nestjs/common';
 import { ReservaService } from './reserva.service';
 import { CreateReservaDto } from './dto/create-reserva.dto';
 import { UpdateReservaDto } from './dto/update-reserva.dto';
+import { JwtAuthGuard } from '@src/domains/auth/guard/jwt-auth.guard';
+import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Reserva } from './entities/reserva.entity';
 
-@Controller('reserva')
+@Controller('estabelecimento/quadra/reserva')
 export class ReservaController {
-  constructor(private readonly reservaService: ReservaService) {}
+  constructor(private readonly reservaService: ReservaService) { }
 
-  @Post()
-  create(@Body() createReservaDto: CreateReservaDto) {
-    return this.reservaService.create(createReservaDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.reservaService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.reservaService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateReservaDto: UpdateReservaDto) {
-    return this.reservaService.update(+id, updateReservaDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.reservaService.remove(+id);
+  @Post('new')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Criar uma nova reserva' })
+  @ApiResponse({ status: 201, description: 'Reserva criada com sucesso', type: Reserva })
+  @ApiResponse({ status: 500, description: 'Erro ao criar reserva' })
+  async create(@Body() createReservaDto: CreateReservaDto, @Request() req) {
+    try {
+      return await this.reservaService.create(req.user, createReservaDto);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Erro ao criar reserva', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }

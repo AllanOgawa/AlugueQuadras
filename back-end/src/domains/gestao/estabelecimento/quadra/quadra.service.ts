@@ -45,7 +45,6 @@ export class QuadraService {
       });
       await this.quadraRepository.save(quadra);
     } catch (error) {
-      console.log(error)
       throw new HttpException('Erro ao criar Quadra', HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

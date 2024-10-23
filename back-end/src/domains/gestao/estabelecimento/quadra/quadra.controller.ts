@@ -1,17 +1,17 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, ValidationPipe, HttpStatus, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard }     from '@src/domains/auth/guard/jwt-auth.guard';
+import { JwtAuthGuard } from '@src/domains/auth/guard/jwt-auth.guard';
 
-import { Quadra }           from './entities/quadra.entity';
-import { QuadraService }    from './quadra.service';
-import { CreateQuadraDto }  from './dto/create-quadra.dto';
-import { UpdateQuadraDto }  from './dto/update-quadra.dto';
+import { Quadra } from './entities/quadra.entity';
+import { QuadraService } from './quadra.service';
+import { CreateQuadraDto } from './dto/create-quadra.dto';
+import { UpdateQuadraDto } from './dto/update-quadra.dto';
 
 @ApiTags('Quadra')
 @Controller('estabelecimento/quadra')
 export class QuadraController {
-  constructor(private readonly quadraService: QuadraService) {}
-  
+  constructor(private readonly quadraService: QuadraService) { }
+
   @Post('new')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
