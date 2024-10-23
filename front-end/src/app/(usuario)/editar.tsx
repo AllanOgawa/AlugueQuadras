@@ -22,7 +22,7 @@ export default function UsuarioEditar() {
     const [email, setEmail] = useState('');
     const [cpf, setCpf] = useState('');
     const [dtNascimento, setDtNascimento] = useState('');
-    const [imagem, setImagem] = useState('');
+    const [images, setImages] = useState<string[]>([]);
 
     const context = useContext(UsuarioContext);
     if (!context) {
@@ -38,14 +38,14 @@ export default function UsuarioEditar() {
     const [imageUrls, setImageUrls] = useState<string[]>([]);
     const uploadImageRef = useRef<{ uploadAllImages: () => Promise<void> } | null>(null);
 
-    const handleImageUpload = (url: string) => {
+    const handleImageUrl = (url: string) => {
         if (url) {
             setImageUrls(prev => [...prev, url]);
-            console.log('Imagem carregada:', url);
+            console.log(url);
         }
     };
 
-    const handleUploadAll = async () => {
+    const handleImageUpload = async () => {
         if (uploadImageRef.current) {
             await uploadImageRef.current.uploadAllImages();
         } else {
@@ -71,8 +71,10 @@ export default function UsuarioEditar() {
             if (usuario[0].dataNascimento) {
                 setDtNascimento(transformarData(usuario[0].dataNascimento));
             }
-            if (usuario[0].imagens && usuario[0].imagens[0].path) {
-                setImagem(usuario[0].imagens[0].path);
+            if (usuario[0].imagens && usuario[0].imagens.length > 0) {
+                const existingImageUrls = usuario[0].imagens.map((img: { path: string }) => `${bucketUrl}/${img.path}`);
+                console.log(existingImageUrls)
+                setImages(existingImageUrls);
             }
         }
         setLoading(false);
@@ -97,8 +99,8 @@ export default function UsuarioEditar() {
             setErrorUsername("o campo Username deve ter pelo menos 6 caracteres.");
             isValid = false;
         }
-        handleUploadAll()
-        if (isValid) cadastrar();
+
+        if (isValid) handleImageUpload();
     };
 
     function transformarData(data: string) {
@@ -106,115 +108,6 @@ export default function UsuarioEditar() {
         return `${dia}/${mes}/${ano}`;
     }
 
-    async function storeData(access_token: string) {
-        try {
-            await AsyncStorage.setItem("access_token", access_token);
-            console.log('Dados armazenados no localStorage com sucesso');
-        } catch (e) {
-            console.error('Erro ao salvar dados', e);
-        }
-    };
-
-
-    async function cadastrar() {
-        // const dataNascimento = transformarData(dtNascimento);
-        let success = false;
-        // setLoading(true);
-
-        // try {
-        //     const response = await fetch(`${apiUrl}/auth/register`, {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/json',
-        //         },
-        //         body: JSON.stringify({
-        //             nome: nome,
-        //             username: username,
-        //             email: email,
-        //             cpf: cpf,
-        //             dataNascimento: dataNascimento,
-        //             senha: senha,
-        //             imagensToAdd: ["public-storage/usuario/usuario.png"]
-        //         }),
-        //     });
-
-        //     const data = await response.json();
-
-        //     if (response.ok) {
-        //         console.log(data)
-        //         Toast.show({
-        //             type: 'success',
-        //             text1: "Cadastro Realizado com Sucesso",
-        //             text2: "Bem-vindo ao AlugueQuadras!",
-        //         });
-        //         success = true;
-        //     } else {
-        //         console.error('Erro no cadastro', data);
-        //         Toast.show({
-        //             type: 'error',
-        //             text1: "Cadastro Falhou",
-        //             text2: data.message,
-        //         });
-        //     }
-        // } catch (error) {
-        //     console.error('Erro de rede', error);
-        //     Toast.show({
-        //         type: 'error',
-        //         text1: "Erro de Rede",
-        //         text2: String(error),
-        //     });
-        // } finally {
-        //     if (success) {
-        //         login();
-        //     }
-        // }
-    }
-
-    async function login() {
-        // try {
-        //     const response = await fetch(`${apiUrl}/auth/login`, {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/json',
-        //         },
-        //         body: JSON.stringify({
-        //             login: username,
-        //             senha: senha,
-        //         }),
-        //     });
-
-        //     const data = await response.json();
-
-        //     if (response.ok) {
-        //         storeData(data.access_token)
-        //         console.log(data);
-        //         Toast.show({
-        //             type: 'success',
-        //             text1: "Login Bem-Sucedido",
-        //         });
-        //         router.replace({
-        //             pathname: '/(tabs)/inicio',
-        //             params: { userData: JSON.stringify(data) },
-        //         });
-        //     } else {
-        //         console.error('Erro no login', data);
-        //         Toast.show({
-        //             type: 'error',
-        //             text1: "Login Falhou",
-        //             text2: data.message,
-        //         });
-        //     }
-        // } catch (error) {
-        //     console.error('Erro de rede', error);
-        //     Toast.show({
-        //         type: 'error',
-        //         text1: "Erro de Rede",
-        //         text2: String(error),
-        //     });
-        // } finally {
-        //     setLoading(false);
-        // }
-    };
 
     return (
         <SafeAreaView className='flex-1 bg-white' style={{ marginTop: Constants.statusBarHeight }}>
@@ -226,7 +119,6 @@ export default function UsuarioEditar() {
             >
                 <View className="w-full px-4">
                     <Text className="text-4xl font-semibold mt-10 mb-5">Editar conta</Text>
-                    <UploadImage onImageUpload={handleImageUpload} ref={uploadImageRef} />
                     <Input
                         className='mb-5'
                         ref={nomeInputRef}
@@ -267,6 +159,15 @@ export default function UsuarioEditar() {
                         label="Data de Nascimento:"
                         value={dtNascimento}
                         editable={false}
+                    />
+                    <UploadImage
+                        ref={uploadImageRef}
+                        allowMultiple={true}
+                        pastaBucket="usuario"
+                        imagensExistentes={images}
+                        onImageUpload={handleImageUrl}
+                        btClassName='mt-4 bg-roxo p-2 rounded-2xl active:bg-roxo/80 mx-4 w-[100%]'
+                        btClassNameTitle="text-white text-center text-lg"
                     />
                 </View>
             </ScrollView>

@@ -1,5 +1,5 @@
-import React, { useState, useImperativeHandle, forwardRef } from 'react';
-import { Button, Image, View, Platform, StyleSheet, Alert } from 'react-native';
+import React, { useState, useImperativeHandle, forwardRef, useEffect } from 'react';
+import { Pressable, Image, View, Platform, StyleSheet, Alert, ScrollView, Text } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import Toast from 'react-native-toast-message';
 import Constants from 'expo-constants';
@@ -10,18 +10,41 @@ const { apiUrl, bucketUrl } = Constants.expoConfig.extra;
 
 interface UploadImageProps {
     onImageUpload: (url: string) => void;
+    allowMultiple?: boolean;
+    pastaBucket: string;
+    btClassName: string;
+    btClassNameTitle: string;
+    imagensExistentes: string[];
 }
 
-const UploadImage = forwardRef(({ onImageUpload }: UploadImageProps, ref) => {
-    const [loading, setLoading] = useState(false);
-    const [images, setImages] = useState<{ uri: string; mime: string }[]>([]); // Mudando para armazenar URI e MIME
+const UploadImage = forwardRef(({
+    onImageUpload,
+    allowMultiple = true,
+    pastaBucket,
+    btClassName,
+    btClassNameTitle,
+    imagensExistentes = []
+}: UploadImageProps, ref) => {
 
-    // Expondo a função uploadAllImages para o pai
+    const [loading, setLoading] = useState(false);
+    const [images, setImages] = useState<{ uri: string; mime: string; novo: boolean }[]>([]);
+    const [imagensToAdd, setImagensToAdd] = useState<{ uri: string; mime: string; novo: boolean }[]>([]);
+    const [imagensToRemove, setImagensToRemove] = useState<{ uri: string; mime: string; novo: boolean }[]>([]);
+    const MAX_IMAGES = 5; // Definir o limite máximo de 5 imagens
+
     useImperativeHandle(ref, () => ({
         uploadAllImages: async () => {
             await uploadAllImages();
         }
     }));
+
+    useEffect(() => {
+        setImages(imagensExistentes.map(image => ({ uri: image, novo: false, mime: "image" })));
+    }, [imagensExistentes]);
+
+    useEffect(() => {
+        setImagensToAdd(images.filter(image => image.novo));
+    }, [images]);
 
     const pickImage = async () => {
         if (Platform.OS !== 'web') {
@@ -32,20 +55,51 @@ const UploadImage = forwardRef(({ onImageUpload }: UploadImageProps, ref) => {
             }
         }
 
+        // Verifica se já atingiu o número máximo de imagens
+        if (allowMultiple && images.length >= MAX_IMAGES) {
+            Alert.alert('Limite atingido', `Você só pode selecionar até ${MAX_IMAGES} imagens.`);
+            return;
+        }
+
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
+            allowsEditing: false,
             quality: 1,
-            selectionLimit: 0, // Permite selecionar múltiplas imagens
+            allowsMultipleSelection: allowMultiple,
+            selectionLimit: allowMultiple ? MAX_IMAGES - images.length : 1, // Controla o limite baseado nas imagens já selecionadas
         });
 
         if (!result.canceled) {
             const selectedImages = result.assets.map(asset => ({
+                novo: true,
                 uri: asset.uri,
-                mime: asset.mime || 'image/jpeg' // Define um MIME padrão se não estiver disponível
+                mime: asset.mimeType || 'image/jpeg' // Usando asset.type para o mimeType
             }));
-            setImages(prevImages => [...prevImages, ...selectedImages]);
+
+            if (allowMultiple) {
+                setImages(prevImages => {
+                    const totalSelectedImages = prevImages.length + selectedImages.length;
+                    if (totalSelectedImages > MAX_IMAGES) {
+                        Alert.alert('Limite atingido', `Você só pode adicionar mais ${MAX_IMAGES - prevImages.length} imagem(ns).`);
+                        return [...prevImages, ...selectedImages.slice(0, MAX_IMAGES - prevImages.length)];
+                    } else {
+                        return [...prevImages, ...selectedImages];
+                    }
+                });
+            } else {
+                setImages(selectedImages.slice(0, 1)); // Apenas a primeira imagem
+            }
         }
+    };
+
+    const removeImage = (index: number) => {
+        const imageToRemove = images.find((_, i) => i == index);
+        if (imageToRemove && !imageToRemove.novo) {
+            setImagensToRemove(prevImages => {
+                return [...prevImages, imageToRemove];
+            })
+        }
+        setImages(images.filter((_, i) => i !== index));
     };
 
     async function getAccessToken() {
@@ -66,11 +120,10 @@ const UploadImage = forwardRef(({ onImageUpload }: UploadImageProps, ref) => {
             setLoading(false);
             return;
         }
-
-        for (const image of images) { // Alterado para usar o novo formato de imagem
-            const accessBucket = await getUploadUrl(image.uri, token, image.mime); // Passando o MIME
+        for (const image of imagensToAdd) {
+            const accessBucket = await getUploadUrl(image.uri, token, image.mime);
             if (accessBucket) {
-                await uploadImageToBucket(accessBucket, image); // Passando o objeto de imagem
+                await uploadImageToBucket(accessBucket, image);
             }
         }
         setLoading(false);
@@ -87,9 +140,9 @@ const UploadImage = forwardRef(({ onImageUpload }: UploadImageProps, ref) => {
                     'Authorization': `Bearer ${token}`,
                 },
                 body: JSON.stringify({
-                    pathName: "usuario",
+                    pathName: pastaBucket,
                     fileName: imageUri.split('/').pop(),
-                    mimeType, // Usando o MIME dinâmico
+                    mimeType,
                 }),
             });
 
@@ -122,8 +175,8 @@ const UploadImage = forwardRef(({ onImageUpload }: UploadImageProps, ref) => {
             formData.append('file', {
                 uri: image.uri,
                 name: accessBucket.fields.key.split('/').pop(),
-                type: image.mime, // Usando o MIME dinâmico
-            });
+                type: image.mime,
+            } as any);
 
             const response = await fetch(`${bucketUrl}/public-storage`, {
                 method: 'POST',
@@ -156,27 +209,87 @@ const UploadImage = forwardRef(({ onImageUpload }: UploadImageProps, ref) => {
 
     return (
         <View style={styles.container}>
-            <Button title="Selecionar Imagens" onPress={pickImage} />
+            <View className={btClassName}>
+                <Pressable onPress={pickImage}>
+                    <Text className={btClassNameTitle}>Selecionar Image{allowMultiple ? 'ns' : 'm'}</Text>
+                </Pressable>
+
+            </View>
+
             {loading && <Loading />}
-            {images.map((image, index) => (
-                <Image key={index} source={{ uri: image.uri }} style={styles.image} />
-            ))}
+
+            <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={true}
+                style={styles.scrollView}
+                contentContainerStyle={styles.imageContainer}
+            >
+                {images.map((image, index) => (
+                    <View key={index} style={styles.imageWrapper}>
+                        <Image source={{ uri: image.uri }} style={styles.image} />
+                        <Pressable style={styles.removeButton} className='bg-primary' onPress={() => removeImage(index)}>
+                            <Text style={styles.removeButtonText}>×</Text>
+                        </Pressable>
+                    </View>
+                ))}
+            </ScrollView>
         </View>
     );
 });
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 20,
+        width: '100%',
+    },
+    scrollView: {
+        width: '100%',
+        padding: 2,
+        marginTop: 5
+    },
+    uploadButton: {
+        backgroundColor: '#007BFF',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 5,
+        marginBottom: 20,
+    },
+    uploadText: {
+        color: 'white',
+        fontWeight: 'bold',
+    },
+    imageContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        flexGrow: 1, // Garante que o conteúdo do ScrollView ocupe o espaço disponível
+    },
+    imageWrapper: {
+        position: 'relative',
+        marginRight: 15,
     },
     image: {
-        width: 200,
-        height: 200,
-        marginTop: 20,
+        width: 150,
+        height: 150,
+        borderRadius: 10,
+    },
+    removeButton: {
+        position: 'absolute',
+        top: 2,
+        right: 2,
+        width: 25,
+        height: 25,
+        borderRadius: 12.5,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    removeButtonText: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 20,
+        lineHeight: 25,
     },
 });
+
 
 export default UploadImage;

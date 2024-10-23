@@ -46,7 +46,7 @@ export default function TelaLogin() {
         try {
             const value = await AsyncStorage.getItem("access_token");
             if (value !== null && value !== "") {
-                handleLogin("value");
+                handleLogin(value);
             } else {
                 setLoading(false);
             }
