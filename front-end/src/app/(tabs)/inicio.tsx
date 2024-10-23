@@ -5,14 +5,38 @@ import { Feather } from '@expo/vector-icons';
 
 import Constants from 'expo-constants'
 import { FilterSport } from "@components/filterSport";
-import * as data from '@/db.json'
 import IconUsuario from "@components/iconUsuario";
-import { router } from "expo-router";
+import Loading from '@components/loading';
+import { useLocalSearchParams, router } from "expo-router";
+import { useContext, useEffect, useState } from "react";
+import { UsuarioContext } from '@context/usuarioContext';
 
 const statusBarHeight = Constants.statusBarHeight;
+const { bucketUrl, userDefaultImage } = Constants.expoConfig.extra;
 
 export default function Inicio() {
-	const user = data.user[0];
+	const [loading, setLoading] = useState(false);
+	const [nome, setNome] = useState("Bem-vindo!");
+	const [imagem, setImagem] = useState(userDefaultImage);
+
+	const context = useContext(UsuarioContext);
+	if (!context) {
+		throw new Error("YourComponent must be used within an ArrayProvider");
+	}
+	const { usuario, setUsuario } = context;
+
+	useEffect(() => {
+		if (usuario != null && usuario[0] !== null) {
+			if (usuario[0].nome) {
+				setNome("Olá! " + usuario[0].nome);
+			}
+			if (usuario[0].imagens && usuario[0].imagens[0].path) {
+				setImagem(usuario[0].imagens[0].path);
+			}
+		}
+		setLoading(false);
+	}, [usuario]);
+
 	return (
 		<SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
 			<StatusBar barStyle="dark-content" backgroundColor="white" />
@@ -24,14 +48,14 @@ export default function Inicio() {
 				<View className="w-full px-4" style={{ marginTop: statusBarHeight + 8 }}>
 					<View className="flex-row justify-between items-center mb-4">
 						<View>
-							<Text className="text-xl font-semibold">Olá {user.name}</Text>
+							<Text className="text-xl font-semibold">{nome}</Text>
 							<Text className="text-xl">Vamos Jogar hoje?</Text>
 						</View>
 						<View className="relative mb-2">
 							<Pressable
 								onPress={() => router.push('/')}
 							>
-								<IconUsuario image={user.image} style="w-16 h-16 rounded-full border-2 border-black" />
+								<IconUsuario image={`${bucketUrl}/${imagem}`} style="w-16 h-16 rounded-full border-2 border-black" />
 								<Feather
 									name="bell"
 									size={16}
@@ -46,6 +70,7 @@ export default function Inicio() {
 					<LastCourt />
 				</View>
 			</ScrollView>
+			{loading && <Loading />}
 		</SafeAreaView>
 	);
 }

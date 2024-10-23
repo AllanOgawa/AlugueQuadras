@@ -47,14 +47,23 @@ export class CreateQuadraDto {
   @IsNotEmpty({ message: 'O campo comprimento não pode estar vazio.' })
   comprimento: number;
 
-  @ApiPropertyOptional({
-    description: 'Imagem (path do bucket) associada à quadra',
-    example: 'quadra/quadra-imagem.jpg',
-    type: String,
+  @ApiProperty({
+    description: 'ID do estabelecimento ao qual a quadra pertence',
+    example: 5,
+    type: Number,
   })
-  @IsString({ message: 'O campo imagem deve ser uma string (path do bucket).' })
-  @IsOptional()
-  imagem?: string;
+  @IsNumber({}, { message: 'O campo idkeyEstabelecimento deve ser um número.' })
+  @IsNotEmpty({ message: 'O campo idkeyEstabelecimento não pode estar vazio.' })
+  idkeyEstabelecimento: number; // ID do estabelecimento ao qual a quadra pertence
+  
+  @ApiProperty({ 
+    description: 'Lista de imagens para adicionar.', 
+    example: ['estabelecimento/imagem1.jpg', 'estabelecimento/imagem2.png'], 
+    required: false 
+  })
+  @IsArray()
+  @IsString({ each: true })
+  imagensToAdd?: string[];
 
   @ApiProperty({
     description: 'Array com IDs dos tipos de esporte a serem adicionados à quadra',
@@ -64,13 +73,4 @@ export class CreateQuadraDto {
   @IsArray({ message: 'O campo tiposEsporteToAdd deve ser um array de IDs.' })
   @IsNotEmpty({ message: 'O campo tiposEsporteToAdd não pode estar vazio.' })
   tiposEsporteToAdd: number[];
-
-  @ApiProperty({
-    description: 'ID do estabelecimento ao qual a quadra pertence',
-    example: 5,
-    type: Number,
-  })
-  @IsNumber({}, { message: 'O campo idkeyEstabelecimento deve ser um número.' })
-  @IsNotEmpty({ message: 'O campo idkeyEstabelecimento não pode estar vazio.' })
-  idkeyEstabelecimento: number; // ID do estabelecimento ao qual a quadra pertence
 }

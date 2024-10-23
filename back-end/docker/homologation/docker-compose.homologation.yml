@@ -1,0 +1,17 @@
+services:
+  back-end-aluguequadras-homologation:
+    build:
+      context: ../../
+      dockerfile: docker/homologation/Dockerfile
+    image: back-end-aluguequadras:homologation
+    container_name: back-end-aluguequadras-homologation
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    command: ["node", "-r", "dotenv/config", "dist/src/main.js", "dotenv_config_path=env/homologation.env"]
+    networks:
+      - nginx_proxy
+
+networks:
+  nginx_proxy:
+    external: true

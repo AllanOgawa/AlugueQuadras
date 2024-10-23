@@ -1,5 +1,8 @@
-import { IsNotEmpty, IsString, IsEmail, Length } from 'class-validator';
+
+import { IsNotEmpty, IsString, IsEmail, Length, IsArray, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { CreateEnderecoDto } from '@src/domains/geral/endereco/dto/create-endereco.dto';
+import { Type } from 'class-transformer';
 
 export class CreateEstabelecimentoDto {
   
@@ -59,4 +62,21 @@ export class CreateEstabelecimentoDto {
   @IsString({ message: 'O campo alvará deve ser uma string.' })
   @IsNotEmpty({ message: 'O campo alvará não pode estar vazio.' })
   alvara: string;
+
+  @ApiProperty({
+    description: 'Endereço do estabelecimento',
+    type: CreateEnderecoDto
+  })
+  @ValidateNested()
+  @Type(() => CreateEnderecoDto)
+  endereco: CreateEnderecoDto;
+
+  @ApiProperty({ 
+    description: 'Lista de imagens para adicionar.', 
+    example: ['estabelecimento/imagem1.jpg', 'estabelecimento/imagem2.png'], 
+    required: false 
+  })
+  @IsArray()
+  @IsString({ each: true })
+  imagensToAdd?: string[];
 }

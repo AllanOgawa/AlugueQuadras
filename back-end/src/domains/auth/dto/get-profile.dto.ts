@@ -1,4 +1,4 @@
-import { Imagem } from "@src/domains/storage/entities/imagem.entity";
+import { Imagem } from "@src/domains/storage/imagem/entities/imagem.entity";
 
 export class GetProfileDto {
   idkey: number;

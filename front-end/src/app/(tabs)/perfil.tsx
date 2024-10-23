@@ -1,19 +1,40 @@
 import IconUsuario from '@components/iconUsuario';
 import Constants from 'expo-constants';
 import { SafeAreaView, ScrollView, StatusBar, Text, View } from 'react-native';
-import * as data from '@/db.json'
 import { CardConfig } from '@components/cardConfig';
 import NotificationCard from '@components/cardNotification';
-import { useRouter } from 'expo-router';
+import { router } from 'expo-router';
+import { useContext, useEffect, useState } from 'react';
+import { UsuarioContext } from '@context/usuarioContext';
+import Loading from '@/src/components/loading';
 
 const statusBarHeight = Constants.statusBarHeight;
+const { bucketUrl, userDefaultImage } = Constants.expoConfig.extra;
 
 export default function Perfil() {
-	const user = data.user[1];
+	const [loading, setLoading] = useState(false);
+	const [nome, setNome] = useState("Usuário não Logado");
+	const [imagem, setImagem] = useState(userDefaultImage);
 
-	const router = useRouter()
+	const context = useContext(UsuarioContext);
+	if (!context) {
+		throw new Error("YourComponent must be used within an ArrayProvider");
+	}
+	const { usuario, setUsuario } = context;
 
-	if (user.adm) {
+	useEffect(() => {
+		if (usuario != null && usuario[0] !== null) {
+			if (usuario[0].nome) {
+				setNome(usuario[0].nome);
+			}
+			if (usuario[0].imagens && usuario[0].imagens[0].path) {
+				setImagem(usuario[0].imagens[0].path);
+			}
+		}
+		setLoading(false);
+	}, [usuario]);
+
+	if (false) {
 		return (
 			<SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
 				<StatusBar barStyle="dark-content" backgroundColor="white" />
@@ -77,6 +98,7 @@ export default function Perfil() {
 					/>
 
 				</ScrollView>
+				{loading && <Loading />}
 			</SafeAreaView>
 		);
 	}
@@ -90,9 +112,9 @@ export default function Perfil() {
 				showsVerticalScrollIndicator={false}
 			>
 				<View className="w-full px-4 py-8" style={{ marginTop: statusBarHeight }}>
-					<IconUsuario image={user.image} style="w-24 h-24 rounded-full border-2 border-black" />
+					<IconUsuario image={`${bucketUrl}/${imagem}`} style="w-24 h-24 rounded-full border-2 border-black" />
 					<Text className="font-bold text-center text-2xl">
-						{user.name}
+						{nome}
 					</Text>
 				</View>
 				<NotificationCard />
@@ -101,7 +123,7 @@ export default function Perfil() {
 					title="Minha conta"
 					subtitle="Meus dados"
 					style='h-16 w-full rounded-2xl flex-row items-center justify-between px-4'
-					onPress={() => router.push('/(usuario)/cadastro')}
+					onPress={() => router.push('/(usuario)/editar')}
 				/>
 				<CardConfig
 					icon="wallet"
@@ -142,6 +164,7 @@ export default function Perfil() {
 					}}
 				/>
 			</ScrollView>
+			{loading && <Loading />}
 		</SafeAreaView>
 	);
 }
