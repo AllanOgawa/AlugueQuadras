@@ -39,7 +39,7 @@ export class Estabelecimento {
   @JoinColumn({ name: 'idkey_endereco' })
   endereco: Endereco;
 
-  @OneToMany(() => Quadra, quadra => quadra.estabelecimento, { eager: true, nullable: true, cascade: true })
+  @OneToMany(() => Quadra, quadra => quadra.estabelecimento, { nullable: true, cascade: true })
   quadras: Quadra[];
 
   @ManyToOne(() => Usuario, usuario => usuario.estabelecimentos)

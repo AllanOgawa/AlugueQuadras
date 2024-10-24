@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, ValidationPipe, HttpStatus, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, ValidationPipe, HttpStatus, UseGuards, Request, ParseIntPipe } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { Estabelecimento } from './entities/estabelecimento.entity';
@@ -7,11 +7,12 @@ import { CreateEstabelecimentoDto } from './dto/create-estabelecimento.dto';
 import { UpdateEstabelecimentoDto } from './dto/update-estabelecimento.dto';
 
 import { JwtAuthGuard } from '@src/domains/auth/guard/jwt-auth.guard';
+import { Quadra } from './quadra/entities/quadra.entity';
 
 @ApiTags('Estabelecimento')
 @Controller('estabelecimento')
 export class EstabelecimentoController {
-  constructor(private readonly estabelecimentoService: EstabelecimentoService) {}
+  constructor(private readonly estabelecimentoService: EstabelecimentoService) { }
 
   @Post('new')
   @UseGuards(JwtAuthGuard)
@@ -62,10 +63,31 @@ export class EstabelecimentoController {
     try {
       const usuario = req.user;
       return await this.estabelecimentoService.findAllByUser(usuario);
-      } catch (error) {
-        throw new HttpException('Erro ao buscar todos estabelecimentos', HttpStatus.INTERNAL_SERVER_ERROR);
-      }
+    } catch (error) {
+      throw new HttpException('Erro ao buscar todos estabelecimentos', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
+
+  @Get(':idkey/quadras')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Listar todas as quadras de um estabelecimento' })
+  @ApiParam({ name: 'idkey', description: 'Identificador do estabelecimento', type: Number })
+  @ApiResponse({ status: 200, description: 'Lista de quadras', type: [Quadra] })
+  @ApiResponse({ status: 404, description: 'Estabelecimento ou quadras não encontradas' })
+  async findQuadrasByIdkeyEstabelecimento(@Param('idkey', ParseIntPipe) idkey: number): Promise<Quadra[]> {
+    try {
+      return await this.estabelecimentoService.findQuadrasByIdkeyEstabelecimento(idkey);
+    } catch (error) {
+      if (error.status === HttpStatus.NOT_FOUND) {
+        throw error;
+      } else {
+        console.error('Erro ao listar quadras:', error);
+        throw new HttpException('Erro ao listar quadras', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    }
+  }
+
 
   @Patch('edit/:idkey')
   @UseGuards(JwtAuthGuard)
@@ -105,7 +127,7 @@ export class EstabelecimentoController {
       if (error.status === HttpStatus.NOT_FOUND) {
         throw error;
       } else {
-      throw new HttpException('Erro ao remover usuário', HttpStatus.INTERNAL_SERVER_ERROR);
+        throw new HttpException('Erro ao remover usuário', HttpStatus.INTERNAL_SERVER_ERROR);
       }
     }
   }

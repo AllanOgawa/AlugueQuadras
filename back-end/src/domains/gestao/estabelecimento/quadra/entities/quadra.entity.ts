@@ -31,7 +31,7 @@ export class Quadra {
   @JoinColumn({ name: 'idkey_estabelecimento' })
   estabelecimento: Estabelecimento;
 
-  @ManyToMany(() => TipoEsporte, { eager: true, nullable: false, cascade: true })  // eager: true para trazer os tipos de esporte junto com a quadra
+  @ManyToMany(() => TipoEsporte, { eager: true, nullable: false, cascade: true })
   @JoinTable({
     name: 'rel_quadra_tipo_esporte',
     joinColumn: { name: 'idkey_quadra', referencedColumnName: 'idkey' },

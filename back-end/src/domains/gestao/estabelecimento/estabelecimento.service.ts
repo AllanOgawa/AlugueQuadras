@@ -1,22 +1,23 @@
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { BadRequestException, HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 
-import { Estabelecimento }          from "./entities/estabelecimento.entity";
+import { Estabelecimento } from "./entities/estabelecimento.entity";
 import { CreateEstabelecimentoDto } from "./dto/create-estabelecimento.dto";
 import { UpdateEstabelecimentoDto } from "./dto/update-estabelecimento.dto";
-import { Usuario }                  from "@src/domains/auth/usuario/entities/usuario.entity";
-import { ImagemService }            from "@src/domains/storage/imagem/imagem.service";
-import { EnderecoService }          from "@src/domains/geral/endereco/endereco.service";
+import { Usuario } from "@src/domains/auth/usuario/entities/usuario.entity";
+import { ImagemService } from "@src/domains/storage/imagem/imagem.service";
+import { EnderecoService } from "@src/domains/geral/endereco/endereco.service";
+import { Quadra } from "./quadra/entities/quadra.entity";
 
 @Injectable()
-export class EstabelecimentoService{
+export class EstabelecimentoService {
   constructor(
     @InjectRepository(Estabelecimento)
     private readonly estabelecimentoRepository: Repository<Estabelecimento>,
     private imagemService: ImagemService,
     private enderecoService: EnderecoService,
-  ){}
+  ) { }
 
   async create(createEstabelecimentoDto: CreateEstabelecimentoDto, usuario: Usuario): Promise<Estabelecimento> {
     let estabelecimento: Estabelecimento;
@@ -55,29 +56,48 @@ export class EstabelecimentoService{
     return this.findByIdkey(estabelecimento.idkey);
   }
 
-  async findAll(): Promise<Estabelecimento[]>{
-    try{
+  async findQuadrasByIdkeyEstabelecimento(idkey: number): Promise<Quadra[]> {
+    const estabelecimento = await this.estabelecimentoRepository.findOne({
+      where: { idkey },
+      relations: ['quadras'],
+    });
+
+    if (!estabelecimento) {
+      throw new NotFoundException(`Estabelecimento com idkey ${idkey} não encontrado`);
+    }
+
+    const quadras = estabelecimento.quadras;
+
+    if (!quadras || quadras.length === 0) {
+      throw new NotFoundException(`Nenhuma quadra encontrada para o estabelecimento com idkey ${idkey}`);
+    }
+
+    return quadras;
+  }
+
+  async findAll(): Promise<Estabelecimento[]> {
+    try {
       return await this.estabelecimentoRepository.find();
-    }catch(error){
+    } catch (error) {
       throw new HttpException('Erro ao buscar estabelecimentos', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  async findAllByUser(usuario: Usuario): Promise<Estabelecimento[]>{
-    try{
+  async findAllByUser(usuario: Usuario): Promise<Estabelecimento[]> {
+    try {
       return await this.estabelecimentoRepository.find({
-        where: { usuario : { idkey: usuario.idkey } },
+        where: { usuario: { idkey: usuario.idkey } },
       });
     }
-    catch(error){
+    catch (error) {
       throw new HttpException('Erro ao buscar estabelecimentos', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  async findByIdkey(idkey: number): Promise<Estabelecimento>{
-    try{
+  async findByIdkey(idkey: number): Promise<Estabelecimento> {
+    try {
       return await this.estabelecimentoRepository.findOne({
-        where:{ idkey }
+        where: { idkey }
       });
     } catch (error) {
       throw new HttpException('Erro ao buscar estabelecimento', HttpStatus.INTERNAL_SERVER_ERROR);
@@ -88,10 +108,10 @@ export class EstabelecimentoService{
     const { nome, telefone, email, alvara } = updateEstabelecimentoDto;
 
     const updateData: Partial<Estabelecimento> = {};
-    if (nome)     updateData.nome     = nome;
+    if (nome) updateData.nome = nome;
     if (telefone) updateData.telefone = telefone;
-    if (email)    updateData.email    = email;
-    if (alvara)   updateData.alvara   = alvara;
+    if (email) updateData.email = email;
+    if (alvara) updateData.alvara = alvara;
 
     try {
       await this.estabelecimentoRepository.update(idkey, updateData);
@@ -105,7 +125,7 @@ export class EstabelecimentoService{
   }
 
   async manageImages(estabelecimento: Estabelecimento, imagensToAdd?: string[], imagensToRemove?: string[]): Promise<void> {
-  
+
     if (imagensToAdd && imagensToAdd.length > 0) {
       try {
         const imagensExistentes = estabelecimento.imagens.map(imagem => imagem.path);

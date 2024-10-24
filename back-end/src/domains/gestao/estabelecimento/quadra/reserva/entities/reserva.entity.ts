@@ -7,10 +7,10 @@ export class Reserva {
   @PrimaryGeneratedColumn({ type: 'bigint', primaryKeyConstraintName: 'pk_reserva' })
   idkey: number;
 
-  @Column({ name: 'data_inicio', type: 'timestamp', nullable: false })
+  @Column({ name: 'data_inicio', type: 'timestamptz', nullable: false })
   dataInicio: Date;
 
-  @Column({ name: 'data_fim', type: 'timestamp', nullable: false })
+  @Column({ name: 'data_fim', type: 'timestamptz', nullable: false })
   dataFim: Date;
 
   @ManyToOne(() => Quadra, quadra => quadra.reservas, { eager: true, nullable: false })
