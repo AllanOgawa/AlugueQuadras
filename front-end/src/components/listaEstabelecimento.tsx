@@ -1,30 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { EstabelecimentoProps } from '../interfaces/estabelecimento';
-import { MaterialIcons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
-import { useNavigation } from '@react-navigation/native';  // Para navegação
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
 
-interface RenderOptions {
-    showImage?: boolean;
-    showAvaliacao?: boolean;
-    showPreco?: boolean;
-    showAcomodacoes?: boolean;
-}
-
 interface Props {
-    options?: RenderOptions;
+    onPress: (estabelecimento: EstabelecimentoProps) => void;
 }
 
-const ListaEstabelecimento: React.FC<Props> = ({ options = {} }) => {
+const ListaEstabelecimento: React.FC<Props> = ({ onPress }) => {
     const [data, setData] = useState<EstabelecimentoProps[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-
-    const navigation = useNavigation(); // Hook para navegação
 
     useEffect(() => {
         const fetchEstabelecimentos = async () => {
@@ -55,19 +44,9 @@ const ListaEstabelecimento: React.FC<Props> = ({ options = {} }) => {
         fetchEstabelecimentos();
     }, []);
 
-    const handlePress = async (item: EstabelecimentoProps) => {
-        try {
-            // Salva o id do estabelecimento no AsyncStorage
-            await AsyncStorage.setItem('idEstabelecimento', item.idkey.toString());
-            console.log('Id do estabelecimento salvo com sucesso.');
-        } catch (error) {
-            console.error('Erro ao salvar o id do estabelecimento:', error);
-        }
-    };
-
     const renderEstabelecimento = (item: EstabelecimentoProps) => (
-        <TouchableOpacity style={styles.card} onPress={() => handlePress(item)} key={item.idkey}>
-            {options.showImage && item.imagens && item.imagens.length > 0 && (
+        <TouchableOpacity style={styles.card} onPress={() => onPress(item)} key={item.idkey}>
+            {item.imagens && item.imagens.length > 0 && (
                 <Image source={{ uri: `${apiUrl}/${item.imagens[0].path}` }} style={styles.image} />
             )}
             <View style={styles.infoContainer}>
@@ -75,12 +54,6 @@ const ListaEstabelecimento: React.FC<Props> = ({ options = {} }) => {
                 <Text style={styles.endereco}>
                     {item.endereco.logradouro}, {item.endereco.numero} - {item.endereco.bairro}, {item.endereco.cidade} - {item.endereco.estado}
                 </Text>
-                {options.showAvaliacao && (
-                    <Text style={styles.avaliacao}>Avaliação: N/A</Text>
-                )}
-                {options.showPreco && (
-                    <Text style={styles.preco}>Preço: N/A</Text>
-                )}
             </View>
         </TouchableOpacity>
     );
@@ -133,13 +106,6 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: '#666',
         marginBottom: 4,
-    },
-    avaliacao: {
-        fontSize: 14,
-        marginBottom: 12,
-    },
-    preco: {
-        fontWeight: 'bold',
     },
 });
 
