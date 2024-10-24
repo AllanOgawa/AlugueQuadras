@@ -148,8 +148,8 @@ export default function Perfil() {
 				/>
 				<CardConfig
 					icon="sports-tennis"
-					title="Tenho um negócio"
-					subtitle="Torne-se um parceiro!"
+					title="Estabelecimento"
+					subtitle="Meu estabelecimento"
 					style="h-16 w-full rounded-2xl flex-row items-center justify-between px-4"
 					onPress={() => {
 <<<<<<< HEAD
@@ -162,6 +162,13 @@ export default function Perfil() {
 						router.push('/(estabelecimento)/menu')
 >>>>>>> 2cef1aa93ebd66ae32746187fd6ec38bf08de022
 					}}
+				/>
+				<CardConfig
+					icon="sports-tennis"
+					title="Quadras"
+					subtitle="Minhas quadras"
+					style='h-16 w-full rounded-2xl flex-row items-center justify-between px-4'
+					onPress={() => router.push('/(quadra)/menu')}
 				/>
 			</ScrollView>
 			{loading && <Loading />}
