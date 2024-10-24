@@ -152,15 +152,7 @@ export default function Perfil() {
 					subtitle="Meu estabelecimento"
 					style="h-16 w-full rounded-2xl flex-row items-center justify-between px-4"
 					onPress={() => {
-<<<<<<< HEAD
-						if (!user.adm) {
-							router.push('/(quadra)/home')
-						} else {
-							console.log("Usuário não é administrador, ação não permitida.");
-						}
-=======
 						router.push('/(estabelecimento)/menu')
->>>>>>> 2cef1aa93ebd66ae32746187fd6ec38bf08de022
 					}}
 				/>
 				<CardConfig

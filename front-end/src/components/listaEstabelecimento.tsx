@@ -1,46 +1,3 @@
-<<<<<<< HEAD
-import React from 'react';
-import { View, Text, Image, FlatList, StyleSheet } from 'react-native';
-
-interface Estabelecimento {
-    id: string;
-    name: string;
-    endereco: string;
-    avaliacao: number;
-    image: { id: string; name: string; image: string }[];
-}
-
-interface Props {
-    data: Estabelecimento[];
-}
-
-const ListaEstabelecimento: React.FC<Props> = ({ data }) => {
-    // Renderiza cada estabelecimento da lista
-    const renderEstabelecimento = ({ item }: { item: Estabelecimento }) => (
-        <View style={styles.card}>
-            <Text style={styles.name}>{item.name}</Text>
-            <Text style={styles.endereco}>{item.endereco}</Text>
-            <Text style={styles.avaliacao}>Avaliação: {item.avaliacao.toFixed(1)} ⭐</Text>
-            <FlatList
-                data={item.image}
-                horizontal
-                keyExtractor={(image) => image.id}
-                renderItem={({ item: img }) => (
-                    <Image source={{ uri: img.image }} style={styles.image} />
-                )}
-                showsHorizontalScrollIndicator={false}
-            />
-        </View>
-    );
-
-    return (
-        <FlatList
-            data={data}
-            keyExtractor={(item) => item.id}
-            renderItem={renderEstabelecimento}
-            contentContainerStyle={styles.container}
-        />
-=======
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { EstabelecimentoProps } from '../interfaces/estabelecimento';
@@ -140,22 +97,10 @@ const ListaEstabelecimento: React.FC<Props> = ({ options = {} }) => {
         <View>
             {data.map(item => renderEstabelecimento(item))}
         </View>
->>>>>>> 2cef1aa93ebd66ae32746187fd6ec38bf08de022
     );
 };
 
 const styles = StyleSheet.create({
-<<<<<<< HEAD
-    container: {
-        paddingHorizontal: 16,
-        paddingVertical: 16,
-    },
-    card: {
-        backgroundColor: '#fff',
-        borderRadius: 8,
-        padding: 16,
-        marginBottom: 16,
-=======
     card: {
         backgroundColor: '#fff',
         borderRadius: 8,
@@ -163,17 +108,11 @@ const styles = StyleSheet.create({
         padding: 16,
         marginBottom: 16,
         marginHorizontal: 8,
->>>>>>> 2cef1aa93ebd66ae32746187fd6ec38bf08de022
         shadowColor: '#000',
         shadowOpacity: 0.1,
         shadowRadius: 8,
         elevation: 3,
     },
-<<<<<<< HEAD
-    name: {
-        fontSize: 18,
-        fontWeight: 'bold',
-=======
     image: {
         width: 150,
         height: 150,
@@ -188,32 +127,19 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         color: '#FF6600',
->>>>>>> 2cef1aa93ebd66ae32746187fd6ec38bf08de022
         marginBottom: 8,
     },
     endereco: {
         fontSize: 14,
         color: '#666',
-<<<<<<< HEAD
-        marginBottom: 8,
-=======
         marginBottom: 4,
->>>>>>> 2cef1aa93ebd66ae32746187fd6ec38bf08de022
     },
     avaliacao: {
         fontSize: 14,
         marginBottom: 12,
     },
-<<<<<<< HEAD
-    image: {
-        width: 100,
-        height: 100,
-        borderRadius: 8,
-        marginRight: 8,
-=======
     preco: {
         fontWeight: 'bold',
->>>>>>> 2cef1aa93ebd66ae32746187fd6ec38bf08de022
     },
 });
 
