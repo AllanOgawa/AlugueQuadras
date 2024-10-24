@@ -1,6 +1,7 @@
 import { EsportesProps } from "./esportes";
 
 export interface QuadraProps {
+    idkey: string;
     local: any;
     endereco: any;
     id: string;

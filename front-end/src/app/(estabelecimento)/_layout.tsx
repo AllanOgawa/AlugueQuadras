@@ -25,6 +25,12 @@ export default function EstabelecimentoLayout() {
       <Stack.Screen name="menu/[id]" options={{
         headerShown: false, animation: "ios"
       }} />
+      <Stack.Screen name="home" options={{
+        headerShown: true, headerTitle: "Estabelecimento",
+        animation: 'ios',
+        headerTintColor: "#000000",
+        headerBackButtonMenuEnabled: true
+      }} />
     </Stack>
   );
 }
