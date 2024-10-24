@@ -151,7 +151,7 @@ export default function MenuEstabelecimento() {
                             title={'Quadras'}
                             subtitle={'Ver quadras deste estabelecimento'}
                             style="h-16 w-full rounded-2xl flex-row items-center justify-between"
-                            onPress={handleVerQuadras}
+                            onPress={() => router.push('/(quadra)/menu')}
                         />
                     </>
                 )}
