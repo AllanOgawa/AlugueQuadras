@@ -1,5 +1,5 @@
 export interface ImagemProps {
-    id: string;
-    name: string;
-    image: string;
+    idkey: number;
+    path: string;
+    dataCadastro: string;
 }

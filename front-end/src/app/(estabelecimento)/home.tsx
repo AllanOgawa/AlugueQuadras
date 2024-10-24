@@ -1,42 +1,136 @@
-import ListaQuadrasEstabelecimento from '@/src/components/listaQuadrasEstabelecimento';
-import { EstabelecimentoProps } from '@/src/interfaces/estabelecimento';
-import { CardConfig } from '@components/cardConfig';
-import CourtList, { CourtProps } from '@components/quadras';
-import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { View, Text, SafeAreaView, ScrollView } from 'react-native';
-import Toast from 'react-native-toast-message';
-
-import * as data from '@/db.json'; // Importa o JSON com os dados
-import SetaVoltar from '@/src/components/setaVoltar';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Button, Alert, SafeAreaView, ScrollView } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import ListaEstabelecimento from '@/src/components/listaEstabelecimento';
+import { router } from 'expo-router';
+import { CardConfig } from '@/src/components/cardConfig';
+import Toast from 'react-native-toast-message';
+import Constants from 'expo-constants';
 
-export default function HomeEstabelecimento() {
-    const [estabelecimentos, setEstabelecimentos] = useState<EstabelecimentoProps[]>([]); // Array de estabelecimentos
-    const { message } = useLocalSearchParams();
+const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
 
-    // Função para lidar com o clique em uma quadra
-    function handleCourtPress(court: CourtProps): void {
-        console.log(`Você clicou na quadra ${court.local} localizada em ${court.endereco}`);
-    }
+const MenuEstabelecimento = () => {
+    const navigation = useNavigation();
+    const [selectedEstabelecimento, setSelectedEstabelecimento] = useState<string | null>(null);
+    const [estabelecimentos, setEstabelecimentos] = useState([]);
 
-    // Exibir toast com a mensagem, se disponível
     useEffect(() => {
-        if (message) {
-            const toastMessage = Array.isArray(message) ? message.join(', ') : message;
+        // Carrega o ID do estabelecimento salvo no AsyncStorage
+        const loadEstabelecimento = async () => {
+            try {
+                const idEstabelecimento = await AsyncStorage.getItem('idEstabelecimento');
+                if (idEstabelecimento) {
+                    setSelectedEstabelecimento(idEstabelecimento);
+                }
+            } catch (error) {
+                console.error('Erro ao carregar o ID do estabelecimento:', error);
+            }
+        };
+
+        // Função para buscar a lista de estabelecimentos
+        const fetchEstabelecimentos = async () => {
+            try {
+                const access_token = await AsyncStorage.getItem('access_token');
+                const response = await fetch(`${apiUrl}/estabelecimento/usuario`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${access_token}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erro ao buscar estabelecimentos');
+                }
+
+                const data = await response.json();
+                setEstabelecimentos(data);
+            } catch (error) {
+                console.error('Erro ao buscar estabelecimentos:', error);
+            }
+        };
+
+        loadEstabelecimento();
+        fetchEstabelecimentos(); // Busca a lista de estabelecimentos ao carregar a tela
+    }, []);
+
+    const handlePress = async (estabelecimento) => {
+        try {
+            // Salva o ID do estabelecimento no AsyncStorage
+            await AsyncStorage.setItem('idEstabelecimento', estabelecimento.idkey.toString());
+            console.log('ID do estabelecimento salvo:', estabelecimento.idkey);
+
+            // Atualiza o estado local
+            setSelectedEstabelecimento(estabelecimento.idkey.toString());
+
+            Alert.alert('Sucesso', 'Estabelecimento selecionado!');
+        } catch (error) {
+            console.error('Erro ao salvar o ID do estabelecimento:', error);
+        }
+    };
+
+    const handleEditarEstabelecimento = () => {
+        if (selectedEstabelecimento) {
+            router.push('/(estabelecimento)/editar', { idEstabelecimento: selectedEstabelecimento });
+        } else {
+            Alert.alert('Erro', 'Nenhum estabelecimento selecionado.');
+        }
+    };
+
+    const removerEstabelecimento = async () => {
+        try {
+            const access_token = await AsyncStorage.getItem('access_token');
+            const response = await fetch(`${apiUrl}/estabelecimento/remove/${selectedEstabelecimento}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${access_token}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Erro ao remover estabelecimento');
+            }
+
+            // Exibe mensagem de sucesso
             Toast.show({
                 type: 'success',
-                text1: toastMessage,
+                text1: 'Estabelecimento removido com sucesso',
+            });
+
+            // Redireciona após a remoção
+            setTimeout(() => {
+                router.replace({
+                    pathname: '/menu',
+                    params: { message: 'Estabelecimento removido com sucesso!' },
+                });
+            }, 600);
+        } catch (error) {
+            console.error(error);
+            Toast.show({
+                type: 'error',
+                text1: 'Erro ao remover o estabelecimento',
             });
         }
-    }, [message]);
+    };
 
-    // Carrega os dados do JSON ao montar o componente
-    useEffect(() => {
-        if (data.estabelecimento && data.estabelecimento.length > 0) {
-            setEstabelecimentos(data.estabelecimento); // Define todos os estabelecimentos
+    const handleRemoverEstabelecimento = () => {
+        if (selectedEstabelecimento) {
+            Alert.alert('Remover', `Deseja remover o estabelecimento ${selectedEstabelecimento}?`, [
+                { text: 'Cancelar', style: 'cancel' },
+                { text: 'Remover', onPress: removerEstabelecimento },
+            ]);
+        } else {
+            Alert.alert('Erro', 'Nenhum estabelecimento selecionado.');
         }
-    }, []);
+    };
+
+    const handleVerQuadras = () => {
+        if (selectedEstabelecimento) {
+            navigation.navigate('QuadrasCadastradas', { idEstabelecimento: selectedEstabelecimento });
+        } else {
+            Alert.alert('Erro', 'Nenhum estabelecimento selecionado.');
+        }
+    };
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
@@ -44,7 +138,7 @@ export default function HomeEstabelecimento() {
                 {/* Cartões de Configuração */}
                 <CardConfig
                     icon={'add-circle-outline'}
-                    title={'Nova Estabelecimento'}
+                    title={'Novo Estabelecimento'}
                     subtitle={'Cadastrar um novo estabelecimento'}
                     style='h-16 w-full rounded-2xl flex-row items-center justify-between'
                     onPress={() => router.push('/create')}
@@ -52,25 +146,24 @@ export default function HomeEstabelecimento() {
                 <CardConfig
                     icon={'create'}
                     title={'Editar Estabelecimento'}
-                    subtitle={'Editar uma quadra'}
+                    subtitle={'Editar um estabelecimento'}
                     style='h-16 w-full rounded-2xl flex-row items-center justify-between'
-                    onPress={() => router.push('/edit')}
+                    onPress={handleEditarEstabelecimento}
                 />
                 <CardConfig
                     icon={'highlight-remove'}
-                    title={'Remover estabelecimento'}
+                    title={'Remover Estabelecimento'}
                     subtitle={'Remover um estabelecimento'}
                     style='h-16 w-full rounded-2xl flex-row items-center justify-between'
-                    onPress={() => router.push('/remove')}
+                    onPress={handleRemoverEstabelecimento}
                 />
 
-                {/* Título para quadras ativas */}
                 <Text className='font-normal text-3xl py-5'>Ativas</Text>
 
                 <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-                    {/* Renderização condicional da lista de estabelecimentos */}
+                    {/* Renderização da lista de estabelecimentos */}
                     {estabelecimentos.length > 0 ? (
-                        <ListaEstabelecimento data={estabelecimentos} />
+                        <ListaEstabelecimento data={estabelecimentos} onPress={handlePress} />
                     ) : (
                         <Text>Nenhum estabelecimento encontrado.</Text>
                     )}
@@ -78,4 +171,6 @@ export default function HomeEstabelecimento() {
             </View>
         </SafeAreaView>
     );
-}
+};
+
+export default MenuEstabelecimento;

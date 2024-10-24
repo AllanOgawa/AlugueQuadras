@@ -35,6 +35,6 @@ export interface EstabelecimentoProps {
     dataAtualizacao: string;     // "dataAtualizacao" (ISO string format)
     endereco: EnderecoProps;     // Objeto de endereço, conforme detalhado
     imagens: ImagemProps[];      // Lista de imagens
-    quadras: QuadraProps[];      // Array vazio por enquanto
+    quadras: QuadraProps[];
 }
 
