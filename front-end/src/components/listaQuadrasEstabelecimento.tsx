@@ -28,7 +28,7 @@ export default function ListaQuadrasEstabelecimento({ quadras, onClick }: { quad
             {quadras.map((quadra) => (
                 <View key={quadra.idkey}>
                     <View className='flex flex-row w-full'>
-                        <TouchableOpacity className='w-32 h-[120] rounded-2xl justify-self-center' onPress={() => openModal(quadra.imagens[0].path)}>
+                        <TouchableOpacity className='w-32 h-[120] rounded-2xl justify-self-center'>
                             <Image
                                 source={{ uri: `${apiUrl}/${quadra.imagens[0].path}` }}
                                 className='w-[7.6rem] h-[7.6rem] rounded-2xl'

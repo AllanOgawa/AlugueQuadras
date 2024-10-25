@@ -37,7 +37,7 @@ export default function MenuEstabelecimento() {
             });
 
             setTimeout(() => {
-                router.replace('/menu', { message: 'Estabelecimento removido com sucesso!' });
+                router.replace('/menu');
             }, 600);
         } catch (error) {
             console.error(error);
@@ -124,7 +124,7 @@ export default function MenuEstabelecimento() {
 
                 {estabelecimento && (
                     <>
-                        <Text style={styles.estabelecimentoName}>{estabelecimento.nome}</Text>
+                        <Text className='text-3xl font-bold my-4'>{estabelecimento.nome}</Text>
                         <CardConfig
                             icon={'create'}
                             title={'Editar Estabelecimento'}
@@ -151,7 +151,7 @@ export default function MenuEstabelecimento() {
                             title={'Quadras'}
                             subtitle={'Ver quadras deste estabelecimento'}
                             style="h-16 w-full rounded-2xl flex-row items-center justify-between"
-                            onPress={() => router.push('/(quadra)/menu')}
+                            onPress={() => router.push({ pathname: '/(quadra)/menu', params: { id: estabelecimento.idkey } })}
                         />
                     </>
                 )}
@@ -167,11 +167,3 @@ export default function MenuEstabelecimento() {
         </SafeAreaView>
     );
 }
-
-const styles = StyleSheet.create({
-    estabelecimentoName: {
-        fontSize: 30,
-        fontWeight: 'bold',
-        marginBottom: 16,
-    },
-});

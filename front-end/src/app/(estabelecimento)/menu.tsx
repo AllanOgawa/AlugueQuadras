@@ -71,6 +71,7 @@ const MenuEstabelecimento = () => {
         <SafeAreaView className="flex-1 bg-white" style={{ marginTop: statusBarHeight }}>
             <SetaVoltar />
             <View className="bg-white w-full px-4 flex-1 mt-1">
+                <Text className='text-3xl font-bold my-4'>Estabelecimentos</Text>
                 {/* Cartões de Configuração */}
                 <CardConfig
                     icon={'add-circle-outline'}

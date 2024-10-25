@@ -1,53 +1,75 @@
 import ListaQuadrasEstabelecimento from '@/src/components/listaQuadrasEstabelecimento';
 import { EstabelecimentoProps } from '@/src/interfaces/estabelecimento';
 import { CardConfig } from '@components/cardConfig';
-import CourtList, { CourtProps } from '@components/quadras';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { View, Text, SafeAreaView, ScrollView, StatusBar } from 'react-native';
+import { View, Text, SafeAreaView, ScrollView, StatusBar, ActivityIndicator } from 'react-native';
 import Toast from 'react-native-toast-message';
-
-import * as data from '@/db.json' // Importa o JSON com os dados
-import { QuadraProps } from '@/src/interfaces/quadra';
 import Constants from 'expo-constants';
 import SetaVoltar from '@/src/components/setaVoltar';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
 const statusBarHeight = Constants.statusBarHeight;
 
 export default function HomeQuadra() {
     const [estabelecimento, setEstabelecimento] = useState<EstabelecimentoProps | null>(null);
-    const { message } = useLocalSearchParams();
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+    const { id } = useLocalSearchParams();  // Caso você passe o id do estabelecimento via rota
 
-    // Função para lidar com o clique em uma quadra
-    function handleCourtPress(court: CourtProps): void {
-        console.log(`Você clicou na quadra ${court.local} localizada em ${court.endereco}`);
+    // Função para buscar dados do estabelecimento na API
+    const fetchEstabelecimento = async () => {
+        try {
+            const access_token = await AsyncStorage.getItem('access_token');
+            const response = await fetch(`${apiUrl}/estabelecimento/search/${id}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${access_token}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Erro ao buscar os dados do estabelecimento');
+            }
+
+            const data = await response.json();
+            setEstabelecimento(data); // Armazena o estabelecimento no estado
+        } catch (error) {
+            setError('Não foi possível carregar o estabelecimento');
+            console.error('Erro ao buscar os dados do estabelecimento:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchEstabelecimento();
+    }, [id]);
+
+    if (loading) {
+        return (
+            <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color="#FF6600" />
+            </SafeAreaView>
+        );
     }
 
-    // Exibir toast com a mensagem, se disponível
-    useEffect(() => {
-        if (message) {
-            const toastMessage = Array.isArray(message) ? message.join(', ') : message;
-            Toast.show({
-                type: 'success',
-                text1: toastMessage,
-            });
-        }
-    }, [message]);
-
-    // Carrega os dados do JSON ao montar o componente
-    useEffect(() => {
-        if (data.estabelecimento && data.estabelecimento.length > 0) {
-            // Defina o primeiro estabelecimento (ou outro critério de escolha)
-            setEstabelecimento(data.estabelecimento[1]);
-        }
-    }, []);
+    if (error) {
+        return (
+            <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Text>{error}</Text>
+            </SafeAreaView>
+        );
+    }
 
     return (
         <SafeAreaView className="flex-1 bg-white" style={{ marginTop: statusBarHeight }}>
             <SetaVoltar />
             <StatusBar barStyle="dark-content" backgroundColor="white" />
             <View className="bg-white w-full px-4 flex-1 mt-1">
-                {/* Cartões de Configuração */}
+                <Text className='text-3xl font-bold my-4'>Quadras</Text>
                 <CardConfig
                     icon={'add-circle-outline'}
                     title={'Nova quadra'}

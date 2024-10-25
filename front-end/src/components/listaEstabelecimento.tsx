@@ -46,9 +46,6 @@ const ListaEstabelecimento: React.FC<Props> = ({ onPress }) => {
 
     const renderEstabelecimento = (item: EstabelecimentoProps) => (
         <TouchableOpacity style={styles.card} onPress={() => onPress(item)} key={item.idkey}>
-            {item.imagens && item.imagens.length > 0 && (
-                <Image source={{ uri: `${apiUrl}/${item.imagens[0].path}` }} style={styles.image} />
-            )}
             <View style={styles.infoContainer}>
                 <Text style={styles.name}>{item.nome}</Text>
                 <Text style={styles.endereco}>
