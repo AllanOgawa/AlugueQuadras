@@ -46,12 +46,21 @@ export default function TelaLogin() {
         try {
             const value = await AsyncStorage.getItem("access_token");
             if (value !== null && value !== "") {
-                handleLogin("value");
+                handleLogin(value);
             } else {
                 setLoading(false);
             }
         } catch (e) {
             console.error('Erro ao obter dados', e);
+        }
+    };
+
+    async function setAccessToken(access_token: string) {
+        try {
+            await AsyncStorage.setItem("access_token", access_token);
+            console.log('Dados armazenados no localStorage com sucesso');
+        } catch (e) {
+            console.error('Erro ao salvar dados', e);
         }
     };
 
@@ -71,9 +80,12 @@ export default function TelaLogin() {
                 setLogin(true);
                 setUsuario([data]);
                 router.replace('/(tabs)/inicio');
+            } else {
+                setAccessToken("");
             }
         } catch (error) {
             console.error('Erro de rede', error);
+            setAccessToken("");
             Toast.show({
                 type: 'error',
                 text1: "Erro de Rede",

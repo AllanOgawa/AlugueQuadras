@@ -1,5 +1,5 @@
-import { ActivityIndicator, SafeAreaView, ScrollView, StatusBar, Text, TextInput, View } from 'react-native';
-import { useRef, useState } from 'react';
+import { SafeAreaView, ScrollView, StatusBar, Text, TextInput, View } from 'react-native';
+import { useContext, useRef, useState } from 'react';
 import Constants from 'expo-constants'
 import { router } from 'expo-router';
 import Input from '@components/inputs/input';
@@ -9,6 +9,7 @@ import BotaoPressable from '@components/botoes/botaoPressable';
 import Loading from '@components/loading';
 import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { UsuarioContext } from '@context/usuarioContext';
 
 const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
 
@@ -22,7 +23,13 @@ export default function UsuarioLogin() {
     const usernameInputRef = useRef<TextInput>(null);
     const senhaInputRef = useRef<TextInput>(null);
 
-    async function storeData(access_token: string) {
+    const context = useContext(UsuarioContext);
+    if (!context) {
+        throw new Error("YourComponent must be used within an ArrayProvider");
+    }
+    const { usuario, setUsuario } = context;
+
+    async function setAccessToken(access_token: string) {
         try {
             await AsyncStorage.setItem("access_token", access_token);
             console.log('Dados armazenados no localStorage com sucesso');
@@ -36,6 +43,7 @@ export default function UsuarioLogin() {
         setErrorUsername('');
         setErrorSenha('');
 
+        let accessToken = "";
         let isValid = true;
         if (!username) {
             setErrorUsername("O campo Username/Email é obrigatório");
@@ -63,16 +71,8 @@ export default function UsuarioLogin() {
             const data = await response.json();
 
             if (response.ok) {
-                storeData(data.access_token)
-                console.log(data);
-                Toast.show({
-                    type: 'success',
-                    text1: "Login Bem-Sucedido",
-                });
-                router.replace({
-                    pathname: '/(tabs)/inicio',
-                    params: { userData: JSON.stringify(data) },
-                });
+                setAccessToken(data.access_token);
+                accessToken = data.access_token;
             } else {
                 console.error('Erro no login', data);
                 Toast.show({
@@ -80,6 +80,42 @@ export default function UsuarioLogin() {
                     text1: "Login Falhou",
                     text2: data.message,
                 });
+            }
+        } catch (error) {
+            console.error('Erro de rede', error);
+            Toast.show({
+                type: 'error',
+                text1: "Erro de Rede",
+                text2: String(error),
+            });
+        } finally {
+            if (accessToken != "") {
+                getProfile(accessToken)
+            }
+            setLoading(false);
+        }
+    };
+
+    async function getProfile(accessToken: string) {
+        setLoading(true);
+        try {
+            const response = await fetch(`${apiUrl}/auth/profile`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                Toast.show({
+                    type: 'success',
+                    text1: "Login Bem-Sucedido",
+                });
+                setUsuario([data]);
+                router.replace('/(tabs)/inicio');
             }
         } catch (error) {
             console.error('Erro de rede', error);
