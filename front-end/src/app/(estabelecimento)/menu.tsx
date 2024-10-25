@@ -72,7 +72,6 @@ const MenuEstabelecimento = () => {
             <SetaVoltar />
             <View className="bg-white w-full px-4 flex-1 mt-1">
                 <Text className='text-3xl font-bold my-4'>Estabelecimentos</Text>
-                {/* Cartões de Configuração */}
                 <CardConfig
                     icon={'add-circle-outline'}
                     title={'Novo Estabelecimento'}
@@ -84,7 +83,6 @@ const MenuEstabelecimento = () => {
                 <Text className='font-normal text-3xl py-5'>Estabelecimentos Ativos</Text>
 
                 <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-                    {/* Renderização da lista de estabelecimentos */}
                     {estabelecimentos.length > 0 ? (
                         <ListaEstabelecimento data={estabelecimentos} onPress={handlePress} />
                     ) : (

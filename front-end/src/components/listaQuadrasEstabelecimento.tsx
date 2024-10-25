@@ -29,10 +29,6 @@ export default function ListaQuadrasEstabelecimento({ quadras, onClick }: { quad
                 <View key={quadra.idkey}>
                     <View className='flex flex-row w-full'>
                         <TouchableOpacity className='w-32 h-[120] rounded-2xl justify-self-center'>
-                            <Image
-                                source={{ uri: `${apiUrl}/${quadra.imagens[0].path}` }}
-                                className='w-[7.6rem] h-[7.6rem] rounded-2xl'
-                            />
                         </TouchableOpacity>
                         <View className='ml-3 flex-1'>
                             <Pressable onPress={() => onClick(quadra)}>
@@ -66,7 +62,6 @@ export default function ListaQuadrasEstabelecimento({ quadras, onClick }: { quad
                 onRequestClose={closeModal}
             >
                 <View className='flex-1 justify-center items-center bg-black/90'>
-                    <Image source={{ uri: selectedImage ?? '' }} style={styles.fullscreenImage} />
                     <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
                         <Ionicons name="close" size={40} color="white" />
                     </TouchableOpacity>

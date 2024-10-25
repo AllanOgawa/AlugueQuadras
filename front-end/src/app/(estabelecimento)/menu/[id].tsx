@@ -61,7 +61,10 @@ export default function MenuEstabelecimento() {
 
     const handleEditarEstabelecimento = () => {
         if (estabelecimento?.idkey) {
-            router.push({ pathname: '/editar', params: { id: estabelecimento.idkey } });
+            router.push({
+                pathname: '/(estabelecimento)/cadastrar',
+                params: { estabelecimento: JSON.stringify(estabelecimento) }, // Passa os dados do estabelecimento como string JSON
+            });
         } else {
             Alert.alert('Erro', 'Nenhum estabelecimento selecionado.');
         }
@@ -121,7 +124,6 @@ export default function MenuEstabelecimento() {
             <SetaVoltar />
             <View className="mx-3">
                 <StatusBar barStyle="dark-content" backgroundColor="white" />
-
                 {estabelecimento && (
                     <>
                         <Text className='text-3xl font-bold my-4'>{estabelecimento.nome}</Text>

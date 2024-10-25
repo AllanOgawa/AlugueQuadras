@@ -1,7 +1,7 @@
 import { ActivityIndicator, SafeAreaView, ScrollView, StatusBar, Text, TextInput, View } from 'react-native';
 import Constants from 'expo-constants';
-import { useState, useRef } from 'react';
-import { router } from 'expo-router';
+import { useState, useEffect, useRef } from 'react';
+import { router, useLocalSearchParams } from 'expo-router';  // Importar useLocalSearchParams para pegar os parâmetros da rota
 import Input from '@components/inputs/input';
 import BotaoTouchableOpacity from '@components/botoes/botaoTouchableOpacity';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -17,6 +17,10 @@ const statusBarHeight = Constants.statusBarHeight;
 const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
 
 export default function EstabelecimentoCadastro() {
+    const { estabelecimento } = useLocalSearchParams(); // Recupera o parâmetro da rota
+    const [isEditing, setIsEditing] = useState(false); // Verifica se é edição ou cadastro
+
+    const [id, setId] = useState(null); // Para armazenar o ID
     const [loading, setLoading] = useState(false);
     const [isAppReady, setIsAppReady] = useState(true);
 
@@ -46,9 +50,7 @@ export default function EstabelecimentoCadastro() {
     const [errorEmail, setErrorEmail] = useState('');
     const [errorAlvara, setErrorAlvara] = useState('');
 
-
     // erros endereco
-    const [errorEndereco, setErrorEndereco] = useState('');
     const [errorCep, setErrorCep] = useState('');
     const [errorEstado, setErrorEstado] = useState('');
     const [errorCidade, setErrorCidade] = useState('');
@@ -58,14 +60,11 @@ export default function EstabelecimentoCadastro() {
 
     // refs
     const nomeInputRef = useRef<TextInput>(null);
-    const nomeResponsavelInputRef = useRef<TextInput>(null);
     const cnpjInputRef = useRef<TextInput>(null);
     const telefoneInputRef = useRef<TextInput>(null);
-    const InformacoesInputRef = useRef<TextInput>(null);
     const razaoSocialInputRef = useRef<TextInput>(null);
     const emailInputRef = useRef<TextInput>(null);
-
-    const EnderecoInputRef = useRef<TextInput>(null);
+    const InformacoesInputRef = useRef<TextInput>(null);
     const CepInputRef = useRef<TextInput>(null);
     const EstadoInputRef = useRef<TextInput>(null);
     const CidadeInputRef = useRef<TextInput>(null);
@@ -73,11 +72,6 @@ export default function EstabelecimentoCadastro() {
     const LogradouroInputRef = useRef<TextInput>(null);
     const NumeroInputRef = useRef<TextInput>(null);
     const ComplementoInputRef = useRef<TextInput>(null);
-
-    const handleSelectionChange = (selected: string[]) => {
-        setSelectedOptions(selected);
-        console.log('Selecionados:', selected);
-    };
 
     const options = [
         { id: '1', label: 'Banheiros' },
@@ -87,36 +81,42 @@ export default function EstabelecimentoCadastro() {
         { id: '5', label: 'Estacionamento' }
     ];
 
-    const handleSubmit = () => {
-        console.log(estabelecimento);
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        let hasError = false;
+    // Verificar se o parâmetro `estabelecimento` foi passado e preencher os estados
+    useEffect(() => {
+        if (estabelecimento) {
+            const parsedEstabelecimento = JSON.parse(estabelecimento); // Converte de JSON string para objeto
+            setId(parsedEstabelecimento.id || null);
+            setNome(parsedEstabelecimento.nome || '');
+            setCnpj(parsedEstabelecimento.cnpj || '');
+            setTelefone(parsedEstabelecimento.telefone || '');
+            setRazaoSocial(parsedEstabelecimento.razaoSocial || '');
+            setEmail(parsedEstabelecimento.email || '');
+            setAlvara(parsedEstabelecimento.alvara || '');
 
-        // Validações dos campos
-        setErrorNome(!nome ? "O campo Nome é obrigatório." : "");
-        setErrorCnpj(!cnpj ? "O campo CNPJ é obrigatório." : "");
-        setErrorTelefone(!telefone ? "O campo Telefone é obrigatório." : "");
-        setErrorCep(!cep ? "Informe um CEP" : "");
-        setErrorAlvara(!alvara ? "O campo Alvará é obrigatório" : "");
-        setErrorEmail(!email ? "O campo Email é obrigatório" : "");
-        setErrorRazaoSocial(!razaoSocial ? "O campo Razão Social é obrigatório." : "");
-
-
-        setErrorCidade(!cidade ? "O campo Cidade é obrigatório." : "");
-        setErrorBairro(!bairro ? "O campo Bairro é obrigatório." : "");
-        setErrorLogradouro(!logradouro ? "O campo Logradouro é obrigatório." : "");
-        setErrorNumero(!numero ? "O campo Número é obrigatório." : "");
-        setErrorEstado(!estado ? "O campo Estado é obrigatório." : "");
-
-
-        if (!nome || !cnpj || !telefone || !cep || !alvara || !email || !razaoSocial || !cidade || !bairro || !logradouro || !numero || !estado) {
-            hasError = true;
-        }
-
-        if (!hasError) {
-            getData();
+            if (parsedEstabelecimento.endereco) {
+                SetCep(parsedEstabelecimento.endereco.cep || '');
+                SetEstado(parsedEstabelecimento.endereco.estado || '');
+                SetCidade(parsedEstabelecimento.endereco.cidade || '');
+                SetBairro(parsedEstabelecimento.endereco.bairro || '');
+                SetLogradouro(parsedEstabelecimento.endereco.logradouro || '');
+                SetNumero(parsedEstabelecimento.endereco.numero || '');
+                SetComplemento(parsedEstabelecimento.endereco.complemento || '');
+            }
+            setIsEditing(true); // Está no modo de edição
         } else {
-            console.log("Erro: Preencha todos os campos obrigatórios.");
+            setIsEditing(false); // Está no modo de cadastro
+        }
+    }, [estabelecimento]);
+
+    // Função para lidar com a submissão, verificando se é edição ou cadastro
+    const handleSubmit = () => {
+        const hasError = validateFields();
+        if (!hasError) {
+            if (isEditing) {
+                editarEstabelecimento();
+            } else {
+                cadastrarEstabelecimento();
+            }
         }
     };
 
@@ -160,25 +160,23 @@ export default function EstabelecimentoCadastro() {
         setCnpj(formattedCNPJ); // Atualiza o estado com o CNPJ formatado
     };
 
-    async function getData() {
-        try {
-            const value = await AsyncStorage.getItem("access_token");
-            if (value !== null && value !== "") {
-                // If the access token exists, continue to cadastro logic
-                setIsAppReady(true)
-                cadastrar(value);
-            } else {
-                // If no access token, allow the app to render the screen
-                setIsAppReady(true);
-            }
-        } catch (e) {
-            console.error('Erro ao obter dados', e);
-            // In case of an error, allow the app to render the screen
-            setIsAppReady(true);
+    const validateFields = () => {
+        let hasError = false;
+        setErrorNome(!nome ? "O campo Nome é obrigatório." : "");
+        setErrorCnpj(!cnpj ? "O campo CNPJ é obrigatório." : "");
+        setErrorTelefone(!telefone ? "O campo Telefone é obrigatório." : "");
+        setErrorCep(!cep ? "Informe um CEP" : "");
+        setErrorAlvara(!alvara ? "O campo Alvará é obrigatório" : "");
+        setErrorEmail(!email ? "O campo Email é obrigatório." : "");
+        setErrorRazaoSocial(!razaoSocial ? "O campo Razão Social é obrigatório." : "");
+
+        if (!nome || !cnpj || !telefone || !cep || !alvara || !email || !razaoSocial) {
+            hasError = true;
         }
+        return hasError;
     };
 
-    const estabelecimento = {
+    const estabelecimentoObj = {
         cnpj: cnpj.replace(/\D/g, ''),
         nome: nome,
         razaoSocial: razaoSocial,
@@ -200,54 +198,66 @@ export default function EstabelecimentoCadastro() {
         ]
     }
 
-    async function cadastrar(access_token: string) {
+    const cadastrarEstabelecimento = async () => {
         setLoading(true);
         try {
+            const token = await AsyncStorage.getItem('access_token');
             const response = await fetch(`${apiUrl}/estabelecimento/new`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${access_token}`,
+                    'Authorization': `Bearer ${token}`,
                 },
-                body: JSON.stringify(estabelecimento)
+                body: JSON.stringify(estabelecimento),
             });
-
             const data = await response.json();
-
             if (response.ok) {
-                Toast.show({
-                    type: 'success',
-                    text1: "Cadastro Realizado com Sucesso",
-                    text2: "Bem-vindo ao AlugueQuadras!",
-                });
+                Toast.show({ type: 'success', text1: 'Cadastro Realizado com Sucesso' });
                 router.replace('/menu');
             } else {
-                Toast.show({
-                    type: 'error',
-                    text1: "Cadastro Falhou",
-                    text2: data.message,
-                });
+                Toast.show({ type: 'error', text1: 'Falha no Cadastro', text2: data.message });
             }
         } catch (error) {
-            console.log('Erro no cadastro', error);
-            Toast.show({
-                type: 'error',
-                text1: "Cadastro falhou",
-                text2: String(error),
-            });
+            console.error('Erro no cadastro', error);
         } finally {
-            setLoading(false);  // Stop showing the loading indicator
-            setIsAppReady(true);  // Ensure the app is marked as ready
+            setLoading(false);
         }
-    }
+    };
 
-    if (!isAppReady) {
-        return (
-            <View className='rounded-2xl flex-1 justify-center items-center'>
-                <ActivityIndicator size="large" className='color-primary' />
-            </View>
-        );
-    }
+    const editarEstabelecimento = async () => {
+        setLoading(true);
+        try {
+            const token = await AsyncStorage.getItem('access_token');
+            const response = await fetch(`${apiUrl}/estabelecimento/edit/${id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    nome,
+                    cnpj,
+                    telefone,
+                    razaoSocial,
+                    email,
+                    alvara,
+                    endereco: { cep, estado, cidade, bairro, logradouro, numero, complemento },
+                    imagensToAdd: selectedOptions,
+                }),
+            });
+            const data = await response.json();
+            if (response.ok) {
+                Toast.show({ type: 'success', text1: 'Edição Realizada com Sucesso' });
+                router.replace('/menu');
+            } else {
+                Toast.show({ type: 'error', text1: 'Falha na Edição', text2: data.message });
+            }
+        } catch (error) {
+            console.error('Erro na edição', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <SafeAreaView className="flex-1 bg-white" style={{ marginTop: statusBarHeight }}>
@@ -255,154 +265,34 @@ export default function EstabelecimentoCadastro() {
             <SetaVoltar />
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View className="w-full px-3">
-                    <Text className="text-4xl font-semibold mt-5 mb-5">Cadastro Estabelecimento</Text>
-                    <Text className="text-2xl font-semibold">Informações Operacionais:</Text>
-                    <Input
-                        className='mt-5'
-                        ref={nomeInputRef}
-                        label="Nome do Estabelecimento:"
-                        obrigatorio
-                        errorMessage={errorNome}
-                        value={nome}
-                        onChangeText={setNome}
+                    <Text className="text-4xl font-semibold mt-5 mb-5">
+                        {isEditing ? "Editar Estabelecimento" : "Cadastro Estabelecimento"}
+                    </Text>
+                    {/* Informações Operacionais */}
+                    <Input label="Nome do Estabelecimento" value={nome} onChangeText={setNome} errorMessage={errorNome} className='mt-5' />
+                    <Input label="CNPJ" value={cnpj} onChangeText={handleCNPJChange} errorMessage={errorCnpj} keyboardType="numeric" maxLength={18} className='mt-5' />
+                    <Input label="Telefone" value={telefone} onChangeText={handleTelefoneChange} errorMessage={errorTelefone} keyboardType="phone-pad" className='mt-5' />
+                    <Input label="Razão Social" value={razaoSocial} onChangeText={setRazaoSocial} errorMessage={errorRazaoSocial} className='mt-5' />
+                    <Input label="Email" value={email} onChangeText={setEmail} errorMessage={errorEmail} keyboardType="email-address" className='mt-5' />
+                    <Input label="Alvará de Funcionamento" value={alvara} onChangeText={setAlvara} errorMessage={errorAlvara} className='mt-5' />
 
-                    />
-                    <Input
-                        className='mt-5'
-                        ref={cnpjInputRef}
-                        label="CNPJ:"
-                        obrigatorio
-                        errorMessage={errorCnpj}
-                        value={cnpj}
-                        keyboardType="numeric"
-                        onChangeText={handleCNPJChange}
-                        maxLength={18}
-                    />
-                    <Input
-                        className='mt-5'
-                        ref={telefoneInputRef}
-                        label="Telefone:"
-                        obrigatorio
-                        errorMessage={errorTelefone}
-                        value={telefone}
-                        keyboardType="phone-pad"
-                        onChangeText={handleTelefoneChange}
-                    />
-                    <Input
-                        className='mt-5'
-                        ref={razaoSocialInputRef}
-                        label="Razão Social:"
-                        obrigatorio
-                        errorMessage={errorRazaoSocial}
-                        value={razaoSocial}
-                        onChangeText={setRazaoSocial}
-                        autoCapitalize='none'
-                    />
-                    <Input
-                        className='mt-5'
-                        ref={emailInputRef}
-                        label="Email:"
-                        obrigatorio
-                        errorMessage={errorEmail}
-                        value={email}
-                        keyboardType="email-address"
-                        onChangeText={setEmail}
-                        autoCapitalize='none'
-                    />
-                    <Input
-                        className='mt-5'
-                        ref={InformacoesInputRef}
-                        label="Alvará de Funcionamento:"
-                        obrigatorio
-                        errorMessage={errorAlvara}
-                        value={alvara}
-                        onChangeText={setAlvara}
-                        autoCapitalize='none'
-                    />
-
+                    {/* Endereço */}
                     <Text className="text-2xl font-semibold mt-6">Endereço:</Text>
+                    <Input label="CEP" value={cep} onChangeText={handleCEPChange} errorMessage={errorCep} keyboardType="numeric" className='mt-5' />
+                    <Input label="Estado" value={estado} onChangeText={SetEstado} errorMessage={errorEstado} maxLength={2} className='mt-5' />
+                    <Input label="Cidade" value={cidade} onChangeText={SetCidade} errorMessage={errorCidade} className='mt-5' />
+                    <Input label="Bairro" value={bairro} onChangeText={SetBairro} errorMessage={errorBairro} className='mt-5' />
+                    <Input label="Logradouro" value={logradouro} onChangeText={SetLogradouro} errorMessage={errorLogradouro} className='mt-5' />
+                    <Input label="Número" value={numero} onChangeText={SetNumero} errorMessage={errorNumero} keyboardType="numeric" className='mt-5' />
+                    <Input label="Complemento" value={complemento} onChangeText={SetComplemento} className='mt-5' />
 
-                    <Input
-                        className='mt-5'
-                        ref={CepInputRef}
-                        label="CEP:"
-                        obrigatorio
-                        errorMessage={errorCep}
-                        value={cep}
-                        keyboardType="numeric"
-                        onChangeText={handleCEPChange}
-                    />
-                    <Input
-                        className='mt-5'
-                        ref={EstadoInputRef}
-                        label="Estado(Sigla):"
-                        obrigatorio
-                        errorMessage={errorEstado}
-                        value={estado}
-                        onChangeText={SetEstado}
-                        maxLength={2}
-                    />
-                    <Input
-                        className='mt-5'
-                        ref={CidadeInputRef}
-                        label="Cidade:"
-                        obrigatorio
-                        errorMessage={errorCidade}
-                        value={cidade}
-                        onChangeText={SetCidade}
-                    />
-                    <Input
-                        className='mt-5'
-                        ref={BairroInputRef}
-                        label="Bairro:"
-                        obrigatorio
-                        errorMessage={errorBairro}
-                        value={bairro}
-                        onChangeText={SetBairro}
-                    />
-                    <Input
-                        className='mt-5'
-                        ref={LogradouroInputRef}
-                        label="Logradouro:"
-                        obrigatorio
-                        errorMessage={errorLogradouro}
-                        value={logradouro}
-                        onChangeText={SetLogradouro}
-                    />
-                    <Input
-                        className='mt-5'
-                        ref={NumeroInputRef}
-                        label="Número:"
-                        obrigatorio
-                        errorMessage={errorNumero}
-                        value={numero}
-                        keyboardType="numeric"
-                        onChangeText={SetNumero}
-                    />
-                    <Input
-                        className='mt-5'
-                        ref={ComplementoInputRef}
-                        label="Complemento:"
-                        value={complemento}
-                        onChangeText={SetComplemento}
-                    />
-
-                    <Text className="text-2xl font-semibold mt-6">Acomocações:</Text>
-                    <MultiSelect
-                        options={options}
-                        selectedOptions={selectedOptions}
-                        onSelectionChange={handleSelectionChange}
-                        icon={<MaterialIcons name="check-box" size={24} color="black" />}
-                    />
+                    {/* Acomodações */}
+                    <Text className="text-2xl font-semibold mt-6">Acomodações:</Text>
+                    <MultiSelect options={options} selectedOptions={selectedOptions} onSelectionChange={setSelectedOptions} icon={<MaterialIcons name="check-box" size={24} color="black" />} />
                 </View>
             </ScrollView>
             <View style={globalStyles.buttonContainer}>
-                <BotaoTouchableOpacity
-                    title={'Cadastrar'}
-                    className='bg-primary p-4 rounded-2xl active:bg-secondary mx-4'
-                    classNameTitle="text-white text-center text-xl"
-                    onPress={handleSubmit}
-                />
+                <BotaoTouchableOpacity title={isEditing ? 'Salvar Alterações' : 'Cadastrar'} onPress={handleSubmit} className='bg-primary p-4 rounded-2xl active:bg-secondary mx-4' classNameTitle="text-white text-center text-xl" />
             </View>
             {loading && <Loading />}
         </SafeAreaView>
