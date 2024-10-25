@@ -13,7 +13,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { UsuarioContext } from '@context/usuarioContext';
 
-const { apiUrl, userDefaultImage } = Constants.expoConfig.extra;
+const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
 
 export default function UsuarioCadastro() {
     const [loading, setLoading] = useState(false);

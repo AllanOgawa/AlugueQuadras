@@ -1,14 +1,16 @@
+import { useEffect, useState, useRef } from 'react';
 import { SafeAreaView, ScrollView, StatusBar, Text, TextInput, View } from 'react-native';
 import Constants from 'expo-constants';
-import { useState, useRef } from 'react';
 import { router } from 'expo-router';
+import { useRoute } from '@react-navigation/native';
 import Input from '@components/inputs/input';
-import BotaoTouchableOpacity from '@components/botoes/botaoTouchableOpacity';
+import BotaoPressable from '@components/botoes/botaoPressable';
 import MultiSelect from '@/src/components/IconService';
 import { MaterialIcons } from '@expo/vector-icons';
 import SetaVoltar from '@/src/components/setaVoltar';
-import BotaoPressable from '@/src/components/botoes/botaoPressable';
 import globalStyles from '@/src/styles/globalStyles';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-toast-message';
 
 const statusBarHeight = Constants.statusBarHeight;
 
@@ -18,6 +20,8 @@ export default function QuadraCadastro() {
     const [comprimento, setComprimento] = useState('');
     const [largura, setLargura] = useState('');
     const [informacoes, setInformacoes] = useState('');
+    const [selectedOptions, setSelectedOptions] = useState<number[]>([]);  // Tipos de esporte selecionados
+    const [sportsOptions, setSportsOptions] = useState([]);  // Tipos de esporte disponíveis
 
     const [errorNome, setErrorNome] = useState('');
     const [errorValor, setErrorValor] = useState('');
@@ -29,23 +33,65 @@ export default function QuadraCadastro() {
     const comprimentoInputRef = useRef<TextInput>(null);
     const larguraInputRef = useRef<TextInput>(null);
     const InformacoesInputRef = useRef<TextInput>(null);
-    const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
 
-    const handleSelectionChange = (selected: string[]) => {
+    const [idEstabelecimento, setIdEstabelecimento] = useState<number | null>(null);
+
+
+    // Busca tipos de esporte ao carregar o componente
+    useEffect(() => {
+        const fetchSports = async () => {
+            try {
+                const access_token = await AsyncStorage.getItem('access_token');
+                const response = await fetch(`${Constants.expoConfig?.extra?.apiUrl}/estabelecimento/quadra/tipo-esporte/list`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${access_token}`,
+                    },
+                });
+
+                const sports = await response.json();
+                setSportsOptions(sports);  // Armazena as opções de esporte no estado
+            } catch (error) {
+                console.error('Erro ao buscar tipos de esporte:', error);
+                Toast.show({
+                    type: 'error',
+                    text1: 'Erro ao carregar tipos de esporte',
+                });
+            }
+        };
+        const fetchEstabelecimentoId = async () => {
+            try {
+                const id = await AsyncStorage.getItem('idEstabelecimento');
+                if (id) {
+                    setIdEstabelecimento(parseInt(id, 10)); // Converte o valor de string para número
+                    console.log('ID do estabelecimento recuperado:', id);
+                } else {
+                    console.log('Nenhum ID encontrado.');
+                }
+            } catch (error) {
+                console.error('Erro ao recuperar o ID do estabelecimento:', error);
+            }
+        };
+        fetchSports();
+        fetchEstabelecimentoId();
+    }, []);
+
+
+    const handleSelectionChange = (selected: number[]) => {
         setSelectedOptions(selected);
-        console.log('Selecionados:', selected);
+        console.log('Tipos de esporte selecionados:', selected);
     };
 
-    const options = [
-        { id: '1', label: 'Banheiros' },
-        { id: '2', label: 'Alimentação' },
-        { id: '3', label: 'Espaço para crianças' },
-        { id: '4', label: 'Espaço para pets' },
-        { id: '5', label: 'Estacionamento' }
-    ];
-
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         let hasError = false;
+
+        if (!idEstabelecimento) {
+            Toast.show({
+                type: 'error',
+                text1: 'Estabelecimento não encontrado',
+            })
+            return;
+        }
 
         // Validações dos campos
         setErrorNome(!nome ? "O campo Nome é obrigatório." : "");
@@ -58,97 +104,115 @@ export default function QuadraCadastro() {
         }
 
         if (!hasError) {
-            setTimeout(() => {
-                router.replace({
-                    pathname: '/menu',
-                    params: { message: "Cadastro de quadra realizado com sucesso!" }
+            const quadraData = {
+                nome,
+                informacoesAdicionais: informacoes,
+                valor: parseFloat(valor),  // Converte para número
+                largura: parseFloat(largura),  // Converte para número
+                comprimento: parseFloat(comprimento),  // Converte para número
+                idkeyEstabelecimento: idEstabelecimento,  // Substitua pelo id real do estabelecimento
+                imagensToAdd: [
+                    "estabelecimento/imagem1.jpg",  // Substitua pelos paths corretos
+                    "estabelecimento/imagem2.png"
+                ],
+                tiposEsporteToAdd: selectedOptions  // Tipos de esporte selecionados
+            };
+
+            console.log('Dados da quadra a serem enviados:', quadraData);
+
+            try {
+                const access_token = await AsyncStorage.getItem('access_token');
+                const response = await fetch(`${Constants.expoConfig?.extra?.apiUrl}/quadra`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${access_token}`,
+                    },
+                    body: JSON.stringify(quadraData),  // Envia os dados como JSON
                 });
-            }, 600);
+
+                if (!response.ok) {
+                    throw new Error('Erro ao cadastrar quadra');
+                }
+
+                // Exibe mensagem de sucesso
+                Toast.show({
+                    type: 'success',
+                    text1: 'Quadra cadastrada com sucesso',
+                });
+
+                // Redireciona após um pequeno intervalo
+                setTimeout(() => {
+                    router.replace({
+                        pathname: '/menu',
+                        params: { message: "Cadastro de quadra realizado com sucesso!" }
+                    });
+                }, 600);
+            } catch (error) {
+                console.error(error);
+                Toast.show({
+                    type: 'error',
+                    text1: 'Erro ao cadastrar a quadra',
+                });
+            }
         } else {
             console.log("Erro: Preencha todos os campos obrigatórios.");
         }
     };
 
-    function confirmCreate(): void {
-        throw new Error('Function not implemented.');
-    }
-
     return (
         <SafeAreaView className="flex-1 bg-white" style={{ marginTop: statusBarHeight }}>
             <StatusBar barStyle="dark-content" backgroundColor="white" />
-            <SetaVoltar />
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View className="w-full px-4">
                     <Text className="text-4xl font-semibold mt-5 mb-5">Cadastrar Quadra</Text>
 
                     <Input
                         className='mt-5'
-                        ref={nomeInputRef}
                         label="Nome da Quadra:"
                         obrigatorio
-                        errorMessage={errorNome}
                         value={nome}
                         onChangeText={setNome}
-                        returnKeyType="next"
-                        onSubmitEditing={() => valorInputRef.current?.focus()}
                     />
                     <Input
                         className='mt-5'
-                        ref={valorInputRef}
                         label="Valor por Hora:"
                         obrigatorio
-                        errorMessage={errorValor}
                         keyboardType="numeric"
                         value={valor}
                         onChangeText={setValor}
-                        returnKeyType="next"
-                        onSubmitEditing={() => comprimentoInputRef.current?.focus()}
                     />
                     <Input
                         className='mt-5'
-                        ref={comprimentoInputRef}
                         label="Comprimento (m):"
                         obrigatorio
-                        errorMessage={errorComprimento}
                         keyboardType="numeric"
                         value={comprimento}
                         onChangeText={setComprimento}
-                        returnKeyType="next"
-                        onSubmitEditing={() => larguraInputRef.current?.focus()}
                     />
                     <Input
                         className='mt-5'
-                        ref={larguraInputRef}
                         label="Largura (m):"
                         obrigatorio
-                        errorMessage={errorLargura}
                         keyboardType="numeric"
                         value={largura}
                         onChangeText={setLargura}
-                        returnKeyType="done"
                     />
                     <Input
                         className='mt-5'
-                        ref={InformacoesInputRef}
                         label="Informações adicionais:"
-                        errorMessage={""}
-                        keyboardType="numeric"
                         value={informacoes}
                         onChangeText={setInformacoes}
-                        returnKeyType="done"
                     />
-
                     <View>
-                        <Text className="text-lg mt-4">Selecione uma ou mais opções:</Text>
-                        <MultiSelect options={options} onSelectionChange={handleSelectionChange} />
-                    </View>
-
-                    <View>
-                        <Text className='h-14 text-lg mt-4'>Insira algumas fotos do local:</Text>
-                        <View className='bg-slate-400 items-center rounded-xl p-2'>
-                            <MaterialIcons name="upload" size={20} color="#ffff" />
-                            <Text className='color-white'>Upload</Text>
-                        </View>
+                        <Text className="text-lg mt-4">Selecione os tipos de esporte:</Text>
+                        <MultiSelect
+                            options={sportsOptions.map(({ idkey, descricao }) => ({
+                                id: String(idkey),
+                                label: descricao
+                            }))}
+                            onSelectionChange={(selected: string[]) => handleSelectionChange(selected.map(Number))}  // Convertendo ids para número
+                        />
                     </View>
                 </View>
             </ScrollView>
@@ -157,7 +221,7 @@ export default function QuadraCadastro() {
                     title={'Cadastrar'}
                     className='bg-primary p-4 rounded-2xl active:bg-secondary mx-4'
                     classNameTitle="text-white text-center text-xl"
-                    onPress={confirmCreate} // Chama a função que exibe o toast e navega
+                    onPress={handleSubmit}  // Chama a função para enviar os dados
                 />
             </View>
         </SafeAreaView>
