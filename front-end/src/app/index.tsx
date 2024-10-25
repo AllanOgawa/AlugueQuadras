@@ -55,6 +55,15 @@ export default function TelaLogin() {
         }
     };
 
+    async function setAccessToken(access_token: string) {
+        try {
+            await AsyncStorage.setItem("access_token", access_token);
+            console.log('Dados armazenados no localStorage com sucesso');
+        } catch (e) {
+            console.error('Erro ao salvar dados', e);
+        }
+    };
+
     const handleLogin = async (access_token: string) => {
         try {
             const response = await fetch(`${apiUrl}/auth/profile`, {
@@ -71,9 +80,12 @@ export default function TelaLogin() {
                 setLogin(true);
                 setUsuario([data]);
                 router.replace('/(tabs)/inicio');
+            } else {
+                setAccessToken("");
             }
         } catch (error) {
             console.error('Erro de rede', error);
+            setAccessToken("");
             Toast.show({
                 type: 'error',
                 text1: "Erro de Rede",

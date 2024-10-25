@@ -83,7 +83,7 @@ export default function UsuarioCadastro() {
             setErrorCpf("CPF Inválido.");
             isValid = false;
         }
-        if (!senha) {
+        if (!cpf) {
             setErrorCpf("o campo CPF é obrigatório.");
             isValid = false;
         }
@@ -106,8 +106,8 @@ export default function UsuarioCadastro() {
                         isValid = false;
                     }
         }
-        if (senha.length < 6) {
-            setErrorSenha("a senha deve ter pelo menos 6 caracteres.");
+        if (senha.length < 8) {
+            setErrorSenha("a senha deve ter pelo menos 8 caracteres.");
             isValid = false;
         }
         if (!senha) {
@@ -148,7 +148,7 @@ export default function UsuarioCadastro() {
         return `${ano}-${mes}-${dia}`;
     }
 
-    async function storeData(access_token: string) {
+    async function setAccessToken(access_token: string) {
         try {
             await AsyncStorage.setItem("access_token", access_token);
             console.log('Dados armazenados no localStorage com sucesso');
@@ -231,7 +231,7 @@ export default function UsuarioCadastro() {
 
             if (response.ok) {
                 accessToken = data.access_token;
-                storeData(data.access_token);
+                setAccessToken(data.access_token);
             } else {
                 console.error('Erro no login', data);
                 Toast.show({
@@ -373,7 +373,7 @@ export default function UsuarioCadastro() {
                         onSubmitEditing={() => confirmarSenhaInputRef.current?.focus()}
                     />
                     <Text className='mb-5 text-sm color-gray-600'>
-                        A senha deve ter pelo menos 6 caracteres.
+                        A senha deve ter pelo menos 8 caracteres.
                     </Text>
                     <InputSenha
                         className='mb-5'

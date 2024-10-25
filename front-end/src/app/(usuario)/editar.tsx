@@ -108,17 +108,15 @@ export default function UsuarioEditar() {
     async function handleImageUpload() {
         if (uploadImageRef.current) {
             try {
-                // Aguarde até que todas as imagens sejam carregadas
                 await uploadImageRef.current.uploadAllImages();
 
             } catch (error) {
                 console.error('Erro ao carregar imagens', error);
-                setLoading(false);
             }
         } else {
             console.error('UploadImage ref não está definida.');
-            setLoading(false);
         }
+        setLoading(false);
     }
 
     async function handleLinksImagens(imagensToAdd: string[], imagensToRemove: string[]) {
@@ -128,8 +126,7 @@ export default function UsuarioEditar() {
     }
 
     async function editarUsuario() {
-        console.log("imagensToAdd", imagensToAdd)
-        console.log("imagensToRemove", imagensToRemove)
+
         try {
             const response = await fetch(`${apiUrl}/auth/profile/edit`, {
                 method: 'PATCH',
@@ -148,7 +145,6 @@ export default function UsuarioEditar() {
             const data = await response.json();
 
             if (response.ok) {
-                console.log(data)
                 Toast.show({
                     type: 'success',
                     text1: "Alteração de Conta Realizado com Sucesso",

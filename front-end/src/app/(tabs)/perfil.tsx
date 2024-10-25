@@ -24,12 +24,10 @@ export default function Perfil() {
 
 	useEffect(() => {
 		if (usuario != null && usuario[0] !== null) {
-			if (usuario[0].nome) {
+			if (usuario[0].nome)
 				setNome(usuario[0].nome);
-			}
-			if (usuario[0].imagens && usuario[0].imagens[0].path) {
+			if (usuario[0].imagens && usuario[0].imagens[0] && usuario[0].imagens[0].path)
 				setImagem(usuario[0].imagens[0].path);
-			}
 		}
 		setLoading(false);
 	}, [usuario]);

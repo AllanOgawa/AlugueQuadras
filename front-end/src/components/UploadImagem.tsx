@@ -124,6 +124,12 @@ const UploadImage = forwardRef(({
             setLoading(false);
             return;
         }
+        if (images.length == 0) {
+            Alert.alert('Erro', "Por favor, selecione ao menos uma imagem");
+            setLoading(false);
+            return;
+        }
+
         for (const image of imagesToAdd) {
             const accessBucket = await getUploadUrl(image.uri, token, image.mime);
             if (accessBucket) {
@@ -131,6 +137,7 @@ const UploadImage = forwardRef(({
             }
         }
         linksImagens(imagensParaAdicionar, imagesToRemove.map(image => image.uri));
+
         setLoading(false);
     }
 

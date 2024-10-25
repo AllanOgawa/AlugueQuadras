@@ -29,7 +29,7 @@ export default function UsuarioLogin() {
     }
     const { usuario, setUsuario } = context;
 
-    async function storeData(access_token: string) {
+    async function setAccessToken(access_token: string) {
         try {
             await AsyncStorage.setItem("access_token", access_token);
             console.log('Dados armazenados no localStorage com sucesso');
@@ -71,7 +71,7 @@ export default function UsuarioLogin() {
             const data = await response.json();
 
             if (response.ok) {
-                storeData(data.access_token);
+                setAccessToken(data.access_token);
                 accessToken = data.access_token;
             } else {
                 console.error('Erro no login', data);

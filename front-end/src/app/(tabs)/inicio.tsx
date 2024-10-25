@@ -27,12 +27,10 @@ export default function Inicio() {
 
 	useEffect(() => {
 		if (usuario != null && usuario[0] !== null) {
-			if (usuario[0].nome) {
+			if (usuario[0].nome)
 				setNome("Olá! " + usuario[0].nome);
-			}
-			if (usuario[0].imagens && usuario[0].imagens[0].path) {
+			if (usuario[0].imagens && usuario[0].imagens[0] && usuario[0].imagens[0].path)
 				setImagem(usuario[0].imagens[0].path);
-			}
 		}
 		setLoading(false);
 	}, [usuario]);
@@ -53,15 +51,15 @@ export default function Inicio() {
 						</View>
 						<View className="relative mb-2">
 							<Pressable
-								onPress={() => router.push('/')}
+							// onPress={() => router.push('/')}
 							>
 								<IconUsuario image={`${bucketUrl}/${imagem}`} style="w-16 h-16 rounded-full border-2 border-black" />
-								<Feather
+								{/* <Feather
 									name="bell"
 									size={16}
 									color="#FF7300"
 									className="absolute top-0 right-0 p-1" // Posiciona o sino sobre a imagem
-								/>
+								/> */}
 							</Pressable>
 						</View>
 					</View>
