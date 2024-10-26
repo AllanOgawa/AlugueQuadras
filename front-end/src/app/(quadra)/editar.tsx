@@ -12,13 +12,10 @@ export default function EditCourt() {
     const [estabelecimento, setEstabelecimento] = useState<EstabelecimentoProps | null>(null);
     const { message } = useLocalSearchParams();
 
-    // Função para lidar com o clique em uma quadra
     function handleCourtPress(quadra: QuadraProps): void {
-        // console.log(`Você clicou na quadra ${quadra.name}, ID: ${quadra.id}`);
         router.push('/cadastrar')
     }
 
-    // Exibir toast com a mensagem, se disponível
     useEffect(() => {
         if (message) {
             const toastMessage = Array.isArray(message) ? message.join(', ') : message;
@@ -29,7 +26,6 @@ export default function EditCourt() {
         }
     }, [message]);
 
-    // Definir o estabelecimento com dados importados
     useEffect(() => {
         const primeiroEstabelecimento = data.estabelecimento?.[0];
         if (primeiroEstabelecimento) {

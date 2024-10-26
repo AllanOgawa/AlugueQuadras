@@ -176,28 +176,6 @@ export default function EstabelecimentoCadastro() {
         return hasError;
     };
 
-    const estabelecimentoObj = {
-        cnpj: cnpj.replace(/\D/g, ''),
-        nome: nome,
-        razaoSocial: razaoSocial,
-        telefone: telefone.replace(/\D/g, ''),
-        email: email,
-        alvara: alvara,
-        endereco: {
-            cep: cep.replace(/\D/g, ''),
-            estado: estado,
-            cidade: cidade,
-            bairro: bairro,
-            logradouro: logradouro,
-            numero: numero,
-            complemento: complemento
-        },
-        imagensToAdd: [
-            "estabelecimento/imagem1.jpg",
-            "estabelecimento/imagem2.png"
-        ]
-    }
-
     const cadastrarEstabelecimento = async () => {
         setLoading(true);
         try {
@@ -235,14 +213,21 @@ export default function EstabelecimentoCadastro() {
                     'Authorization': `Bearer ${token}`,
                 },
                 body: JSON.stringify({
-                    nome,
-                    cnpj,
-                    telefone,
-                    razaoSocial,
-                    email,
-                    alvara,
-                    endereco: { cep, estado, cidade, bairro, logradouro, numero, complemento },
-                    imagensToAdd: selectedOptions,
+                    nome: "Loja do Richard",
+                    telefone: "99999999999",
+                    email: "Ricardoereto@gmail.com",
+                    alvara: "não ten",
+                    endereco: {
+                        logradouro: "Rua não sei o nome",
+                        numero: "1333",
+                        complemento: "",
+                        bairro: "Não sei",
+                        cidade: "Maringa",
+                        estado: "SP",
+                        cep: "12312312"
+                    },
+                    imagensToAdd: ["estabelecimento/imagem3.jpg"],
+                    imagensToRemove: ["estabelecimento/imagem1.jpg"]
                 }),
             });
             const data = await response.json();
@@ -250,6 +235,7 @@ export default function EstabelecimentoCadastro() {
                 Toast.show({ type: 'success', text1: 'Edição Realizada com Sucesso' });
                 router.replace('/menu');
             } else {
+                console.log(estabelecimento);
                 Toast.show({ type: 'error', text1: 'Falha na Edição', text2: data.message });
             }
         } catch (error) {
@@ -258,6 +244,7 @@ export default function EstabelecimentoCadastro() {
             setLoading(false);
         }
     };
+
 
     return (
         <SafeAreaView className="flex-1 bg-white" style={{ marginTop: statusBarHeight }}>
