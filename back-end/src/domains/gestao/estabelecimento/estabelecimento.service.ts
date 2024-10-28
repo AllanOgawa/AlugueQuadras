@@ -1,5 +1,5 @@
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { ILike, In, Repository } from "typeorm";
 import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 
 import { Estabelecimento } from "./entities/estabelecimento.entity";
@@ -9,6 +9,7 @@ import { Usuario } from "@src/domains/auth/usuario/entities/usuario.entity";
 import { ImagemService } from "@src/domains/storage/imagem/imagem.service";
 import { EnderecoService } from "@src/domains/geral/endereco/endereco.service";
 import { Quadra } from "./quadra/entities/quadra.entity";
+import { SearchEstabelecimentoDto } from "./dto/search.dto";
 
 @Injectable()
 export class EstabelecimentoService {
@@ -55,6 +56,37 @@ export class EstabelecimentoService {
 
     return this.findByIdkey(estabelecimento.idkey);
   }
+
+
+  async searchByCriteria(query: SearchEstabelecimentoDto): Promise<{ data: Estabelecimento[]; total: number; page: number; limit: number }> {
+    const { idkey, page = 1, limit = 10, ...filters } = query;
+    const whereConditions: any = {};
+
+    const allowedFields = ['nome', 'rating']; // Campos permitidos para busca
+
+    if (idkey !== undefined) {
+      whereConditions.idkey = idkey;
+    }
+
+    for (const [key, value] of Object.entries(filters)) {
+      if (allowedFields.includes(key)) {
+        whereConditions[key] = ILike(`%${value}%`);
+      }
+    }
+
+    const [data, total] = await this.estabelecimentoRepository.findAndCount({
+      where: whereConditions,
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    if (!data || data.length === 0) {
+      throw new NotFoundException('Nenhum estabelecimento encontrado com os critérios fornecidos');
+    }
+
+    return { data, total, page, limit };
+  }
+
 
   async findQuadrasByIdkeyEstabelecimento(idkey: number): Promise<Quadra[]> {
     const estabelecimento = await this.estabelecimentoRepository.findOne({

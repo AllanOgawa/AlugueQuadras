@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, ValidationPipe, HttpStatus, UseGuards, Request, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, ValidationPipe, HttpStatus, UseGuards, Request, ParseIntPipe, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { Estabelecimento } from './entities/estabelecimento.entity';
@@ -8,6 +8,7 @@ import { UpdateEstabelecimentoDto } from './dto/update-estabelecimento.dto';
 
 import { JwtAuthGuard } from '@src/domains/auth/guard/jwt-auth.guard';
 import { Quadra } from './quadra/entities/quadra.entity';
+import { SearchEstabelecimentoDto } from './dto/search.dto';
 
 @ApiTags('Estabelecimento')
 @Controller('estabelecimento')
@@ -30,26 +31,38 @@ export class EstabelecimentoController {
     }
   }
 
-  @Get('search/:idkey')
-  @ApiOperation({ summary: 'Buscar estabelecimento por ID' })
-  @ApiParam({ name: 'idkey', description: 'ID do estabelecimento a ser buscado', example: 1 })
-  @ApiResponse({ status: 200, description: 'Estabelecimento encontrado com sucesso', type: Estabelecimento })
-  @ApiResponse({ status: 404, description: 'Estabelecimento não encontrado' })
-  @ApiResponse({ status: 500, description: 'Erro ao buscar o estabelecimento' })
-  async findByIdkey(@Param('idkey') idkey: number): Promise<Estabelecimento> {
+  @Get('list')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Listar todos os estabelecimentos' })
+  @ApiResponse({ status: 200, description: 'Lista de estabelecimentos', type: [Estabelecimento] })
+  @ApiResponse({ status: 401, description: 'Não autorizado' })
+  async findAll(): Promise<Estabelecimento[]> {
     try {
-      const estabelecimento = await this.estabelecimentoService.findByIdkey(idkey);
-      if (!estabelecimento) {
-        throw new HttpException('Estabelecimento não encontrado', HttpStatus.NOT_FOUND);
-      }
-      return estabelecimento;
+      return await this.estabelecimentoService.findAll();
     } catch (error) {
-      if (error.status === HttpStatus.NOT_FOUND) {
+      if (error instanceof HttpException) {
         throw error;
-      } else {
-        console.error('Erro ao buscar estabelecimento:', error);
-        throw new HttpException('Erro ao buscar estabelecimento', HttpStatus.INTERNAL_SERVER_ERROR);
       }
+      throw new HttpException('Erro ao listar todos os estabelecimentos', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+
+  @Get('search')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Buscar estabelecimentos por múltiplos critérios com paginação' })
+  @ApiResponse({ status: 200, description: 'Lista de estabelecimentos encontrados', type: [Estabelecimento] })
+  @ApiResponse({ status: 401, description: 'Não autorizado' })
+  async search(@Query() query: SearchEstabelecimentoDto): Promise<{ data: Estabelecimento[]; total: number; page: number; limit: number }> {
+    try {
+      return await this.estabelecimentoService.searchByCriteria(query);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Erro ao buscar estabelecimentos com os critérios fornecidos', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -99,7 +112,7 @@ export class EstabelecimentoController {
   @ApiResponse({ status: 500, description: 'Erro ao atualizar o estabelecimento' })
   async update(@Param('idkey') idkey: number, @Body(ValidationPipe) updateEstabelecimentoDto: UpdateEstabelecimentoDto): Promise<Estabelecimento> {
     try {
-      await this.findByIdkey(idkey);
+      await this.estabelecimentoService.findByIdkey(idkey);
       return await this.estabelecimentoService.update(idkey, updateEstabelecimentoDto);
     } catch (error) {
       if (error.status === HttpStatus.NOT_FOUND) {
@@ -121,7 +134,7 @@ export class EstabelecimentoController {
   async remove(@Param('idkey') idkey: number, @Request() req): Promise<void> {
     try {
       const usuario = req.user;
-      await this.findByIdkey(idkey);
+      await this.estabelecimentoService.findByIdkey(idkey);
       await this.estabelecimentoService.remove(idkey, usuario);
     } catch (error) {
       if (error.status === HttpStatus.NOT_FOUND) {
