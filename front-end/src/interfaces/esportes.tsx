@@ -1,4 +1,4 @@
-export interface EsportesProps {
-    id: string;
-    name: string;
+export interface EsporteProps {
+    idkey: number;
+    descricao: string;
 }

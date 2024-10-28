@@ -1,16 +1,15 @@
 #!/bin/bash
 
 # Diretório da aplicação
-APP_DIR=/home/opc/servers/AlugueQuadras
+APP_DIR=/home/opc/servers/AlugueQuadrasProduction/back-end
 
 # Navegar até o diretório da aplicação
 cd $APP_DIR || { echo "Diretório não encontrado: $APP_DIR"; exit 1; }
 
-# Puxar as últimas mudanças do repositório
-git pull origin main
+git pull origin master
 
-# Definir o NODE_ENV
-export NODE_ENV=production
+# Construir os containers Docker
+sudo docker compose -f ./docker/production/docker-compose.production.yml up -d --build
 
-# Construir e iniciar os containers
-docker-compose -f docker/docker-compose.common.yml -f docker/docker-compose.production.yml up -d --build --remove-orphans
+# Verificar o status dos containers 
+sudo docker compose -f ./docker/production/docker-compose.production.yml ps

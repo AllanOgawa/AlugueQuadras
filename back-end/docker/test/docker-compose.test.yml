@@ -1,0 +1,17 @@
+services:
+  back-end-aluguequadras-test:
+    build:
+      context: ../../
+      dockerfile: docker/test/Dockerfile
+    image: back-end-aluguequadras:test
+    container_name: back-end-aluguequadras-test
+    restart: unless-stopped
+    ports:
+      - "3002:3002"
+    command: ["node", "-r", "dotenv/config", "dist/src/main.js", "dotenv_config_path=env/test.env"]
+    networks:
+      - nginx_proxy
+
+networks:
+  nginx_proxy:
+    external: true
