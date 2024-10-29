@@ -63,7 +63,7 @@ export default function MenuEstabelecimento() {
         if (estabelecimento?.idkey) {
             router.push({
                 pathname: '/(estabelecimento)/cadastrar',
-                params: { estabelecimento: JSON.stringify(estabelecimento) }, // Passa os dados do estabelecimento como string JSON
+                params: { estabelecimento: JSON.stringify(estabelecimento) },
             });
         } else {
             Alert.alert('Erro', 'Nenhum estabelecimento selecionado.');

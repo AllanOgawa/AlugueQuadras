@@ -20,7 +20,7 @@ export default function EstabelecimentoCadastro() {
     const { estabelecimento } = useLocalSearchParams(); // Recupera o parâmetro da rota
     const [isEditing, setIsEditing] = useState(false); // Verifica se é edição ou cadastro
 
-    const [id, setId] = useState(null); // Para armazenar o ID
+    const [idkey, setIdkey] = useState(null); // Para armazenar o ID
     const [loading, setLoading] = useState(false);
     const [isAppReady, setIsAppReady] = useState(true);
 
@@ -85,7 +85,7 @@ export default function EstabelecimentoCadastro() {
     useEffect(() => {
         if (estabelecimento) {
             const parsedEstabelecimento = JSON.parse(estabelecimento); // Converte de JSON string para objeto
-            setId(parsedEstabelecimento.id || null);
+            setIdkey(parsedEstabelecimento.idkey || null);
             setNome(parsedEstabelecimento.nome || '');
             setCnpj(parsedEstabelecimento.cnpj || '');
             setTelefone(parsedEstabelecimento.telefone || '');
@@ -206,36 +206,34 @@ export default function EstabelecimentoCadastro() {
         setLoading(true);
         try {
             const token = await AsyncStorage.getItem('access_token');
-            const response = await fetch(`${apiUrl}/estabelecimento/edit/${id}`, {
+            const response = await fetch(`${apiUrl}/estabelecimento/edit/${idkey}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
                 body: JSON.stringify({
-                    nome: "Loja do Richard",
-                    telefone: "99999999999",
-                    email: "Ricardoereto@gmail.com",
-                    alvara: "não ten",
+                    nome: nome,
+                    telefone: telefone,
+                    email: email,
+                    alvara: alvara,
                     endereco: {
-                        logradouro: "Rua não sei o nome",
-                        numero: "1333",
-                        complemento: "",
-                        bairro: "Não sei",
-                        cidade: "Maringa",
-                        estado: "SP",
-                        cep: "12312312"
-                    },
-                    imagensToAdd: ["estabelecimento/imagem3.jpg"],
-                    imagensToRemove: ["estabelecimento/imagem1.jpg"]
+                        logradouro: logradouro,
+                        numero: numero,
+                        bairro: bairro,
+                        cidade: cidade,
+                        estado: estado,
+                        cep: cep
+                    }
                 }),
             });
             const data = await response.json();
+            console.log(data);
             if (response.ok) {
                 Toast.show({ type: 'success', text1: 'Edição Realizada com Sucesso' });
                 router.replace('/menu');
             } else {
-                console.log(estabelecimento);
+                console.log(data);
                 Toast.show({ type: 'error', text1: 'Falha na Edição', text2: data.message });
             }
         } catch (error) {
