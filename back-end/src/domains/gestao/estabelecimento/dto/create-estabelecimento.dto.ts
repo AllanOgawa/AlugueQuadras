@@ -5,7 +5,7 @@ import { CreateEnderecoDto } from '@src/domains/geral/endereco/dto/create-endere
 import { Type } from 'class-transformer';
 
 export class CreateEstabelecimentoDto {
-  
+
   @ApiProperty({
     description: 'CNPJ do estabelecimento',
     example: '12345678000195',
@@ -69,12 +69,13 @@ export class CreateEstabelecimentoDto {
   })
   @ValidateNested()
   @Type(() => CreateEnderecoDto)
+  @IsNotEmpty({ message: 'O campo endereco não pode estar vazio.' })
   endereco: CreateEnderecoDto;
 
-  @ApiProperty({ 
-    description: 'Lista de imagens para adicionar.', 
-    example: ['estabelecimento/imagem1.jpg', 'estabelecimento/imagem2.png'], 
-    required: false 
+  @ApiProperty({
+    description: 'Lista de imagens para adicionar.',
+    example: ['estabelecimento/imagem1.jpg', 'estabelecimento/imagem2.png'],
+    required: false
   })
   @IsArray()
   @IsString({ each: true })

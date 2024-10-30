@@ -7,8 +7,8 @@ import { QuadraController }   from './quadra.controller';
 
 import { EstabelecimentoModule }  from '../estabelecimento.module';
 import { TipoEsporteModule }      from './tipo-esporte/tipo-esporte.module';
-import { Imagem } from '@src/domains/storage/imagem/entities/imagem.entity';
 import { ImagemModule } from '@src/domains/storage/imagem/imagem.module';
+import { ReservaModule } from './reserva/reserva.module';
 
 @Module({
   imports: 
@@ -17,6 +17,7 @@ import { ImagemModule } from '@src/domains/storage/imagem/imagem.module';
     TipoEsporteModule,
     ImagemModule,
     forwardRef(() => EstabelecimentoModule),
+    ReservaModule,
   ],
   controllers: [QuadraController],
   providers: [QuadraService],
