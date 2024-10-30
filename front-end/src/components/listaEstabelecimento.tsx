@@ -1,49 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { EstabelecimentoProps } from '../interfaces/estabelecimento';
-import Constants from 'expo-constants';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
 
 interface Props {
-    onPress: (estabelecimento: EstabelecimentoProps) => void;
+    estabelecimentos: EstabelecimentoProps[];  // Lista de estabelecimentos
+    onPress: (estabelecimento: EstabelecimentoProps) => void;  // Função para lidar com o clique
+    loading: boolean;  // Indica se está carregando
+    error?: string | null;  // Mensagem de erro opcional
 }
 
-const ListaEstabelecimento: React.FC<Props> = ({ onPress }) => {
-    const [data, setData] = useState<EstabelecimentoProps[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        const fetchEstabelecimentos = async () => {
-            try {
-                const access_token = await AsyncStorage.getItem('access_token');
-                const response = await fetch(`${apiUrl}/estabelecimento/usuario`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${access_token}`,
-                    },
-                });
-
-                if (!response.ok) {
-                    throw new Error('Erro ao buscar os dados.');
-                }
-
-                const jsonData = await response.json();
-                setData(jsonData);
-                setLoading(false);
-            } catch (err) {
-                console.log(err);
-                setError('Erro ao carregar os dados.');
-                setLoading(false);
-            }
-        };
-
-        fetchEstabelecimentos();
-    }, []);
-
+const ListaEstabelecimento: React.FC<Props> = ({ estabelecimentos, onPress, loading, error }) => {
+    // Renderiza um estabelecimento individual
     const renderEstabelecimento = (item: EstabelecimentoProps) => (
         <TouchableOpacity style={styles.card} onPress={() => onPress(item)} key={item.idkey}>
             <View style={styles.infoContainer}>
@@ -55,17 +22,23 @@ const ListaEstabelecimento: React.FC<Props> = ({ onPress }) => {
         </TouchableOpacity>
     );
 
+    // Exibe o indicador de carregamento se `loading` for verdadeiro
     if (loading) {
         return <ActivityIndicator size="large" color="#FF6600" />;
     }
 
+    // Exibe uma mensagem de erro, se houver
     if (error) {
         return <Text>{error}</Text>;
     }
 
     return (
         <View>
-            {data.map(item => renderEstabelecimento(item))}
+            {estabelecimentos.length > 0 ? (
+                estabelecimentos.map(item => renderEstabelecimento(item))
+            ) : (
+                <Text style={styles.emptyText}>Nenhum estabelecimento encontrado.</Text>
+            )}
         </View>
     );
 };
@@ -83,12 +56,6 @@ const styles = StyleSheet.create({
         shadowRadius: 8,
         elevation: 3,
     },
-    image: {
-        width: 150,
-        height: 150,
-        borderRadius: 10,
-        marginRight: 16,
-    },
     infoContainer: {
         flex: 1,
         justifyContent: 'center',
@@ -103,6 +70,12 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: '#666',
         marginBottom: 4,
+    },
+    emptyText: {
+        textAlign: 'center',
+        color: '#666',
+        fontSize: 16,
+        marginTop: 20,
     },
 });
 

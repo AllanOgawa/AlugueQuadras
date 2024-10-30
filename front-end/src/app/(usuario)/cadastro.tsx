@@ -14,6 +14,7 @@ import { router } from 'expo-router';
 import { UsuarioContext } from '@context/usuarioContext';
 
 const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
+const userDefaultImage = Constants.expoConfig?.extra?.userDefaultImage || '';
 
 export default function UsuarioCadastro() {
     const [loading, setLoading] = useState(false);

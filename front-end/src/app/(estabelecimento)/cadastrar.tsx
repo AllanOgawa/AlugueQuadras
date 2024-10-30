@@ -1,7 +1,7 @@
-import { ActivityIndicator, SafeAreaView, ScrollView, StatusBar, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, SafeAreaView, ScrollView, StatusBar, Text, View } from 'react-native';
 import Constants from 'expo-constants';
-import { useState, useEffect, useRef } from 'react';
-import { router, useLocalSearchParams } from 'expo-router';  // Importar useLocalSearchParams para pegar os parâmetros da rota
+import { useState, useEffect } from 'react';
+import { router, useLocalSearchParams } from 'expo-router';
 import Input from '@components/inputs/input';
 import BotaoTouchableOpacity from '@components/botoes/botaoTouchableOpacity';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -11,67 +11,73 @@ import globalStyles from '@/src/styles/globalStyles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import MultiSelect from '@/src/components/IconService';
+import { EstabelecimentoProps, EnderecoProps } from '@/src/interfaces/estabelecimento';
 
 const statusBarHeight = Constants.statusBarHeight;
-
 const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
 
+const initialEnderecoState: EnderecoProps = {
+    idkey: 0,
+    logradouro: '',
+    numero: '',
+    complemento: '',
+    bairro: '',
+    cidade: '',
+    estado: '',
+    cep: '',
+    dataCadastro: '',
+    dataAtualizacao: ''
+};
+
+// Funções auxiliares para formatação
+function formatCNPJ(value: string) {
+    return value
+        .replace(/\D/g, '')
+        .replace(/(\d{2})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d)/, '$1/$2')
+        .replace(/(\d{4})(\d)/, '$1-$2')
+        .replace(/(-\d{2})\d+?$/, '$1');
+}
+
+function formatCEP(value: string) {
+    return value
+        .replace(/\D/g, '')
+        .replace(/(\d{5})(\d)/, '$1-$2')
+        .replace(/(-\d{3})\d+?$/, '$1');
+}
+
+function formatTelefone(value: string) {
+    return value
+        .replace(/\D/g, '')
+        .replace(/(\d{2})(\d)/, '($1) $2')
+        .replace(/(\d{5})(\d)/, '$1-$2')
+        .replace(/(-\d{4})\d+?$/, '$1');
+}
+
+function removePontuacao(value: string) {
+    return value.replace(/\D/g, ''); // Remove tudo que não for dígito
+}
+
+
 export default function EstabelecimentoCadastro() {
-    const { estabelecimento } = useLocalSearchParams(); // Recupera o parâmetro da rota
-    const [isEditing, setIsEditing] = useState(false); // Verifica se é edição ou cadastro
-
-    const [idkey, setIdkey] = useState(null); // Para armazenar o ID
+    const { estabelecimento } = useLocalSearchParams();
+    const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [isAppReady, setIsAppReady] = useState(true);
-
-    // estabelecimento
-    const [nome, setNome] = useState('');
-    const [cnpj, setCnpj] = useState('');
-    const [telefone, setTelefone] = useState('');
-    const [razaoSocial, setRazaoSocial] = useState('');
-    const [email, setEmail] = useState('');
-    const [alvara, setAlvara] = useState('');
-
-    // endereco
-    const [cep, SetCep] = useState('');
-    const [estado, SetEstado] = useState('');
-    const [cidade, SetCidade] = useState('');
-    const [bairro, SetBairro] = useState('');
-    const [logradouro, SetLogradouro] = useState('');
-    const [numero, SetNumero] = useState('');
-    const [complemento, SetComplemento] = useState('');
-
-    // validation errors
-    const [errorNome, setErrorNome] = useState('');
-    const [errorCnpj, setErrorCnpj] = useState('');
-    const [errorTelefone, setErrorTelefone] = useState('');
+    const [idkey, setIdkey] = useState<number | null>(null);
+    const [estabelecimentoData, setEstabelecimentoData] = useState<Omit<EstabelecimentoProps, 'endereco' | 'imagens' | 'quadras'>>({
+        idkey: 0,
+        nome: '',
+        cnpj: ''.replace(/\D/g, ''),
+        telefone: ''.replace(/\D/g, ''),
+        razaoSocial: '',
+        email: '',
+        alvara: '',
+        dataCadastro: '',
+        dataAtualizacao: ''
+    });
+    const [enderecoData, setEnderecoData] = useState<EnderecoProps>(initialEnderecoState);
     const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
-    const [errorRazaoSocial, setErrorRazaoSocial] = useState('');
-    const [errorEmail, setErrorEmail] = useState('');
-    const [errorAlvara, setErrorAlvara] = useState('');
-
-    // erros endereco
-    const [errorCep, setErrorCep] = useState('');
-    const [errorEstado, setErrorEstado] = useState('');
-    const [errorCidade, setErrorCidade] = useState('');
-    const [errorBairro, setErrorBairro] = useState('');
-    const [errorLogradouro, setErrorLogradouro] = useState('');
-    const [errorNumero, setErrorNumero] = useState('');
-
-    // refs
-    const nomeInputRef = useRef<TextInput>(null);
-    const cnpjInputRef = useRef<TextInput>(null);
-    const telefoneInputRef = useRef<TextInput>(null);
-    const razaoSocialInputRef = useRef<TextInput>(null);
-    const emailInputRef = useRef<TextInput>(null);
-    const InformacoesInputRef = useRef<TextInput>(null);
-    const CepInputRef = useRef<TextInput>(null);
-    const EstadoInputRef = useRef<TextInput>(null);
-    const CidadeInputRef = useRef<TextInput>(null);
-    const BairroInputRef = useRef<TextInput>(null);
-    const LogradouroInputRef = useRef<TextInput>(null);
-    const NumeroInputRef = useRef<TextInput>(null);
-    const ComplementoInputRef = useRef<TextInput>(null);
 
     const options = [
         { id: '1', label: 'Banheiros' },
@@ -81,113 +87,102 @@ export default function EstabelecimentoCadastro() {
         { id: '5', label: 'Estacionamento' }
     ];
 
-    // Verificar se o parâmetro `estabelecimento` foi passado e preencher os estados
+
+
     useEffect(() => {
         if (estabelecimento) {
-            const parsedEstabelecimento = JSON.parse(estabelecimento); // Converte de JSON string para objeto
-            setIdkey(parsedEstabelecimento.idkey || null);
-            setNome(parsedEstabelecimento.nome || '');
-            setCnpj(parsedEstabelecimento.cnpj || '');
-            setTelefone(parsedEstabelecimento.telefone || '');
-            setRazaoSocial(parsedEstabelecimento.razaoSocial || '');
-            setEmail(parsedEstabelecimento.email || '');
-            setAlvara(parsedEstabelecimento.alvara || '');
+            const parsedEstabelecimento: EstabelecimentoProps = typeof estabelecimento === 'string'
+                ? JSON.parse(estabelecimento)
+                : estabelecimento;
 
-            if (parsedEstabelecimento.endereco) {
-                SetCep(parsedEstabelecimento.endereco.cep || '');
-                SetEstado(parsedEstabelecimento.endereco.estado || '');
-                SetCidade(parsedEstabelecimento.endereco.cidade || '');
-                SetBairro(parsedEstabelecimento.endereco.bairro || '');
-                SetLogradouro(parsedEstabelecimento.endereco.logradouro || '');
-                SetNumero(parsedEstabelecimento.endereco.numero || '');
-                SetComplemento(parsedEstabelecimento.endereco.complemento || '');
-            }
-            setIsEditing(true); // Está no modo de edição
+            setIsEditing(true);
+            setIdkey(parsedEstabelecimento.idkey);
+            setEstabelecimentoData(parsedEstabelecimento);
+            setEnderecoData(parsedEstabelecimento.endereco);
         } else {
-            setIsEditing(false); // Está no modo de cadastro
+            setIsEditing(false);
         }
     }, [estabelecimento]);
 
-    // Função para lidar com a submissão, verificando se é edição ou cadastro
-    const handleSubmit = () => {
-        const hasError = validateFields();
-        if (!hasError) {
-            if (isEditing) {
-                editarEstabelecimento();
-            } else {
-                cadastrarEstabelecimento();
-            }
-        }
+    const handleInputChange = (field: keyof EstabelecimentoProps, value: string) => {
+        setEstabelecimentoData(prev => ({ ...prev, [field]: value }));
     };
 
-    function formatCNPJ(value: string) {
-        return value
-            .replace(/\D/g, '') // Remove tudo que não for dígito
-            .replace(/(\d{2})(\d)/, '$1.$2') // Coloca o primeiro ponto
-            .replace(/(\d{3})(\d)/, '$1.$2') // Coloca o segundo ponto
-            .replace(/(\d{3})(\d)/, '$1/$2') // Coloca a barra
-            .replace(/(\d{4})(\d)/, '$1-$2') // Coloca o hífen
-            .replace(/(-\d{2})\d+?$/, '$1'); // Limita a 14 dígitos
-    }
-
-    function formatCEP(value: string) {
-        return value
-            .replace(/\D/g, '') // Remove tudo que não for dígito
-            .replace(/(\d{5})(\d)/, '$1-$2') // Coloca o hífen
-            .replace(/(-\d{3})\d+?$/, '$1'); // Limita a 9 dígitos
-    }
-
-    function formatTelefone(value: string) {
-        return value
-            .replace(/\D/g, '') // Remove tudo que não for dígito
-            .replace(/(\d{2})(\d)/, '($1) $2') // Coloca o DDD
-            .replace(/(\d{5})(\d)/, '$1-$2') // Coloca o hífen
-            .replace(/(-\d{4})\d+?$/, '$1'); // Limita a 14 dígitos
-    }
-
-    const handleTelefoneChange = (value: string) => {
-        const formattedTelefone = formatTelefone(value);
-        setTelefone(formattedTelefone); // Atualiza o estado com o telefone formatado
-    }
-
-    const handleCEPChange = (value: string) => {
-        const formattedCEP = formatCEP(value);
-        SetCep(formattedCEP); // Atualiza o estado com o CEP formatado
+    const handleEnderecoChange = (field: keyof EnderecoProps, value: string) => {
+        setEnderecoData(prev => ({ ...prev, [field]: value }));
     };
 
-    const handleCNPJChange = (value: string) => {
-        const formattedCNPJ = formatCNPJ(value);
-        setCnpj(formattedCNPJ); // Atualiza o estado com o CNPJ formatado
-    };
+    // Manipuladores de formatação para atualização de estado
+    const handleTelefoneChange = (value: string) => handleInputChange('telefone', formatTelefone(value));
+    const handleCEPChange = (value: string) => handleEnderecoChange('cep', formatCEP(value));
+    const handleCNPJChange = (value: string) => handleInputChange('cnpj', formatCNPJ(value));
 
     const validateFields = () => {
-        let hasError = false;
-        setErrorNome(!nome ? "O campo Nome é obrigatório." : "");
-        setErrorCnpj(!cnpj ? "O campo CNPJ é obrigatório." : "");
-        setErrorTelefone(!telefone ? "O campo Telefone é obrigatório." : "");
-        setErrorCep(!cep ? "Informe um CEP" : "");
-        setErrorAlvara(!alvara ? "O campo Alvará é obrigatório" : "");
-        setErrorEmail(!email ? "O campo Email é obrigatório." : "");
-        setErrorRazaoSocial(!razaoSocial ? "O campo Razão Social é obrigatório." : "");
+        const { nome, cnpj, telefone, razaoSocial, email, alvara } = estabelecimentoData;
+        const { cep, logradouro, estado, cidade, bairro, numero } = enderecoData;
+        const errors: { [key: string]: string } = {};
 
-        if (!nome || !cnpj || !telefone || !cep || !alvara || !email || !razaoSocial) {
-            hasError = true;
+        if (!nome) errors.nome = "O campo Nome é obrigatório.";
+        if (!cnpj) errors.cnpj = "O campo CNPJ é obrigatório.";
+        if (!telefone) errors.telefone = "O campo Telefone é obrigatório.";
+        if (!cep) errors.cep = "Informe um CEP";
+        if (!alvara) errors.alvara = "O campo Alvará é obrigatório";
+        if (!email) errors.email = "O campo Email é obrigatório.";
+        if (!razaoSocial) errors.razaoSocial = "O campo Razão Social é obrigatório.";
+
+        return Object.keys(errors).length ? errors : null;
+    };
+
+    const handleSubmit = async () => {
+        const errors = validateFields();
+        if (!errors) {
+            isEditing ? await editarEstabelecimento() : await cadastrarEstabelecimento();
+        } else {
+            Object.keys(errors).forEach(key => {
+                Toast.show({ type: 'error', text1: errors[key] });
+            });
         }
-        return hasError;
     };
 
     const cadastrarEstabelecimento = async () => {
         setLoading(true);
         try {
             const token = await AsyncStorage.getItem('access_token');
+
+            // Estruturando o objeto com os campos necessários
+            const payload = {
+                cnpj: removePontuacao(estabelecimentoData.cnpj),          // Remove pontuação do CNPJ
+                razaoSocial: estabelecimentoData.razaoSocial,
+                nome: estabelecimentoData.nome,
+                telefone: estabelecimentoData.telefone,
+                email: estabelecimentoData.email,
+                alvara: estabelecimentoData.alvara,
+                endereco: {
+                    logradouro: enderecoData.logradouro,
+                    numero: enderecoData.numero,
+                    complemento: enderecoData.complemento,
+                    bairro: enderecoData.bairro,
+                    cidade: enderecoData.cidade,
+                    estado: enderecoData.estado,
+                    cep: removePontuacao(enderecoData.cep)                // Remove pontuação do CEP
+                },
+                imagensToAdd: [
+                    "estabelecimento/imagem1.jpg",
+                    "estabelecimento/imagem2.png"
+                ]
+            };
+
+            console.log('Dados enviados no cadastro:', payload);
+
             const response = await fetch(`${apiUrl}/estabelecimento/new`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
-                body: JSON.stringify(estabelecimento),
+                body: JSON.stringify(payload),
             });
+
             const data = await response.json();
             if (response.ok) {
                 Toast.show({ type: 'success', text1: 'Cadastro Realizado com Sucesso' });
@@ -213,36 +208,26 @@ export default function EstabelecimentoCadastro() {
                     'Authorization': `Bearer ${token}`,
                 },
                 body: JSON.stringify({
-                    nome: nome,
-                    telefone: telefone,
-                    email: email,
-                    alvara: alvara,
+                    ...estabelecimentoData,
+                    cnpj: removePontuacao(estabelecimentoData.cnpj),
+                    telefone: removePontuacao(estabelecimentoData.telefone),
                     endereco: {
-                        logradouro: logradouro,
-                        numero: numero,
-                        bairro: bairro,
-                        cidade: cidade,
-                        estado: estado,
-                        cep: cep
+                        ...enderecoData,
+                        cep: removePontuacao(enderecoData.cep)
                     }
                 }),
             });
             const data = await response.json();
-            console.log(data);
-            if (response.ok) {
-                Toast.show({ type: 'success', text1: 'Edição Realizada com Sucesso' });
-                router.replace('/menu');
-            } else {
-                console.log(data);
-                Toast.show({ type: 'error', text1: 'Falha na Edição', text2: data.message });
-            }
+            response.ok
+                ? Toast.show({ type: 'success', text1: 'Edição Realizada com Sucesso' })
+                : Toast.show({ type: 'error', text1: 'Falha na Edição', text2: data.message });
+            router.replace('/menu');
         } catch (error) {
             console.error('Erro na edição', error);
         } finally {
             setLoading(false);
         }
     };
-
 
     return (
         <SafeAreaView className="flex-1 bg-white" style={{ marginTop: statusBarHeight }}>
@@ -253,25 +238,22 @@ export default function EstabelecimentoCadastro() {
                     <Text className="text-4xl font-semibold mt-5 mb-5">
                         {isEditing ? "Editar Estabelecimento" : "Cadastro Estabelecimento"}
                     </Text>
-                    {/* Informações Operacionais */}
-                    <Input label="Nome do Estabelecimento" value={nome} onChangeText={setNome} errorMessage={errorNome} className='mt-5' />
-                    <Input label="CNPJ" value={cnpj} onChangeText={handleCNPJChange} errorMessage={errorCnpj} keyboardType="numeric" maxLength={18} className='mt-5' />
-                    <Input label="Telefone" value={telefone} onChangeText={handleTelefoneChange} errorMessage={errorTelefone} keyboardType="phone-pad" className='mt-5' />
-                    <Input label="Razão Social" value={razaoSocial} onChangeText={setRazaoSocial} errorMessage={errorRazaoSocial} className='mt-5' />
-                    <Input label="Email" value={email} onChangeText={setEmail} errorMessage={errorEmail} keyboardType="email-address" className='mt-5' />
-                    <Input label="Alvará de Funcionamento" value={alvara} onChangeText={setAlvara} errorMessage={errorAlvara} className='mt-5' />
+                    <Input label="Nome do Estabelecimento" value={estabelecimentoData.nome} onChangeText={value => handleInputChange('nome', value)} className='mt-5' />
+                    <Input label="CNPJ" value={estabelecimentoData.cnpj} onChangeText={handleCNPJChange} keyboardType="numeric" maxLength={18} className='mt-5' />
+                    <Input label="Telefone" value={estabelecimentoData.telefone} onChangeText={handleTelefoneChange} keyboardType="phone-pad" className='mt-5' />
+                    <Input label="Razão Social" value={estabelecimentoData.razaoSocial} onChangeText={value => handleInputChange('razaoSocial', value)} className='mt-5' />
+                    <Input label="Email" value={estabelecimentoData.email} onChangeText={value => handleInputChange('email', value)} keyboardType="email-address" className='mt-5' />
+                    <Input label="Alvará de Funcionamento" value={estabelecimentoData.alvara} onChangeText={value => handleInputChange('alvara', value)} className='mt-5' />
 
-                    {/* Endereço */}
                     <Text className="text-2xl font-semibold mt-6">Endereço:</Text>
-                    <Input label="CEP" value={cep} onChangeText={handleCEPChange} errorMessage={errorCep} keyboardType="numeric" className='mt-5' />
-                    <Input label="Estado" value={estado} onChangeText={SetEstado} errorMessage={errorEstado} maxLength={2} className='mt-5' />
-                    <Input label="Cidade" value={cidade} onChangeText={SetCidade} errorMessage={errorCidade} className='mt-5' />
-                    <Input label="Bairro" value={bairro} onChangeText={SetBairro} errorMessage={errorBairro} className='mt-5' />
-                    <Input label="Logradouro" value={logradouro} onChangeText={SetLogradouro} errorMessage={errorLogradouro} className='mt-5' />
-                    <Input label="Número" value={numero} onChangeText={SetNumero} errorMessage={errorNumero} keyboardType="numeric" className='mt-5' />
-                    <Input label="Complemento" value={complemento} onChangeText={SetComplemento} className='mt-5' />
+                    <Input label="CEP" value={enderecoData.cep} onChangeText={handleCEPChange} keyboardType="numeric" className='mt-5' />
+                    <Input label="Estado" value={enderecoData.estado} onChangeText={value => handleEnderecoChange('estado', value)} maxLength={2} className='mt-5' />
+                    <Input label="Cidade" value={enderecoData.cidade} onChangeText={value => handleEnderecoChange('cidade', value)} className='mt-5' />
+                    <Input label="Bairro" value={enderecoData.bairro} onChangeText={value => handleEnderecoChange('bairro', value)} className='mt-5' />
+                    <Input label="Logradouro" value={enderecoData.logradouro} onChangeText={value => handleEnderecoChange('logradouro', value)} className='mt-5' />
+                    <Input label="Número" value={enderecoData.numero} onChangeText={value => handleEnderecoChange('numero', value)} keyboardType="numeric" className='mt-5' />
+                    <Input label="Complemento" value={enderecoData.complemento} onChangeText={value => handleEnderecoChange('complemento', value)} className='mt-5' />
 
-                    {/* Acomodações */}
                     <Text className="text-2xl font-semibold mt-6">Acomodações:</Text>
                     <MultiSelect options={options} selectedOptions={selectedOptions} onSelectionChange={setSelectedOptions} icon={<MaterialIcons name="check-box" size={24} color="black" />} />
                 </View>

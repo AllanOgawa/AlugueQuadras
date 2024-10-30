@@ -1,229 +1,133 @@
-import { useEffect, useState, useRef } from 'react';
-import { SafeAreaView, ScrollView, StatusBar, Text, TextInput, View } from 'react-native';
-import Constants from 'expo-constants';
-import { router } from 'expo-router';
-import { useRoute } from '@react-navigation/native';
-import Input from '@components/inputs/input';
-import BotaoPressable from '@components/botoes/botaoPressable';
-import MultiSelect from '@/src/components/IconService';
-import { MaterialIcons } from '@expo/vector-icons';
-import SetaVoltar from '@/src/components/setaVoltar';
-import globalStyles from '@/src/styles/globalStyles';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TextInput, SafeAreaView, ScrollView, Button, ActivityIndicator } from 'react-native';
+import { router, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { QuadraProps } from '@/src/interfaces/quadra';
+import UploadImage from '@components/UploadImagem';
+import { CardConfig } from '@components/cardConfig';
+import Constants from 'expo-constants';
+import SetaVoltar from '@/src/components/setaVoltar';
 import Toast from 'react-native-toast-message';
 
-const statusBarHeight = Constants.statusBarHeight;
+const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
 
-export default function QuadraCadastro() {
-    const [nome, setNome] = useState('');
-    const [valor, setValor] = useState('');
-    const [comprimento, setComprimento] = useState('');
-    const [largura, setLargura] = useState('');
-    const [informacoes, setInformacoes] = useState('');
-    const [selectedOptions, setSelectedOptions] = useState<number[]>([]);  // Tipos de esporte selecionados
-    const [sportsOptions, setSportsOptions] = useState([]);  // Tipos de esporte disponíveis
+export default function CadastroEdicaoQuadra() {
+    const { quadra: quadraParam } = useLocalSearchParams();
+    const [quadraData, setQuadraData] = useState<Partial<QuadraProps>>({
+        nome: '',
+        informacoesAdicionais: '',
+        valor: '',
+        largura: '',
+        comprimento: '',
+        tiposEsporte: [],
+        imagens: []
+    });
+    const [isEditing, setIsEditing] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-    const [errorNome, setErrorNome] = useState('');
-    const [errorValor, setErrorValor] = useState('');
-    const [errorComprimento, setErrorComprimento] = useState('');
-    const [errorLargura, setErrorLargura] = useState('');
-
-    const nomeInputRef = useRef<TextInput>(null);
-    const valorInputRef = useRef<TextInput>(null);
-    const comprimentoInputRef = useRef<TextInput>(null);
-    const larguraInputRef = useRef<TextInput>(null);
-    const InformacoesInputRef = useRef<TextInput>(null);
-
-    const [idEstabelecimento, setIdEstabelecimento] = useState<number | null>(null);
-
-
-    // Busca tipos de esporte ao carregar o componente
     useEffect(() => {
-        const fetchSports = async () => {
-            try {
-                const access_token = await AsyncStorage.getItem('access_token');
-                const response = await fetch(`${Constants.expoConfig?.extra?.apiUrl}/estabelecimento/quadra/tipo-esporte/list`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${access_token}`,
-                    },
-                });
+        if (quadraParam) {
+            const parsedQuadra = typeof quadraParam === 'string' ? JSON.parse(quadraParam) : quadraParam;
+            setQuadraData(parsedQuadra);
+            setIsEditing(true);
+        }
+    }, [quadraParam]);
 
-                const sports = await response.json();
-                setSportsOptions(sports);  // Armazena as opções de esporte no estado
-            } catch (error) {
-                console.error('Erro ao buscar tipos de esporte:', error);
-                Toast.show({
-                    type: 'error',
-                    text1: 'Erro ao carregar tipos de esporte',
-                });
-            }
-        };
-        const fetchEstabelecimentoId = async () => {
-            try {
-                const id = await AsyncStorage.getItem('idEstabelecimento');
-                if (id) {
-                    setIdEstabelecimento(parseInt(id, 10)); // Converte o valor de string para número
-                    console.log('ID do estabelecimento recuperado:', id);
-                } else {
-                    console.log('Nenhum ID encontrado.');
-                }
-            } catch (error) {
-                console.error('Erro ao recuperar o ID do estabelecimento:', error);
-            }
-        };
-        fetchSports();
-        fetchEstabelecimentoId();
-    }, []);
-
-
-    const handleSelectionChange = (selected: number[]) => {
-        setSelectedOptions(selected);
-        console.log('Tipos de esporte selecionados:', selected);
+    const handleInputChange = (field: keyof QuadraProps, value: string) => {
+        setQuadraData((prevData) => ({ ...prevData, [field]: value }));
     };
 
     const handleSubmit = async () => {
-        let hasError = false;
+        setLoading(true);
+        try {
+            const access_token = await AsyncStorage.getItem('access_token');
+            const url = isEditing
+                ? `${apiUrl}/estabelecimento/quadra/edit/${quadraData.idkey}`
+                : `${apiUrl}/estabelecimento/quadra/new`;
+            const method = isEditing ? 'PATCH' : 'POST';
 
-        if (!idEstabelecimento) {
+            const response = await fetch(url, {
+                method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${access_token}`,
+                },
+                body: JSON.stringify({
+                    ...quadraData,
+                    valor: parseFloat(quadraData.valor || '0'), // Convertendo o valor para float
+                    // imagensToAdd: quadraData.imagens?.map((img) => img.path), // Paths das imagens
+                    tiposEsporteToAdd: quadraData.tiposEsporte?.map((esporte) => esporte.idkey), // IDs dos esportes
+                    imagensToAdd: [
+                        "estabelecimento/imagem1.jpg",
+                        "estabelecimento/imagem2.png"
+                    ],
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error(isEditing ? 'Erro ao editar a quadra' : 'Erro ao cadastrar a quadra');
+            }
+
+            Toast.show({
+                type: 'success',
+                text1: isEditing ? 'Quadra editada com sucesso!' : 'Quadra cadastrada com sucesso!',
+            });
+            setTimeout(() => router.replace('/menu'), 600);
+        } catch (error) {
             Toast.show({
                 type: 'error',
-                text1: 'Estabelecimento não encontrado',
-            })
-            return;
-        }
-
-        // Validações dos campos
-        setErrorNome(!nome ? "O campo Nome é obrigatório." : "");
-        setErrorValor(!valor ? "O campo Valor é obrigatório." : "");
-        setErrorComprimento(!comprimento ? "O campo Comprimento é obrigatório." : "");
-        setErrorLargura(!largura ? "O campo Largura é obrigatório." : "");
-
-        if (!nome || !valor || !comprimento || !largura) {
-            hasError = true;
-        }
-
-        if (!hasError) {
-            const quadraData = {
-                nome,
-                informacoesAdicionais: informacoes,
-                valor: parseFloat(valor),  // Converte para número
-                largura: parseFloat(largura),  // Converte para número
-                comprimento: parseFloat(comprimento),  // Converte para número
-                idkeyEstabelecimento: idEstabelecimento,  // Substitua pelo id real do estabelecimento
-                imagensToAdd: [
-                    "estabelecimento/imagem1.jpg",  // Substitua pelos paths corretos
-                    "estabelecimento/imagem2.png"
-                ],
-                tiposEsporteToAdd: selectedOptions  // Tipos de esporte selecionados
-            };
-
-            console.log('Dados da quadra a serem enviados:', quadraData);
-
-            try {
-                const access_token = await AsyncStorage.getItem('access_token');
-                const response = await fetch(`${Constants.expoConfig?.extra?.apiUrl}/quadra`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${access_token}`,
-                    },
-                    body: JSON.stringify(quadraData),  // Envia os dados como JSON
-                });
-
-                if (!response.ok) {
-                    throw new Error('Erro ao cadastrar quadra');
-                }
-
-                // Exibe mensagem de sucesso
-                Toast.show({
-                    type: 'success',
-                    text1: 'Quadra cadastrada com sucesso',
-                });
-
-                // Redireciona após um pequeno intervalo
-                setTimeout(() => {
-                    router.replace({
-                        pathname: '/menu',
-                        params: { message: "Cadastro de quadra realizado com sucesso!" }
-                    });
-                }, 600);
-            } catch (error) {
-                console.error(error);
-                Toast.show({
-                    type: 'error',
-                    text1: 'Erro ao cadastrar a quadra',
-                });
-            }
-        } else {
-            console.log("Erro: Preencha todos os campos obrigatórios.");
+                text1: 'Erro ao salvar a quadra',
+                text2: error.message,
+            });
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <SafeAreaView className="flex-1 bg-white" style={{ marginTop: statusBarHeight }}>
-            <StatusBar barStyle="dark-content" backgroundColor="white" />
-            <ScrollView showsVerticalScrollIndicator={false}>
-                <View className="w-full px-4">
-                    <Text className="text-4xl font-semibold mt-5 mb-5">Cadastrar Quadra</Text>
-
-                    <Input
-                        className='mt-5'
-                        label="Nome da Quadra:"
-                        obrigatorio
-                        value={nome}
-                        onChangeText={setNome}
-                    />
-                    <Input
-                        className='mt-5'
-                        label="Valor por Hora:"
-                        obrigatorio
-                        keyboardType="numeric"
-                        value={valor}
-                        onChangeText={setValor}
-                    />
-                    <Input
-                        className='mt-5'
-                        label="Comprimento (m):"
-                        obrigatorio
-                        keyboardType="numeric"
-                        value={comprimento}
-                        onChangeText={setComprimento}
-                    />
-                    <Input
-                        className='mt-5'
-                        label="Largura (m):"
-                        obrigatorio
-                        keyboardType="numeric"
-                        value={largura}
-                        onChangeText={setLargura}
-                    />
-                    <Input
-                        className='mt-5'
-                        label="Informações adicionais:"
-                        value={informacoes}
-                        onChangeText={setInformacoes}
-                    />
-                    <View>
-                        <Text className="text-lg mt-4">Selecione os tipos de esporte:</Text>
-                        <MultiSelect
-                            options={sportsOptions.map(({ idkey, descricao }) => ({
-                                id: String(idkey),
-                                label: descricao
-                            }))}
-                            onSelectionChange={(selected: string[]) => handleSelectionChange(selected.map(Number))}  // Convertendo ids para número
-                        />
-                    </View>
-                </View>
-            </ScrollView>
-            <View style={globalStyles.buttonContainer}>
-                <BotaoPressable
-                    title={'Cadastrar'}
-                    className='bg-primary p-4 rounded-2xl active:bg-secondary mx-4'
-                    classNameTitle="text-white text-center text-xl"
-                    onPress={handleSubmit}  // Chama a função para enviar os dados
+        <SafeAreaView style={{ flex: 1, paddingTop: 20 }}>
+            <SetaVoltar />
+            <ScrollView contentContainerStyle={{ padding: 16 }}>
+                <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 16 }}>
+                    {isEditing ? 'Editar Quadra' : 'Cadastrar Quadra'}
+                </Text>
+                <TextInput
+                    placeholder="Nome da Quadra"
+                    value={quadraData.nome}
+                    onChangeText={(text) => handleInputChange('nome', text)}
+                    style={{ marginBottom: 16, borderBottomWidth: 1, padding: 8 }}
                 />
-            </View>
+                <TextInput
+                    placeholder="Informações Adicionais"
+                    value={quadraData.informacoesAdicionais}
+                    onChangeText={(text) => handleInputChange('informacoesAdicionais', text)}
+                    style={{ marginBottom: 16, borderBottomWidth: 1, padding: 8 }}
+                />
+                <TextInput
+                    placeholder="Valor"
+                    value={quadraData.valor}
+                    onChangeText={(text) => handleInputChange('valor', text)}
+                    style={{ marginBottom: 16, borderBottomWidth: 1, padding: 8 }}
+                    keyboardType="numeric"
+                />
+                <TextInput
+                    placeholder="Largura"
+                    value={quadraData.largura}
+                    onChangeText={(text) => handleInputChange('largura', text)}
+                    style={{ marginBottom: 16, borderBottomWidth: 1, padding: 8 }}
+                    keyboardType="numeric"
+                />
+                <TextInput
+                    placeholder="Comprimento"
+                    value={quadraData.comprimento}
+                    onChangeText={(text) => handleInputChange('comprimento', text)}
+                    style={{ marginBottom: 16, borderBottomWidth: 1, padding: 8 }}
+                    keyboardType="numeric"
+                />
+
+                <Button title={isEditing ? 'Salvar Alterações' : 'Cadastrar Quadra'} onPress={handleSubmit} />
+                {loading && <ActivityIndicator size="large" color="#FF6600" style={{ marginTop: 16 }} />}
+            </ScrollView>
         </SafeAreaView>
     );
 }
