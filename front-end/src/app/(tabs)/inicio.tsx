@@ -16,6 +16,7 @@ const { bucketUrl, userDefaultImage } = Constants.expoConfig.extra;
 
 export default function Inicio() {
 	const [loading, setLoading] = useState(false);
+	const [logado, setLogado] = useState(false);
 	const [nome, setNome] = useState("Bem-vindo!");
 	const [imagem, setImagem] = useState(userDefaultImage);
 
@@ -27,6 +28,7 @@ export default function Inicio() {
 
 	useEffect(() => {
 		if (usuario != null && usuario[0] !== null) {
+			setLogado(true);
 			if (usuario[0].nome)
 				setNome("Olá! " + usuario[0].nome);
 			if (usuario[0].imagens && usuario[0].imagens[0] && usuario[0].imagens[0].path)
@@ -51,7 +53,10 @@ export default function Inicio() {
 						</View>
 						<View className="relative mb-2">
 							<Pressable
-							// onPress={() => router.push('/')}
+								onPress={() => {
+									if (logado) router.push('/(tabs)/perfil');
+									else router.push('/(usuario)/cadastro');
+								}}
 							>
 								<IconUsuario image={`${bucketUrl}/${imagem}`} style="w-16 h-16 rounded-full border-2 border-black" />
 								{/* <Feather
