@@ -8,6 +8,7 @@ import { UsuarioModule } from '@src/domains/auth/usuario/usuario.module';
 import { AcomodacaoModule } from './acomodacao/acomodacao.module';
 import { ImagemModule } from '@src/domains/storage/imagem/imagem.module';
 import { EnderecoModule } from '@src/domains/geral/endereco/endereco.module';
+import { HorariofuncionamentoModule } from './horariofuncionamento/horariofuncionamento.module';
 
 @Module({
     imports: [
@@ -17,6 +18,7 @@ import { EnderecoModule } from '@src/domains/geral/endereco/endereco.module';
         AcomodacaoModule,
         ImagemModule,
         EnderecoModule,
+        HorariofuncionamentoModule,
     ],
     controllers: [EstabelecimentoController],
     providers: [EstabelecimentoService],
