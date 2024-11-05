@@ -9,6 +9,7 @@ import { QuadraModule }   from './quadra/quadra.module';
 import { UsuarioModule }  from '@src/domains/auth/usuario/usuario.module';
 import { ImagemModule }   from '@src/domains/storage/imagem/imagem.module';
 import { EnderecoModule } from '@src/domains/geral/endereco/endereco.module';
+import { HorarioFuncionamentoModule } from './horario-funcionamento/horario-funcionamento.module';
 
 
 @Module({
@@ -17,7 +18,8 @@ import { EnderecoModule } from '@src/domains/geral/endereco/endereco.module';
     QuadraModule,
     UsuarioModule,
     ImagemModule,
-    EnderecoModule
+    EnderecoModule,
+    HorarioFuncionamentoModule
   ], 
   controllers: [EstabelecimentoController],
   providers: [EstabelecimentoService],

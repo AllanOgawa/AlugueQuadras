@@ -23,6 +23,7 @@ export class EstabelecimentoService {
   async create(createEstabelecimentoDto: CreateEstabelecimentoDto, usuario: Usuario): Promise<Estabelecimento> {
     let estabelecimento: Estabelecimento;
     let novasImagens = [];
+    let novosHorarios = [];
 
     try {
       estabelecimento = this.estabelecimentoRepository.create({
@@ -137,13 +138,14 @@ export class EstabelecimentoService {
   }
 
   async updateFields(idkey: number, updateEstabelecimentoDto: UpdateEstabelecimentoDto): Promise<void> {
-    const { nome, telefone, email, alvara } = updateEstabelecimentoDto;
+    const { nome, telefone, email, alvara, sobre } = updateEstabelecimentoDto;
 
     const updateData: Partial<Estabelecimento> = {};
     if (nome) updateData.nome = nome;
     if (telefone) updateData.telefone = telefone;
     if (email) updateData.email = email;
     if (alvara) updateData.alvara = alvara;
+    if (sobre) updateData.sobre = sobre;
 
     try {
       await this.estabelecimentoRepository.update(idkey, updateData);

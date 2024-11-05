@@ -1,9 +1,9 @@
 // src/domains/geral/endereco/dto/update-endereco.dto.ts
 
-import { 
-  IsString, 
-  Length, 
-  IsOptional, 
+import {
+  IsString,
+  Length,
+  IsOptional,
   IsNotEmpty
 } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
@@ -77,4 +77,22 @@ export class UpdateEnderecoDto {
   @IsOptional()
   @Length(8, 8, { message: 'O campo CEP deve ter exatamente 8 caracteres.' })
   cep?: string;
+
+  @ApiPropertyOptional({
+    description: 'Latitude do endereço',
+    example: '-23.5505199',
+    type: String
+  })
+  @IsString({ message: 'O campo latitude deve ser uma string.' })
+  @IsOptional()
+  latitude?: string;
+
+  @ApiPropertyOptional({
+    description: 'Longitude do endereço',
+    example: '-46.6333094',
+    type: String
+  })
+  @IsString({ message: 'O campo longitude deve ser uma string.' })
+  @IsOptional()
+  longitude?: string;
 }

@@ -64,6 +64,15 @@ export class CreateEstabelecimentoDto {
   alvara: string;
 
   @ApiProperty({
+    description: 'Informações do estabelecimento',
+    example: 'O Tenis Club é um estabelecimento que oferece quadras de tênis para locação.',
+    type: String
+  })
+  @IsString({ message: 'O campo sobre deve ser uma string.' })
+  @IsNotEmpty({ message: 'O campo sobre não pode estar vazio.' })
+  sobre: string;
+
+  @ApiProperty({
     description: 'Endereço do estabelecimento',
     type: CreateEnderecoDto
   })

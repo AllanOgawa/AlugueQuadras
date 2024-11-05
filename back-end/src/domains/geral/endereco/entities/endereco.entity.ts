@@ -1,9 +1,9 @@
-import { 
-  Entity, 
-  PrimaryGeneratedColumn, 
-  Column, 
-  CreateDateColumn, 
-  UpdateDateColumn, 
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
   OneToOne,
 } from "typeorm";
 
@@ -35,6 +35,12 @@ export class Endereco {
 
   @Column({ type: 'text', nullable: false })
   cep: string;
+
+  @Column({ type: 'text', nullable: true })
+  latitude: string;
+
+  @Column({ type: 'text', nullable: true })
+  longitude: string;
 
   @CreateDateColumn({ type: 'timestamp', name: 'data_cadastro', default: () => 'CURRENT_TIMESTAMP' })
   dataCadastro: Date;
