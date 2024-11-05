@@ -1,13 +1,13 @@
-import { EsportesProps } from "./esportes";
+import { EsporteProps } from "./esportes";
+import { ImagemProps } from "./estabelecimento";
 
 export interface QuadraProps {
-    local: any;
-    endereco: any;
-    id: string;
-    name: string;
-    comprimento: number;
-    largura: number;
-    image: string;
-    valor: string;
-    esportes: EsportesProps[];
+    idkey: number; // Identificador da quadra
+    nome: string; // Nome da quadra
+    informacoesAdicionais: string; // Informações adicionais sobre a quadra
+    valor: string; // Valor da quadra
+    largura: string; // Largura da quadra (string para manter a formatação original)
+    comprimento: string; // Comprimento da quadra (string para manter a formatação original)
+    tiposEsporte: EsporteProps[]; // Lista de tipos de esporte
+    imagens: ImagemProps[]; // Lista de imagens da quadra
 }
