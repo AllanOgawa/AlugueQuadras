@@ -78,7 +78,9 @@ export class EstabelecimentoService {
             try {
                 novasAcomodacoes =
                     await this.acomodacaoService.createAcomodacoes(
-                        createEstabelecimentoDto.acomodacoesToAdd,
+                        createEstabelecimentoDto.acomodacoesToAdd.map(
+                            (descricao) => ({ descricao }),
+                        ),
                     );
                 await this.estabelecimentoRepository
                     .createQueryBuilder()
@@ -290,7 +292,9 @@ export class EstabelecimentoService {
                 if (novasAcomodacoesParaAdicionar.length > 0) {
                     const acomodacoesEntities =
                         await this.acomodacaoService.createAcomodacoes(
-                            novasAcomodacoesParaAdicionar,
+                            novasAcomodacoesParaAdicionar.map((descricao) => ({
+                                descricao,
+                            })),
                         );
                     await this.estabelecimentoRepository
                         .createQueryBuilder()

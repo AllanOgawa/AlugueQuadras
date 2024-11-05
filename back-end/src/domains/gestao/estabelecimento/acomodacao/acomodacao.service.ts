@@ -165,4 +165,17 @@ export class AcomodacaoService {
             );
         }
     }
+
+    async searchAcomodacoes(descricoes: string[]): Promise<Acomodacao[]> {
+        return await this.acomodacaoRepository.find({
+            where: { descricao: In(descricoes) },
+        });
+    }
+
+    async removeAcomodacoes(descricoes: string[]): Promise<void> {
+        const acomodacoesParaRemover = await this.acomodacaoRepository.find({
+            where: { descricao: In(descricoes) },
+        });
+        await this.acomodacaoRepository.remove(acomodacoesParaRemover);
+    }
 }
