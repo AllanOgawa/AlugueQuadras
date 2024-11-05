@@ -32,6 +32,7 @@ const tabData: { route: string, name: TabName, iconFocused: IconName, iconUnfocu
 }];
 
 export default function TabLayout() {
+
 	return (
 		<Tabs
 			screenOptions={{

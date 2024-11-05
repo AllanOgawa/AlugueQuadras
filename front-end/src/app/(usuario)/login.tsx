@@ -1,5 +1,5 @@
-import { Alert, SafeAreaView, ScrollView, StatusBar, Text, TextInput, View } from 'react-native';
-import { useContext, useRef, useState } from 'react';
+import { ActivityIndicator, SafeAreaView, ScrollView, StatusBar, Text, TextInput, View } from 'react-native';
+import { useRef, useState } from 'react';
 import Constants from 'expo-constants'
 import { router } from 'expo-router';
 import Input from '@components/inputs/input';
@@ -9,9 +9,8 @@ import BotaoPressable from '@components/botoes/botaoPressable';
 import Loading from '@components/loading';
 import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { UsuarioContext } from '@context/usuarioContext';
 
-const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
+const { apiUrl } = Constants.expoConfig.extra;
 
 export default function UsuarioLogin() {
     const [loading, setLoading] = useState(false);
@@ -23,13 +22,7 @@ export default function UsuarioLogin() {
     const usernameInputRef = useRef<TextInput>(null);
     const senhaInputRef = useRef<TextInput>(null);
 
-    const context = useContext(UsuarioContext);
-    if (!context) {
-        throw new Error("YourComponent must be used within an ArrayProvider");
-    }
-    const { usuario, setUsuario } = context;
-
-    async function setAccessToken(access_token: string) {
+    async function storeData(access_token: string) {
         try {
             await AsyncStorage.setItem("access_token", access_token);
             console.log('Dados armazenados no localStorage com sucesso');
@@ -43,7 +36,6 @@ export default function UsuarioLogin() {
         setErrorUsername('');
         setErrorSenha('');
 
-        let accessToken = "";
         let isValid = true;
         if (!username) {
             setErrorUsername("O campo Username/Email é obrigatório");
@@ -54,10 +46,7 @@ export default function UsuarioLogin() {
             isValid = false;
         }
 
-        if (!isValid) {
-            setLoading(false);
-            return;
-        }
+        if (!isValid) return;
 
         try {
             const response = await fetch(`${apiUrl}/auth/login`, {
@@ -74,53 +63,28 @@ export default function UsuarioLogin() {
             const data = await response.json();
 
             if (response.ok) {
-                setAccessToken(data.access_token);
-                accessToken = data.access_token;
-            } else {
-                Alert.alert(
-                    "Login Falhou",
-                    data.message
-                );
-            }
-        } catch (error) {
-            Alert.alert(
-                "Erro de Rede",
-                String(error)
-            );
-        } finally {
-            setLoading(false);
-            if (accessToken != "") {
-                getProfile(accessToken)
-            }
-        }
-    };
-
-    async function getProfile(accessToken: string) {
-        setLoading(true);
-        try {
-            const response = await fetch(`${apiUrl}/auth/profile`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${accessToken}`,
-                },
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
+                storeData(data.access_token)
+                console.log(data);
                 Toast.show({
                     type: 'success',
                     text1: "Login Bem-Sucedido",
                 });
-                setUsuario([data]);
                 router.replace('/(tabs)/inicio');
+            } else {
+                console.error('Erro no login', data);
+                Toast.show({
+                    type: 'error',
+                    text1: "Login Falhou",
+                    text2: data.message,
+                });
             }
         } catch (error) {
-            Alert.alert(
-                "Erro de Rede",
-                String(error)
-            );
+            console.error('Erro de rede', error);
+            Toast.show({
+                type: 'error',
+                text1: "Erro de Rede",
+                text2: String(error),
+            });
         } finally {
             setLoading(false);
         }
@@ -142,7 +106,6 @@ export default function UsuarioLogin() {
                         ref={usernameInputRef}
                         label="Username/Email:"
                         obrigatorio
-                        autoCapitalize='none'
                         keyboardType="email-address"
                         errorMessage={errorUsername}
                         value={username}
@@ -155,7 +118,6 @@ export default function UsuarioLogin() {
                         ref={senhaInputRef}
                         label="Senha:"
                         obrigatorio
-                        autoCapitalize='none'
                         errorMessage={errorSenha}
                         value={senha}
                         onChangeText={setSenha}
@@ -169,6 +131,7 @@ export default function UsuarioLogin() {
                     title={'Login'}
                     className='bg-primary p-4 rounded-2xl active:bg-secondary mx-4 mt-20'
                     classNameTitle='text-white text-center text-xl'
+                    // onPress={handleSubmit}
                     onPress={handleSubmit}
                 />
                 <BotaoPressable

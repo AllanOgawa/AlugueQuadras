@@ -12,25 +12,24 @@ pg.types.setTypeParser(20, (val) => parseInt(val, 10)); // Configura o TypeParse
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => {
-        const dbHost = configService.get<string>('DB_HOST');
-        const dbPort = configService.get<number>('DB_PORT');
-        const dbUsername = configService.get<string>('DB_USERNAME');
-        const dbPassword = configService.get<string>('DB_PASSWORD');
-        const dbName = configService.get<string>('DB_NAME');
+        const dbHost      = configService.get<string>('DB_HOST');
+        const dbPort      = configService.get<number>('DB_PORT');
+        const dbUsername  = configService.get<string>('DB_USERNAME');
+        const dbPassword  = configService.get<string>('DB_PASSWORD');
+        const dbName      = configService.get<string>('DB_NAME');
         return {
           type: 'postgres',
-          host: dbHost,
-          port: dbPort,
+          host:     dbHost,
+          port:     dbPort,
           username: dbUsername,
           password: dbPassword,
           database: dbName,
           entities: entities,
           synchronize: true, // Habilita synchronize apenas se não for produção
-          logging: false,
-          timezone: 'Z',
+          logging:  false,
         };
       },
     }),
   ],
 })
-export class DatabaseModule { }
+export class DatabaseModule {}

@@ -71,6 +71,30 @@ export class EstabelecimentoService {
             }
         }
 
+        if (
+            createEstabelecimentoDto.acomodacoesToAdd &&
+            createEstabelecimentoDto.acomodacoesToAdd.length > 0
+        ) {
+            try {
+                novasAcomodacoes =
+                    await this.acomodacaoService.createAcomodacoes(
+                        createEstabelecimentoDto.acomodacoesToAdd.map(
+                            (descricao) => ({ descricao }),
+                        ),
+                    );
+                await this.estabelecimentoRepository
+                    .createQueryBuilder()
+                    .relation(Estabelecimento, 'acomodacoes')
+                    .of(estabelecimento)
+                    .add(novasAcomodacoes);
+            } catch (error) {
+                console.log(error);
+                throw new BadRequestException(
+                    'Erro ao associar acomodações ao estabelecimento.',
+                );
+            }
+        }
+
         return this.findByIdkey(estabelecimento.idkey);
     }
 
@@ -116,11 +140,13 @@ export class EstabelecimentoService {
         updateEstabelecimentoDto: UpdateEstabelecimentoDto,
     ): Promise<void> {
         const { nome, telefone, email, alvara } = updateEstabelecimentoDto;
+
         const updateData: Partial<Estabelecimento> = {};
         if (nome) updateData.nome = nome;
         if (telefone) updateData.telefone = telefone;
         if (email) updateData.email = email;
         if (alvara) updateData.alvara = alvara;
+
         try {
             await this.estabelecimentoRepository.update(idkey, updateData);
         } catch (error) {
@@ -145,6 +171,7 @@ export class EstabelecimentoService {
                 const novasImagensParaAdicionar = imagensToAdd.filter(
                     (caminho) => !imagensExistentes.includes(caminho),
                 );
+
                 if (novasImagensParaAdicionar.length > 0) {
                     const imagensEntities =
                         await this.imagemService.createImagens(
@@ -163,6 +190,7 @@ export class EstabelecimentoService {
                 );
             }
         }
+
         if (imagensToRemove && imagensToRemove.length > 0) {
             try {
                 const imagensParaRemover =
@@ -174,6 +202,7 @@ export class EstabelecimentoService {
                     .relation(Estabelecimento, 'imagens')
                     .of(estabelecimento)
                     .remove(imagensParaRemover);
+
                 await this.imagemService.removeImagens(imagensToRemove);
             } catch (error) {
                 console.log(error);
@@ -189,7 +218,9 @@ export class EstabelecimentoService {
         updateEstabelecimentoDto: UpdateEstabelecimentoDto,
     ): Promise<Estabelecimento> {
         await this.updateFields(idkey, updateEstabelecimentoDto);
+
         const estabelecimento = await this.findByIdkey(idkey);
+
         const {
             imagensToAdd,
             imagensToRemove,
@@ -202,23 +233,27 @@ export class EstabelecimentoService {
             acomodacaoToAdd,
             acomodacoesToRemove,
         );
+
         if (updateEstabelecimentoDto.endereco) {
             await this.enderecoService.update(
                 estabelecimento.endereco.idkey,
                 updateEstabelecimentoDto.endereco,
             );
         }
+
         return this.findByIdkey(idkey);
     }
 
     async remove(idkey: number, usuario: Usuario): Promise<void> {
         const estabelecimento = await this.findByIdkey(idkey);
+
         if (estabelecimento.imagens && estabelecimento.imagens.length > 0) {
             const caminhosImagens = estabelecimento.imagens.map(
                 (imagem) => imagem.path,
             );
             await this.imagemService.removeImagens(caminhosImagens);
         }
+
         if (
             estabelecimento.acomodacoes &&
             estabelecimento.acomodacoes.length > 0
@@ -228,6 +263,7 @@ export class EstabelecimentoService {
             );
             await this.acomodacaoService.removeAcomodacoes(acomodacoesNomes);
         }
+
         try {
             await this.estabelecimentoRepository.remove(estabelecimento);
         } catch (error) {

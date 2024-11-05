@@ -3,9 +3,6 @@ import MapView, { Marker } from 'react-native-maps';
 import { useState, useEffect } from 'react';
 
 import { ObterLocalizacao } from '@components/obterLocalizacao';
-import Constants from 'expo-constants';
-
-const statusBarHeight = Constants.statusBarHeight;
 
 export default function Mapa() {
   const [location, setLocation] = useState({
@@ -33,14 +30,14 @@ export default function Mapa() {
 
   if (loading) {
     return (
-      <View className='rounded-2xl flex-1 justify-center items-center'>
-        <ActivityIndicator size="large" className='color-primary' />
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#FF7300" />
       </View>
     );
   }
 
   return (
-    <View className='flex-1 justify-center items-center' style={{ marginTop: statusBarHeight + 1 }}>
+    <View style={styles.container}>
       <MapView
         style={styles.map}
         initialRegion={location}
@@ -61,6 +58,11 @@ export default function Mapa() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   map: {
     width: '100%',
     height: '100%',

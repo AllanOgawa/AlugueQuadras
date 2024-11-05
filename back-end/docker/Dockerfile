@@ -1,5 +1,5 @@
 # -----------------------------------------------------
-# Stage 1: Build the application
+# Stage 1: Construir a aplicação
 # -----------------------------------------------------
   FROM node:18-alpine AS builder
 
@@ -15,7 +15,7 @@
   # Copiar o restante do código da aplicação
   COPY . .
   
-  # Buildar a aplicação NestJS para produção
+  # Compilar a aplicação NestJS
   RUN npm run build
   
   # -----------------------------------------------------
@@ -32,8 +32,6 @@
   # Copiar os arquivos de dependências novamente
   COPY package*.json ./
   
-  COPY env/production.env env/production.env
-
   # Instalar apenas as dependências de produção
   RUN npm ci --only=production
   
@@ -49,8 +47,13 @@
   # Expor a porta que a aplicação irá utilizar
   EXPOSE 3000
   
+  # Definir variáveis de ambiente específicas (serão sobrescritas pelo Docker Compose)
+  ENV NODE_ENV=production
+  
   # (Opcional) Define um healthcheck para monitorar a saúde da aplicação
   HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://back-end-aluguequadras-production:3000/health || exit 1
-
-  CMD ["node", "-r", "dotenv/config", "dist/src/main.js", "dotenv_config_path=env/production.env"]
+    CMD curl -f http://localhost:3000/health || exit 1
+  
+  # Comando para iniciar a aplicação
+  CMD ["node", "dist/main"]
+  

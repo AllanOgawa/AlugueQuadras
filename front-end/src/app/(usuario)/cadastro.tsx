@@ -1,6 +1,6 @@
 import globalStyles from '@/src/styles/globalStyles';
-import { Alert, SafeAreaView, ScrollView, StatusBar, Text, TextInput, View } from 'react-native';
-import { useContext, useRef, useState } from 'react';
+import { ActivityIndicator, SafeAreaView, ScrollView, StatusBar, Text, TextInput, View } from 'react-native';
+import { useRef, useState } from 'react';
 import Constants from 'expo-constants'
 import SetaVoltar from '@components/setaVoltar';
 import Loading from '@components/loading';
@@ -11,9 +11,8 @@ import BotaoTouchableOpacity from '@components/botoes/botaoTouchableOpacity';
 import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
-import { UsuarioContext } from '@context/usuarioContext';
 
-const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
+const { apiUrl } = Constants.expoConfig.extra;
 
 export default function UsuarioCadastro() {
     const [loading, setLoading] = useState(false);
@@ -41,12 +40,6 @@ export default function UsuarioCadastro() {
     const senhaInputRef = useRef<TextInput>(null);
     const confirmarSenhaInputRef = useRef<TextInput>(null);
 
-    const context = useContext(UsuarioContext);
-    if (!context) {
-        throw new Error("YourComponent must be used within an ArrayProvider");
-    }
-    const { usuario, setUsuario } = context;
-
     function handleSubmit() {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         let isValid = true;
@@ -67,10 +60,6 @@ export default function UsuarioCadastro() {
             setErrorUsername("o campo Username é obrigatório.");
             isValid = false;
         }
-        if (username && username.length < 6) {
-            setErrorUsername("o campo Username deve ter pelo menos 6 caracteres.");
-            isValid = false;
-        }
         if (!emailRegex.test(email)) {
             setErrorEmail("Formato de Email Inválido.");
             isValid = false;
@@ -83,7 +72,7 @@ export default function UsuarioCadastro() {
             setErrorCpf("CPF Inválido.");
             isValid = false;
         }
-        if (!cpf) {
+        if (!senha) {
             setErrorCpf("o campo CPF é obrigatório.");
             isValid = false;
         }
@@ -106,8 +95,8 @@ export default function UsuarioCadastro() {
                         isValid = false;
                     }
         }
-        if (senha.length < 8) {
-            setErrorSenha("a senha deve ter pelo menos 8 caracteres.");
+        if (senha.length < 6) {
+            setErrorSenha("a senha deve ter pelo menos 6 caracteres.");
             isValid = false;
         }
         if (!senha) {
@@ -148,7 +137,7 @@ export default function UsuarioCadastro() {
         return `${ano}-${mes}-${dia}`;
     }
 
-    async function setAccessToken(access_token: string) {
+    async function storeData(access_token: string) {
         try {
             await AsyncStorage.setItem("access_token", access_token);
             console.log('Dados armazenados no localStorage com sucesso');
@@ -175,7 +164,6 @@ export default function UsuarioCadastro() {
                     cpf: cpf,
                     dataNascimento: dataNascimento,
                     senha: senha,
-                    imagensToAdd: [userDefaultImage]
                 }),
             });
 
@@ -190,18 +178,21 @@ export default function UsuarioCadastro() {
                 });
                 success = true;
             } else {
-                Alert.alert(
-                    "Cadastro Falhou",
-                    data.message
-                );
+                console.error('Erro no cadastro', data);
+                Toast.show({
+                    type: 'error',
+                    text1: "Cadastro Falhou",
+                    text2: data.message,
+                });
             }
         } catch (error) {
-            Alert.alert(
-                "Erro de Rede",
-                String(error)
-            );
+            console.error('Erro de rede', error);
+            Toast.show({
+                type: 'error',
+                text1: "Erro de Rede",
+                text2: String(error),
+            });
         } finally {
-            setLoading(false);
             if (success) {
                 login();
             }
@@ -209,8 +200,6 @@ export default function UsuarioCadastro() {
     }
 
     async function login() {
-        setLoading(true);
-        let accessToken = "";
         try {
             const response = await fetch(`${apiUrl}/auth/login`, {
                 method: 'POST',
@@ -226,49 +215,28 @@ export default function UsuarioCadastro() {
             const data = await response.json();
 
             if (response.ok) {
-                accessToken = data.access_token;
-                setAccessToken(data.access_token);
-            } else {
-                Alert.alert(
-                    "Login Falhou",
-                    data.message
-                );
-            }
-        } catch (error) {
-            Alert.alert(
-                "Erro de Rede",
-                String(error)
-            );
-        } finally {
-            setLoading(false);
-            if (accessToken != "") {
-                getProfile(accessToken);
-            }
-        }
-    };
-
-    async function getProfile(accessToken: string) {
-        setLoading(true);
-        try {
-            const response = await fetch(`${apiUrl}/auth/profile`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${accessToken}`,
-                },
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                setUsuario([data]);
+                storeData(data.access_token)
+                console.log(data);
+                Toast.show({
+                    type: 'success',
+                    text1: "Login Bem-Sucedido",
+                });
                 router.replace('/(tabs)/inicio');
+            } else {
+                console.error('Erro no login', data);
+                Toast.show({
+                    type: 'error',
+                    text1: "Login Falhou",
+                    text2: data.message,
+                });
             }
         } catch (error) {
-            Alert.alert(
-                "Erro de Rede",
-                String(error)
-            );
+            console.error('Erro de rede', error);
+            Toast.show({
+                type: 'error',
+                text1: "Erro de Rede",
+                text2: String(error),
+            });
         } finally {
             setLoading(false);
         }
@@ -359,7 +327,7 @@ export default function UsuarioCadastro() {
                         onSubmitEditing={() => confirmarSenhaInputRef.current?.focus()}
                     />
                     <Text className='mb-5 text-sm color-gray-600'>
-                        A senha deve ter pelo menos 8 caracteres.
+                        A senha deve ter pelo menos 6 caracteres.
                     </Text>
                     <InputSenha
                         className='mb-5'

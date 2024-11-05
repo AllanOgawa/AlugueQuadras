@@ -1,51 +1,25 @@
-import { useState, useImperativeHandle, forwardRef, useEffect } from 'react';
-import { Pressable, Image, View, Platform, StyleSheet, Alert, ScrollView, Text } from 'react-native';
+import React, { useState } from 'react';
+import { Button, Image, View, Platform, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import CryptoJS from 'crypto-js';
+import { Buffer } from 'buffer';
 import Toast from 'react-native-toast-message';
-import Constants from 'expo-constants';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Loading from './loading';
-
-const { apiUrl, bucketUrl } = Constants.expoConfig.extra;
 
 interface UploadImageProps {
-    linksImagens: (imagensToAdd: string[], imagensToRemove: string[]) => void;
-    multipasImagens?: boolean;
-    pastaBucket: string;
-    btClassName: string;
-    btClassNameTitle: string;
-    imagensExistentes: string[];
+    onImageUpload: (url: string) => void; // Callback para lidar com a URL da imagem
 }
 
-const UploadImage = forwardRef(({
-    linksImagens,
-    multipasImagens = true,
-    pastaBucket,
-    btClassName,
-    btClassNameTitle,
-    imagensExistentes = []
-}: UploadImageProps, ref) => {
+const UploadImage: React.FC<UploadImageProps> = ({ onImageUpload }) => {
+    const [image, setImage] = useState<string | null>(null);
+    const [uploading, setUploading] = useState(false);
 
-    const [loading, setLoading] = useState(false);
-    const [images, setImages] = useState<{ uri: string; mime: string; novo: boolean }[]>([]);
-    const [imagesToAdd, setImagesToAdd] = useState<{ uri: string; mime: string; novo: boolean }[]>([]);
-    const [imagesToRemove, setImagesToRemove] = useState<{ uri: string; mime: string; novo: boolean }[]>([]);
-    const MAX_IMAGES = 5; // Definir o limite máximo de 5 imagens
+    const region = 'sa-east-1';
+    const service = 's3';
+    const endpoint = 's3.aluguequadras.com.br';
+    const bucket = 'storage';
+    const host = `${endpoint}/${bucket}`;
 
-    useImperativeHandle(ref, () => ({
-        uploadAllImages: async () => {
-            await uploadAllImages();
-        },
-    }));
-
-    useEffect(() => {
-        setImages(imagensExistentes.map(image => ({ uri: image, novo: false, mime: "image" })));
-    }, [imagensExistentes]);
-
-    useEffect(() => {
-        setImagesToAdd(images.filter(image => image.novo));
-    }, [images]);
-
+    // Função para selecionar imagem
     const pickImage = async () => {
         if (Platform.OS !== 'web') {
             const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -55,251 +29,221 @@ const UploadImage = forwardRef(({
             }
         }
 
-        // Verifica se já atingiu o número máximo de imagens
-        if (multipasImagens && images.length >= MAX_IMAGES) {
-            Alert.alert('Limite atingido', `Você só pode selecionar até ${MAX_IMAGES} imagens.`);
-            return;
-        }
-
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: false,
+            allowsEditing: true,
             quality: 1,
-            allowsMultipleSelection: multipasImagens,
-            selectionLimit: multipasImagens ? MAX_IMAGES - images.length : 1, // Controla o limite baseado nas imagens já selecionadas
         });
 
-        if (!result.canceled) {
-            const selectedImages = result.assets.map(asset => ({
-                novo: true,
-                uri: asset.uri,
-                mime: asset.mimeType || 'image/jpeg' // Usando asset.type para o mimeType
-            }));
-
-            if (multipasImagens) {
-                setImages(prevImages => {
-                    const totalSelectedImages = prevImages.length + selectedImages.length;
-                    if (totalSelectedImages > MAX_IMAGES) {
-                        Alert.alert('Limite atingido', `Você só pode adicionar mais ${MAX_IMAGES - prevImages.length} imagem(ns).`);
-                        return [...prevImages, ...selectedImages.slice(0, MAX_IMAGES - prevImages.length)];
-                    } else {
-                        return [...prevImages, ...selectedImages];
-                    }
-                });
-            } else {
-                if (images && images[0] && !images[0].novo)
-                    setImagesToRemove(images);
-
-                setImages(selectedImages.slice(0, 1));
-            }
+        if (!result.cancelled) {
+            setImage(result.assets[0].uri);
+            await getUploadUrl(result.assets[0]);
         }
     };
 
-    const removeImage = (index: number) => {
-        const imageToRemove = images.find((_, i) => i == index);
-        if (imageToRemove && !imageToRemove.novo) {
-            setImagesToRemove(prevImages => {
-                return [...prevImages, imageToRemove];
-            })
-        }
-        setImages(images.filter((_, i) => i !== index));
-    };
-
-    async function getAccessToken() {
+    async function getUploadUrl(result: ImagePicker.ImageInfo) {
+        console.log(result)
         try {
-            const value = await AsyncStorage.getItem("access_token");
-            return value || null;
-        } catch (e) {
-            console.error('Erro ao obter dados', e);
-            return null;
-        }
-    }
-
-    async function uploadAllImages() {
-        setLoading(true);
-        const token = await getAccessToken();
-        const imagensParaAdicionar = [];
-        if (!token) {
-            Alert.alert('Erro', 'Token de acesso não encontrado.');
-            setLoading(false);
-            return;
-        }
-        if (images.length == 0) {
-            Alert.alert('Erro', "Por favor, selecione ao menos uma imagem");
-            setLoading(false);
-            return;
-        }
-
-        for (const image of imagesToAdd) {
-            const accessBucket = await getUploadUrl(image.uri, token, image.mime);
-            if (accessBucket) {
-                imagensParaAdicionar.push(await uploadImageToBucket(accessBucket, image));
-            }
-        }
-        linksImagens(imagensParaAdicionar, imagesToRemove.map(image => image.uri));
-
-        setLoading(false);
-    }
-
-    async function getUploadUrl(imageUri: string, token: string, mimeType: string) {
-        let sucesso = false;
-        let accessBucket;
-        try {
-            const response = await fetch(`${apiUrl}/storage/upload-url`, {
+            const response = await fetch('http://192.168.137.1:3000/storage/upload-url', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
                 },
                 body: JSON.stringify({
-                    pathName: pastaBucket,
-                    fileName: imageUri.split('/').pop(),
-                    mimeType,
+                    pathName: "usuario",
+                    fileName: result.fileName,
+                    mimeType: result.mimeType
                 }),
             });
 
             const data = await response.json();
+            console.log(data);
+
             if (response.ok) {
-                accessBucket = data;
-                sucesso = true;
+                console.log(data);
             }
         } catch (error) {
-            console.error('Erro de rede getUploadUrl', error);
+            console.error('Erro de rede', error);
             Toast.show({
                 type: 'error',
                 text1: "Erro de Rede",
                 text2: String(error),
             });
         }
-        return sucesso ? accessBucket : null;
     }
 
-    async function uploadImageToBucket(accessBucket: any, image: { uri: string; mime: string }) {
-        let sucesso = false;
-        const uploadedUrl = `public-storage/${accessBucket.fields.key}`;
+
+
+
+
+
+
+
+
+
+
+
+    // Função para gerar assinatura AWS Signature v4
+    const generateSignature = (method, path, queryParams, headers, body) => {
+        const algorithm = 'AWS4-HMAC-SHA256';
+        const serviceName = service;
+        const requestDate = headers['x-amz-date']; // Formato: YYYYMMDD'T'HHMMSS'Z'
+        const dateStamp = requestDate.substring(0, 8); // YYYYMMDD
+
+        // ************* PASSO 1: Criar a Chave de Assinatura *************
+        const kDate = CryptoJS.HmacSHA256(dateStamp, 'AWS4' + secretKey);
+        const kRegion = CryptoJS.HmacSHA256(region, kDate);
+        const kService = CryptoJS.HmacSHA256(serviceName, kRegion);
+        const kSigning = CryptoJS.HmacSHA256('aws4_request', kService);
+
+        // ************* PASSO 2: Criar a String Canônica *************
+        const canonicalURI = path;
+        const canonicalQueryString = queryParams
+            ? Object.keys(queryParams)
+                .sort()
+                .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(queryParams[key])}`)
+                .join('&') : '';
+
+        const sortedHeaders = Object.keys(headers).map(key => key.toLowerCase()).sort();
+        const canonicalHeaders = sortedHeaders
+            .map((key) => `${key}:${headers[key]}\n`)
+            .join('');
+
+        const signedHeaders = sortedHeaders.join(';');
+
+        const payloadHash = CryptoJS.SHA256(body || '').toString(CryptoJS.enc.Hex);
+
+        const canonicalRequest = [
+            method,
+            canonicalURI,
+            canonicalQueryString,
+            canonicalHeaders,
+            signedHeaders,
+            payloadHash
+        ].join('\n');
+
+        // ************* PASSO 3: Criar a String para Assinar *************
+        const credentialScope = `${dateStamp}/${region}/${serviceName}/aws4_request`;
+        const hashCanonicalRequest = CryptoJS.SHA256(canonicalRequest).toString(CryptoJS.enc.Hex);
+        const stringToSign = [
+            algorithm,
+            requestDate,
+            credentialScope,
+            hashCanonicalRequest
+        ].join('\n');
+
+        // ************* PASSO 4: Calcular a Assinatura *************
+        const signature = CryptoJS.HmacSHA256(stringToSign, kSigning).toString(CryptoJS.enc.Hex);
+
+        // ************* PASSO 5: Criar o Cabeçalho de Autorização *************
+        const authorizationHeader = `${algorithm} Credential=${accessKey}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`;
+
+        return authorizationHeader;
+    };
+
+
+    // Função para fazer upload da imagem
+    // Função para fazer upload da imagem
+    const uploadImage = async (result: ImagePicker.ImageInfo) => {
+        setUploading(true);
         try {
-            const formData = new FormData();
+            const fileName = result.assets[0].uri.split('/').pop();
+            const mimeType = result.assets[0].type || 'image/jpeg'; // Ajuste conforme necessário
 
-            Object.entries(accessBucket.fields).forEach(([key, value]) => {
-                formData.append(key, value);
+            const response = await fetch(result.assets[0].uri);
+            const blob = await response.blob();
+
+            // Obter ArrayBuffer do blob
+            const arrayBuffer = await new Promise<ArrayBuffer>((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    if (reader.result instanceof ArrayBuffer) {
+                        resolve(reader.result);
+                    } else {
+                        reject(new Error("Não foi possível converter o blob em ArrayBuffer."));
+                    }
+                };
+                reader.onerror = reject;
+                reader.readAsArrayBuffer(blob);
             });
 
-            formData.append('file', {
-                uri: image.uri,
-                name: accessBucket.fields.key.split('/').pop(),
-                type: image.mime,
-            } as any);
+            const body = Buffer.from(arrayBuffer).toString('base64'); // Necessário para hashing
 
-            const response = await fetch(`${bucketUrl}/public-storage`, {
-                method: 'POST',
-                body: formData,
+            const now = new Date();
+            const amzDate = now.toISOString().replace(/[:-]|\.\d{3}/g, ''); // YYYYMMDD'T'HHMMSS'Z'
+            const dateStamp = amzDate.substring(0, 8); // YYYYMMDD
+
+            // Remover a barra no início
+            const objectPath = `${bucket}/${fileName}`;
+
+            let headers = {
+                'Authorization': "",
+                'Host': host,
+                'x-amz-date': amzDate,
+                'Content-Type': mimeType,
+                'x-amz-content-sha256': CryptoJS.SHA256(body).toString(CryptoJS.enc.Hex),
+            };
+
+            const method = 'PUT';
+            const path = objectPath;
+            const queryParams = {};
+
+            // Gerar assinatura
+            const authorization = generateSignature(method, path, queryParams, headers, body);
+            headers['Authorization'] = authorization;
+
+            console.log(`https://${host}/${fileName}`);
+            console.log("method", method);
+            console.log("headers", headers);
+            console.log("blob", blob);
+
+            const uploadResponse = await fetch(`https://${host}/${fileName}`, {
+                method: method,
+                headers: headers,
+                body: blob, // Usar blob diretamente
             });
 
-            if (response.ok) {
-                console.log('Imagem enviada com sucesso!');
-                sucesso = true;
+            console.log(uploadResponse);
+            if (uploadResponse.ok) {
+                const uploadedUrl = `https://${host}/${fileName}`;
+                Alert.alert('Sucesso', 'Imagem enviada com sucesso!');
+                onImageUpload(uploadedUrl); // Chamar a função callback com a URL da imagem
             } else {
-                const errorText = await response.text();
-                console.log(`Falha no upload: ${response.status}\n${errorText}`);
+                const errorText = await uploadResponse.text();
+                Alert.alert('Erro', `Falha no upload: ${uploadResponse.status}\n${errorText}`);
             }
         } catch (error) {
             console.error('Erro no upload:', error);
-            Toast.show({
-                type: 'error',
-                text1: "Erro de Rede",
-                text2: String(error),
-            });
+            Alert.alert('Erro', 'Ocorreu um erro durante o upload.');
         } finally {
-            if (sucesso) {
-                return uploadedUrl;
-            }
-            return;
+            setUploading(false);
         }
-    }
+    };
+
 
     return (
         <View style={styles.container}>
-            <View className={btClassName}>
-                <Pressable onPress={pickImage}>
-                    <Text className={btClassNameTitle}>Selecionar Image{multipasImagens ? 'ns' : 'm'}</Text>
-                </Pressable>
-
-            </View>
-
-            {loading && <Loading />}
-
-            <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={true}
-                style={styles.scrollView}
-                contentContainerStyle={styles.imageContainer}
-            >
-                {images.map((image, index) => (
-                    <View key={index} style={styles.imageWrapper}>
-                        <Image source={{ uri: (image.novo) ? image.uri : `${bucketUrl}/${image.uri}` }} style={styles.image} />
-                        <Pressable style={styles.removeButton} className='bg-primary' onPress={() => removeImage(index)}>
-                            <Text style={styles.removeButtonText}>×</Text>
-                        </Pressable>
-                    </View>
-                ))}
-            </ScrollView>
+            <Button title="Selecionar e Upload de Imagem" onPress={pickImage} />
+            {uploading && <ActivityIndicator size="large" color="#0000ff" style={{ marginTop: 20 }} />}
+            {image && !uploading && (
+                <Image source={{ uri: image }} style={styles.image} />
+            )}
         </View>
     );
-});
+};
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        width: '100%',
-    },
-    scrollView: {
-        width: '100%',
-        padding: 2,
-        marginTop: 5
-    },
-    uploadButton: {
-        backgroundColor: '#007BFF',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 5,
-        marginBottom: 20,
-    },
-    uploadText: {
-        color: 'white',
-        fontWeight: 'bold',
-    },
-    imageContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        flexGrow: 1, // Garante que o conteúdo do ScrollView ocupe o espaço disponível
-    },
-    imageWrapper: {
-        position: 'relative',
-        marginRight: 15,
+        padding: 20,
     },
     image: {
-        width: 150,
-        height: 150,
-        borderRadius: 10,
-    },
-    removeButton: {
-        position: 'absolute',
-        top: 2,
-        right: 2,
-        width: 25,
-        height: 25,
-        borderRadius: 12.5,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    removeButtonText: {
-        color: 'white',
-        fontWeight: 'bold',
-        fontSize: 20,
-        lineHeight: 25,
+        width: 200,
+        height: 200,
+        marginTop: 20,
     },
 });
-
 
 export default UploadImage;

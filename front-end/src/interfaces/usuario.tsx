@@ -1,4 +1,6 @@
 export interface UsuarioProps {
-    nome: string;
+    id: string;
+    name: string;
+    adm?: boolean;
     image: string;
 }

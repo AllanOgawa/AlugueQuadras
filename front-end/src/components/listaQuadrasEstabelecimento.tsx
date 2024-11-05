@@ -3,10 +3,8 @@ import { View, Text, Modal, Image, Dimensions, TouchableOpacity, StyleSheet, Pre
 import { QuadraProps } from '@src/interfaces/quadra';
 import HorizontalLine from './horizontalLine';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import Constants from 'expo-constants';
 
 const { width, height } = Dimensions.get('window');
-const apiUrl = Constants.expoConfig?.extra?.apiUrl || ''; // Pegando o URL da API
 
 export default function ListaQuadrasEstabelecimento({ quadras, onClick }: { quadras: QuadraProps[], onClick: (quadra: QuadraProps) => void }) {
     const [modalVisible, setModalVisible] = useState(false);
@@ -26,11 +24,11 @@ export default function ListaQuadrasEstabelecimento({ quadras, onClick }: { quad
         <View>
             <Text className='font-bold text-xl mb-7'>Quadras ({quadras.length})</Text>
             {quadras.map((quadra) => (
-                <View key={quadra.idkey}>
+                <View key={quadra.id}>
                     <View className='flex flex-row w-full'>
-                        <TouchableOpacity className='w-32 h-[120] rounded-2xl justify-self-center' onPress={() => openModal(quadra.imagens[0].path)}>
+                        <TouchableOpacity className='w-32 h-[120] rounded-2xl justify-self-center' onPress={() => openModal(quadra.image)}>
                             <Image
-                                source={{ uri: `${apiUrl}/${quadra.imagens[0].path}` }}
+                                source={{ uri: quadra.image }}
                                 className='w-[7.6rem] h-[7.6rem] rounded-2xl'
                             />
                         </TouchableOpacity>
@@ -38,18 +36,18 @@ export default function ListaQuadrasEstabelecimento({ quadras, onClick }: { quad
                             <Pressable onPress={() => onClick(quadra)}>
                                 <View className="flex-1">
                                     <Text className='text-lg leading-5 font-bold' numberOfLines={2}>
-                                        {quadra.nome}
+                                        {quadra.name}
                                     </Text>
-                                    <Text className='text-sm leading-4 mt-1 color-gray-600' numberOfLines={2}>
-                                        {quadra.tiposEsporte.map((esporte, index) => (
-                                            (index === 0 ? '' : ', ') + esporte.descricao
+                                    <Text className='text-sm leading-4 mt-1 color-gray-600' numberOfLines={2} >
+                                        {quadra.esportes.map((esporte, index) => (
+                                            (index == 0) ? esporte.name : `, ${esporte.name}`
                                         ))}
                                     </Text>
                                 </View>
-                                <Text className='text-lg leading-5' numberOfLines={1}>
-                                    {quadra.valor ? `R$ ${quadra.valor}` : 'Valor não disponível'}
+                                <Text className='text-lg leading-5' numberOfLines={1} >
+                                    {quadra.valor}
                                 </Text>
-                                <Text className='text-sm leading-4 color-gray-600' numberOfLines={1}>
+                                <Text className='text-sm leading-4 color-gray-600' numberOfLines={1} >
                                     Dimensões: {quadra.largura}m(L) x {quadra.comprimento}m(C)
                                 </Text>
                             </Pressable>

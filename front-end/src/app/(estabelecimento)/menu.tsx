@@ -1,98 +1,90 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, Button, Alert, SafeAreaView, ScrollView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import ListaEstabelecimento from '@/src/components/listaEstabelecimento';
-import { router } from 'expo-router';
-import { CardConfig } from '@/src/components/cardConfig';
+import { EstabelecimentoProps } from '@/src/interfaces/estabelecimento';
+import { CardConfig } from '@components/cardConfig';
+import CourtList, { CourtProps } from '@components/quadras';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { View, Text, SafeAreaView, FlatList, StatusBar } from 'react-native';
 import Toast from 'react-native-toast-message';
+
+import * as data from '@/db.json';
 import Constants from 'expo-constants';
 import SetaVoltar from '@/src/components/setaVoltar';
 
-const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
 const statusBarHeight = Constants.statusBarHeight;
 
-const MenuEstabelecimento = () => {
-    const navigation = useNavigation();
-    const [selectedEstabelecimento, setSelectedEstabelecimento] = useState<string | null>(null);
-    const [estabelecimentos, setEstabelecimentos] = useState([]);
+export default function HomeEstabelecimento() {
+    const [estabelecimentos, setEstabelecimentos] = useState<EstabelecimentoProps[]>([]);
+    const { message } = useLocalSearchParams();
+    const [loading, setLoading] = useState(false);
+
+    function handleCourtPress(court: CourtProps): void {
+        console.log(`Você clicou na quadra ${court.local} localizada em ${court.endereco}`);
+    }
 
     useEffect(() => {
-        // Carrega o ID do estabelecimento salvo no AsyncStorage
-        const loadEstabelecimento = async () => {
-            try {
-                const idEstabelecimento = await AsyncStorage.getItem('idEstabelecimento');
-                if (idEstabelecimento) {
-                    setSelectedEstabelecimento(idEstabelecimento);
-                }
-            } catch (error) {
-                console.error('Erro ao carregar o ID do estabelecimento:', error);
-            }
-        };
+        if (message) {
+            const toastMessage = Array.isArray(message) ? message.join(', ') : message;
+            Toast.show({
+                type: 'success',
+                text1: toastMessage,
+            });
+        }
+    }, [message]);
 
-        // Função para buscar a lista de estabelecimentos
-        const fetchEstabelecimentos = async () => {
-            try {
-                const access_token = await AsyncStorage.getItem('access_token');
-                const response = await fetch(`${apiUrl}/estabelecimento/usuario`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${access_token}`,
-                    },
-                });
-
-                if (!response.ok) {
-                    throw new Error('Erro ao buscar estabelecimentos');
-                }
-
-                const data = await response.json();
-                setEstabelecimentos(data);
-            } catch (error) {
-                console.error('Erro ao buscar estabelecimentos:', error);
-            }
-        };
-
-        loadEstabelecimento();
-        fetchEstabelecimentos(); // Busca a lista de estabelecimentos ao carregar a tela
+    useEffect(() => {
+        if (data.estabelecimento && data.estabelecimento.length > 0) {
+            setEstabelecimentos(data.estabelecimento);
+        }
     }, []);
 
-    const handlePress = async (estabelecimento) => {
-        try {
-            // Salva o ID do estabelecimento no AsyncStorage
-            await AsyncStorage.setItem('idEstabelecimento', estabelecimento.idkey.toString());
-            setSelectedEstabelecimento(estabelecimento.idkey);
-            router.push({ pathname: '/menu/[id]', params: { id: estabelecimento.idkey } });
-        } catch (error) {
-            console.error('Erro ao salvar o ID do estabelecimento:', error);
+    // Rodapé da lista
+    const getFooter = () => {
+        if (loading) {
+            return <Text>Carregando...</Text>;
         }
+        return null;
     };
 
     return (
         <SafeAreaView className="flex-1 bg-white" style={{ marginTop: statusBarHeight }}>
             <SetaVoltar />
-            <View className="bg-white w-full px-4 flex-1 mt-1">
-                {/* Cartões de Configuração */}
+            <View className='mx-3'>
+                <StatusBar barStyle="dark-content" backgroundColor="white" />
                 <CardConfig
                     icon={'add-circle-outline'}
-                    title={'Novo Estabelecimento'}
+                    title={'Nova Estabelecimento'}
                     subtitle={'Cadastrar um novo estabelecimento'}
                     style='h-16 w-full rounded-2xl flex-row items-center justify-between'
                     onPress={() => router.push('/cadastrar')}
                 />
-
-                <Text className='font-normal text-3xl py-5'>Estabelecimentos Ativos</Text>
-
-                <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-                    {/* Renderização da lista de estabelecimentos */}
-                    {estabelecimentos.length > 0 ? (
-                        <ListaEstabelecimento data={estabelecimentos} onPress={handlePress} />
-                    ) : (
-                        <Text>Nenhum estabelecimento encontrado.</Text>
-                    )}
-                </ScrollView>
+                <CardConfig
+                    icon={'create'}
+                    title={'Editar Estabelecimento'}
+                    subtitle={'Editar uma estabelecimento'}
+                    style='h-16 w-full rounded-2xl flex-row items-center justify-between'
+                    onPress={() => router.push('/editar')}
+                />
+                <CardConfig
+                    icon={'highlight-remove'}
+                    title={'Remover estabelecimento'}
+                    subtitle={'Remover um estabelecimento'}
+                    style='h-16 w-full rounded-2xl flex-row items-center justify-between'
+                    onPress={() => router.push('/remover')}
+                />
+                <Text className='font-normal text-3xl pt-5 pb-3'>Ativas</Text>
             </View>
+            <FlatList
+                data={estabelecimentos}
+                renderItem={({ item }) => <ListaEstabelecimento data={[item]} onPress={() => router.push({
+                    pathname: '/(estabelecimento)/menu/[id]',
+                    params: { id: item.id }
+                })} />}
+                ListFooterComponent={getFooter}
+                keyExtractor={(item) => item.id.toString()}
+                onEndReached={() => setLoading(true)}
+                onEndReachedThreshold={0.1}
+            />
         </SafeAreaView>
     );
-};
-
-export default MenuEstabelecimento;
+}

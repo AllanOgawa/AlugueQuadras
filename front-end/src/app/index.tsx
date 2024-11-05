@@ -1,23 +1,17 @@
 import { SafeAreaView, ImageBackground, View, StyleSheet, Text, StatusBar, ActivityIndicator } from 'react-native';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { router } from 'expo-router';
 import BotaoPressable from '@components/botoes/botaoPressable';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing } from 'react-native-reanimated';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import Constants from 'expo-constants';
-import { UsuarioContext } from '@context/usuarioContext';
 
 const { apiUrl } = Constants.expoConfig.extra;
 
 export default function TelaLogin() {
     const [login, setLogin] = useState(false);
-    const [loading, setLoading] = useState(true);
-    const context = useContext(UsuarioContext);
-    if (!context) {
-        throw new Error("YourComponent must be used within an ArrayProvider");
-    }
-    const { usuario, setUsuario } = context;
+    const [isAppReady, setIsAppReady] = useState(false);
 
     const opacity = useSharedValue(0);
     const translateY = useSharedValue(50);
@@ -39,28 +33,22 @@ export default function TelaLogin() {
             duration: 3000,
             easing: Easing.out(Easing.exp),
         });
-        getAcessToken();
+
+        getData();
     }, [opacity, translateY]);
 
-    async function getAcessToken() {
+
+    async function getData() {
         try {
             const value = await AsyncStorage.getItem("access_token");
             if (value !== null && value !== "") {
+                console.log(value);
                 handleLogin(value);
             } else {
-                setLoading(false);
+                setIsAppReady(true);
             }
         } catch (e) {
             console.error('Erro ao obter dados', e);
-        }
-    };
-
-    async function setAccessToken(access_token: string) {
-        try {
-            await AsyncStorage.setItem("access_token", access_token);
-            console.log('Dados armazenados no localStorage com sucesso');
-        } catch (e) {
-            console.error('Erro ao salvar dados', e);
         }
     };
 
@@ -77,27 +65,24 @@ export default function TelaLogin() {
             const data = await response.json();
 
             if (response.ok) {
+                console.log(data);
                 setLogin(true);
-                setUsuario([data]);
                 router.replace('/(tabs)/inicio');
-            } else {
-                setAccessToken("");
             }
         } catch (error) {
             console.error('Erro de rede', error);
-            setAccessToken("");
             Toast.show({
                 type: 'error',
                 text1: "Erro de Rede",
                 text2: String(error),
             });
         } finally {
-            setLoading(false);
+            setIsAppReady(true);
         }
     };
 
 
-    if (loading) {
+    if (!isAppReady) {
         return (
             <View className='rounded-2xl flex-1 justify-center items-center'>
                 <ActivityIndicator size="large" className='color-primary' />

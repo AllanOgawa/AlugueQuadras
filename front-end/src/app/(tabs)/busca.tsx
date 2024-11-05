@@ -1,39 +1,42 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, FlatList, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import Constants from 'expo-constants';
+import * as data from '@/db.json';
+import { EstabelecimentoProps } from '@/src/interfaces/estabelecimento';
 import ListaEstabelecimento from '@/src/components/listaEstabelecimento';
 import { MaterialIcons } from '@expo/vector-icons';
 
 const statusBarHeight = Constants.statusBarHeight;
 
-interface SearchBarProps {
-    search: string;
-    setSearch: (text: string) => void;
-}
-interface FilterButtonProps {
-    title: string;
-}
-
 export default function Busca() {
+    const [estabelecimentos, setEstabelecimentos] = useState<EstabelecimentoProps[]>([]);
     const [search, setSearch] = useState('');
 
-    function handleEstablishmentPress(estabelecimento: any) {
+    // Carregar os estabelecimentos do arquivo JSON
+    useEffect(() => {
+        if (data.estabelecimento && data.estabelecimento.length > 0) {
+            setEstabelecimentos(data.estabelecimento);
+        }
+    }, []);
+
+    // Filtrar estabelecimentos com base na pesquisa
+    const filteredEstabelecimentos = estabelecimentos.filter(estabelecimento =>
+        estabelecimento.name.toLowerCase().includes(search.toLowerCase())
+    );
+
+    function handleEstablishmentPress(estabelecimento: EstabelecimentoProps): void {
         console.log('clicado', estabelecimento);
     }
 
     return (
         <View style={styles.container}>
+            {/* Cabeçalho e filtros */}
             <Header />
+            {/* Barra de busca */}
             <SearchBar search={search} setSearch={setSearch} />
+            {/* Lista de estabelecimentos */}
             <ScrollView>
-                <ListaEstabelecimento
-                    onPress={handleEstablishmentPress}
-                    options={{
-                        showImage: true,
-                        showAvaliacao: true,
-                        showPreco: true,
-                        showAcomodacoes: true,
-                    }} />
+                <ListaEstabelecimento data={filteredEstabelecimentos} onPress={handleEstablishmentPress} />
             </ScrollView>
         </View>
     );
@@ -51,13 +54,13 @@ const Header = () => (
     </View>
 );
 
-const FilterButton: React.FC<FilterButtonProps> = ({ title }) => (
+const FilterButton = ({ title }) => (
     <TouchableOpacity style={styles.filterButton}>
         <Text style={styles.filterText}>{title}</Text>
     </TouchableOpacity>
 );
 
-const SearchBar: React.FC<SearchBarProps> = ({ search, setSearch }) => (
+const SearchBar = ({ search, setSearch }) => (
     <View style={styles.searchContainer}>
         <MaterialIcons name="search" size={20} color="#666" style={styles.icon} />
         <TextInput
@@ -111,9 +114,10 @@ const styles = StyleSheet.create({
     searchBar: {
         flex: 1,
         height: 40,
-        paddingLeft: 10,
+        paddingLeft: 10, // Adiciona um pequeno espaço à esquerda
     },
     icon: {
-        marginRight: 10,
+        marginRight: 10, // Espaço entre o ícone e o TextInput
     },
 });
+

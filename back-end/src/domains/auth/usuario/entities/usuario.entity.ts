@@ -3,7 +3,6 @@ import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, OneToMan
 import { UsuarioTipoEnum }  from '../enums/usuario-tipo.enum';
 import { Estabelecimento }  from '@domains/gestao/estabelecimento/entities/estabelecimento.entity';
 import { Imagem }           from '@src/domains/storage/imagem/entities/imagem.entity';
-import { Reserva } from '@src/domains/gestao/estabelecimento/quadra/reserva/entities/reserva.entity';
 
 @Entity({ schema: 'auth', name: 'usuario' })
 export class Usuario {
@@ -49,7 +48,4 @@ export class Usuario {
     inverseJoinColumn: { name: 'idkey_imagem', referencedColumnName: 'idkey' }
   })
   imagens: Imagem[];
-
-  @OneToMany(() => Reserva, reserva => reserva.usuario)
-  reservas: Reserva[];
 }

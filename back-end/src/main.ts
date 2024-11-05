@@ -1,17 +1,14 @@
 import { AppModule } from './app.module';
 import { NestFactory } from '@nestjs/core';
-import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import { setupSwagger } from './swagger.config';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
-import * as bodyParser from 'body-parser';
 
+import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
 
   const app = await NestFactory.create(AppModule);
-  const configService = app.get(ConfigService);
-  const port = configService.get<number>('API_PORT') || 3000;
 
   app.enableCors({
     origin: (origin, callback) => {
@@ -39,6 +36,6 @@ async function bootstrap() {
   app.use(bodyParser.json({ limit: '10mb' }));
   app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
-  await app.listen(port);
+  await app.listen(3000);
 }
 bootstrap();

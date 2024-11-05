@@ -55,11 +55,11 @@ export class CreateQuadraDto {
   @IsNumber({}, { message: 'O campo idkeyEstabelecimento deve ser um número.' })
   @IsNotEmpty({ message: 'O campo idkeyEstabelecimento não pode estar vazio.' })
   idkeyEstabelecimento: number; // ID do estabelecimento ao qual a quadra pertence
-
-  @ApiProperty({
-    description: 'Lista de imagens para adicionar.',
-    example: ['estabelecimento/imagem1.jpg', 'estabelecimento/imagem2.png'],
-    required: false
+  
+  @ApiProperty({ 
+    description: 'Lista de imagens para adicionar.', 
+    example: ['estabelecimento/imagem1.jpg', 'estabelecimento/imagem2.png'], 
+    required: false 
   })
   @IsArray()
   @IsString({ each: true })

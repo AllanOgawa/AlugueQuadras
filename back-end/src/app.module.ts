@@ -9,15 +9,15 @@ import { HealthModule } from './common/health/health.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: [
+      envFilePath: [ 
         'env/common.env',
-        process.env.NODE_ENV === 'production'
+        process.env.NODE_ENV === 'production' 
           ? 'env/production.env'
-          : process.env.NODE_ENV === 'test'
-            ? 'env/test.env'
-            : process.env.NODE_ENV === 'homologation'
-              ? 'env/homologation.env'
-              : 'env/development.env'
+          : process.env.NODE_ENV === 'test' 
+          ? 'env/test.env' 
+          : process.env.NODE_ENV === 'homologation' 
+          ? 'env/homologation.env' 
+          : 'env/development.env' 
       ],
     }),
     DatabaseModule,
