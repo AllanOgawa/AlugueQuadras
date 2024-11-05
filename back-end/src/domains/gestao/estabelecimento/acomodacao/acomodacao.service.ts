@@ -1,7 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateAcomodacaoDto } from './dto/create-acomodacao.dto';
-import { In } from 'typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Acomodacao } from './entities/acomodacao.entity';
 import { UpdateAcomodacaoDto } from './dto/update-acomodacao.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -19,9 +18,7 @@ export class AcomodacaoService {
         try {
             const acomodacao =
                 this.acomodacaoRepository.create(createAcomodacaoDto);
-            const createAcomodacao =
-                await this.acomodacaoRepository.save(acomodacao);
-            return createAcomodacao;
+            return await this.acomodacaoRepository.save(acomodacao);
         } catch (error) {
             throw new HttpException(
                 'Erro ao criar Acomodacao',
@@ -33,14 +30,34 @@ export class AcomodacaoService {
     async createAcomodacoes(
         createAcomodacaoDto: CreateAcomodacaoDto[],
     ): Promise<Acomodacao[]> {
-      const acomodacoesExistentes = createAcomodacaoDto.map(a=> a.descricao);
-      const existeAcomodacao = await this.acomodacaoRepository.find({
-          where: {descricao: In(acomodacoesExistentes)}
-      });
+        try {
+            const acomodacoesExistentes = createAcomodacaoDto.map(
+                (a) => a.descricao,
+            );
+            const existeAcomodacao = await this.acomodacaoRepository.find({
+                where: { descricao: In(acomodacoesExistentes) },
+            });
 
-      const descricoesExistentes = existeAcomodacao.map({descricaoAcomodacao => descricaoAcomodacao.descricao});
-      const novasAcomodacoes = createAcomodacaoDto.filter(criarNovasAcomodacoes => !descricoesExistentes.includes(descricoesExistentes.descricao));
-        return Acomodacao[]
+            const descricoesExistentes = existeAcomodacao.map(
+                (descricaoAcomodacao) => descricaoAcomodacao.descricao,
+            );
+
+            const novasAcomodacoes = createAcomodacaoDto.filter(
+                (criarNovasAcomodacoes) =>
+                    !descricoesExistentes.includes(
+                        criarNovasAcomodacoes.descricao,
+                    ),
+            );
+
+            const acomodacoesCriadas =
+                this.acomodacaoRepository.create(novasAcomodacoes);
+            return await this.acomodacaoRepository.save(acomodacoesCriadas);
+        } catch (error) {
+            throw new HttpException(
+                'Erro ao criar acomodações',
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     async findAll(): Promise<Acomodacao[]> {
@@ -48,7 +65,7 @@ export class AcomodacaoService {
             return await this.acomodacaoRepository.find();
         } catch (error) {
             throw new HttpException(
-                'Erro ao buscaar Acomodacoes',
+                'Erro ao buscar Acomodacoes',
                 HttpStatus.INTERNAL_SERVER_ERROR,
             );
         }
@@ -116,7 +133,7 @@ export class AcomodacaoService {
             Object.assign(acomodacao, updateData);
 
             if (updateData.descricao && updateData.descricao.length > 0) {
-                const acomods = await this.acomodacaoRepository.findBy({
+                await this.acomodacaoRepository.findBy({
                     idkey: idKey,
                 });
             }
