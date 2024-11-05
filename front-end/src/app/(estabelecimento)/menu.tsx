@@ -56,7 +56,7 @@ const handlePress = async (estabelecimento: any, setSelectedEstabelecimento: Rea
     }
 };
 
-const MenuEstabelecimento = () => {
+const MenuGeralEstabelecimento = () => {
     const [selectedEstabelecimento, setSelectedEstabelecimento] = useState<string | null>(null);
     const [estabelecimentos, setEstabelecimentos] = useState([]);
     const [loading, setLoading] = useState<boolean>(true);
@@ -99,4 +99,4 @@ const MenuEstabelecimento = () => {
     );
 };
 
-export default MenuEstabelecimento;
+export default MenuGeralEstabelecimento;

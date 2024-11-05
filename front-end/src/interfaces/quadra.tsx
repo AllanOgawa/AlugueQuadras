@@ -10,4 +10,5 @@ export interface QuadraProps {
     comprimento: string; // Comprimento da quadra (string para manter a formatação original)
     tiposEsporte: EsporteProps[]; // Lista de tipos de esporte
     imagens: ImagemProps[]; // Lista de imagens da quadra
+    coberta: boolean; // Indica se a quadra é coberta
 }

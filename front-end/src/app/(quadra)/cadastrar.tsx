@@ -1,17 +1,33 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, SafeAreaView, ScrollView, Button, ActivityIndicator } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, TextInput, SafeAreaView, ScrollView, Alert, ActivityIndicator } from 'react-native';
+import { useLocalSearchParams, router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { QuadraProps } from '@/src/interfaces/quadra';
 import UploadImage from '@components/UploadImagem';
-import { CardConfig } from '@components/cardConfig';
-import Constants from 'expo-constants';
 import SetaVoltar from '@/src/components/setaVoltar';
 import Toast from 'react-native-toast-message';
+import BotaoTouchableOpacity from '@components/botoes/botaoTouchableOpacity';
+import Constants from 'expo-constants';
+import globalStyles from '@/src/styles/globalStyles';
+import Input from '@/src/components/inputs/input';
+import Checkbox from '@/src/components/checkbox';
 
 const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
 
 export default function CadastroEdicaoQuadra() {
+
+    const [errorNome, setErrorNome] = useState('');
+    const [errorValor, setErrorValor] = useState('');
+    const [errorLargura, setErrorLargura] = useState('');
+    const [errorComprimento, setErrorComprimento] = useState('');
+    const [isCovered, setIsCovered] = useState(false);
+
+    const quadraNomeInputRef = useRef<TextInput>(null);
+    const valorInputRef = useRef<TextInput>(null);
+    const informacoesAdicionaisInputRef = useRef<TextInput>(null);
+    const larguraInputRef = useRef<TextInput>(null);
+    const comprimentoInputRef = useRef<TextInput>(null);
+
     const { quadra: quadraParam } = useLocalSearchParams();
     const [quadraData, setQuadraData] = useState<Partial<QuadraProps>>({
         nome: '',
@@ -19,7 +35,7 @@ export default function CadastroEdicaoQuadra() {
         valor: '',
         largura: '',
         comprimento: '',
-        tiposEsporte: [],
+        coberta: false,
         imagens: []
     });
     const [isEditing, setIsEditing] = useState(false);
@@ -38,8 +54,42 @@ export default function CadastroEdicaoQuadra() {
     };
 
     const handleSubmit = async () => {
+
+        if (!quadraData.nome) {
+            setErrorNome('Campo obrigatório');
+            quadraNomeInputRef.current?.focus();
+            return;
+        } else {
+            setErrorNome('');
+        }
+
+        if (!quadraData.valor) {
+            setErrorValor('Campo obrigatório');
+            valorInputRef.current?.focus();
+            return;
+        } else {
+            setErrorValor('');
+        }
+
+        if (!quadraData.largura) {
+            setErrorLargura('Campo obrigatório');
+            larguraInputRef.current?.focus();
+            return;
+        } else {
+            setErrorLargura('');
+        }
+
+        if (!quadraData.comprimento) {
+            setErrorComprimento('Campo obrigatório');
+            comprimentoInputRef.current?.focus();
+            return;
+        } else {
+            setErrorComprimento('');
+        }
+
         setLoading(true);
         try {
+            console.log('QuadraData:', quadraData);
             const access_token = await AsyncStorage.getItem('access_token');
             const url = isEditing
                 ? `${apiUrl}/estabelecimento/quadra/edit/${quadraData.idkey}`
@@ -55,12 +105,7 @@ export default function CadastroEdicaoQuadra() {
                 body: JSON.stringify({
                     ...quadraData,
                     valor: parseFloat(quadraData.valor || '0'), // Convertendo o valor para float
-                    // imagensToAdd: quadraData.imagens?.map((img) => img.path), // Paths das imagens
-                    tiposEsporteToAdd: quadraData.tiposEsporte?.map((esporte) => esporte.idkey), // IDs dos esportes
-                    imagensToAdd: [
-                        "estabelecimento/imagem1.jpg",
-                        "estabelecimento/imagem2.png"
-                    ],
+                    imagensToAdd: "",
                 }),
             });
 
@@ -84,48 +129,148 @@ export default function CadastroEdicaoQuadra() {
         }
     };
 
+    const handleDelete = async () => {
+        Alert.alert(
+            'Confirmação',
+            'Deseja realmente remover esta quadra?',
+            [
+                {
+                    text: 'Cancelar',
+                    style: 'cancel',
+                },
+                {
+                    text: 'Remover',
+                    onPress: async () => {
+                        setLoading(true);
+                        try {
+                            const access_token = await AsyncStorage.getItem('access_token');
+                            const response = await fetch(`${apiUrl}/estabelecimento/quadra/remove/${quadraData.idkey}`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'Authorization': `Bearer ${access_token}`,
+                                },
+                            });
+
+                            if (!response.ok) {
+                                throw new Error('Erro ao remover a quadra');
+                            }
+
+                            Toast.show({
+                                type: 'success',
+                                text1: 'Quadra removida com sucesso!',
+                            });
+                            setTimeout(() => router.replace('/menu'), 600);
+                        } catch (error) {
+                            Toast.show({
+                                type: 'error',
+                                text1: 'Erro ao remover a quadra',
+                                text2: error.message,
+                            });
+                        } finally {
+                            setLoading(false);
+                        }
+                    },
+                },
+            ],
+            { cancelable: true }
+        );
+    };
+
     return (
-        <SafeAreaView style={{ flex: 1, paddingTop: 20 }}>
+        <SafeAreaView className="flex-1 bg-white" style={{ marginTop: Constants.statusBarHeight }}>
             <SetaVoltar />
             <ScrollView contentContainerStyle={{ padding: 16 }}>
-                <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 16 }}>
+                <Text className="text-4xl font-semibold mb-5">
                     {isEditing ? 'Editar Quadra' : 'Cadastrar Quadra'}
                 </Text>
-                <TextInput
-                    placeholder="Nome da Quadra"
+
+                <Input
+                    className='mb-5'
+                    ref={quadraNomeInputRef}
+                    label="Nome Completo:"
+                    obrigatorio
+                    errorMessage={errorNome}
                     value={quadraData.nome}
                     onChangeText={(text) => handleInputChange('nome', text)}
-                    style={{ marginBottom: 16, borderBottomWidth: 1, padding: 8 }}
+                    autoComplete="name"
+                    returnKeyType="done"
                 />
-                <TextInput
-                    placeholder="Informações Adicionais"
+                <Input
+                    className='mb-5'
+                    ref={informacoesAdicionaisInputRef}
+                    label="Informações adicionais:"
                     value={quadraData.informacoesAdicionais}
                     onChangeText={(text) => handleInputChange('informacoesAdicionais', text)}
-                    style={{ marginBottom: 16, borderBottomWidth: 1, padding: 8 }}
-                />
-                <TextInput
-                    placeholder="Valor"
-                    value={quadraData.valor}
-                    onChangeText={(text) => handleInputChange('valor', text)}
-                    style={{ marginBottom: 16, borderBottomWidth: 1, padding: 8 }}
-                    keyboardType="numeric"
-                />
-                <TextInput
-                    placeholder="Largura"
-                    value={quadraData.largura}
-                    onChangeText={(text) => handleInputChange('largura', text)}
-                    style={{ marginBottom: 16, borderBottomWidth: 1, padding: 8 }}
-                    keyboardType="numeric"
-                />
-                <TextInput
-                    placeholder="Comprimento"
-                    value={quadraData.comprimento}
-                    onChangeText={(text) => handleInputChange('comprimento', text)}
-                    style={{ marginBottom: 16, borderBottomWidth: 1, padding: 8 }}
-                    keyboardType="numeric"
+                    autoComplete="off"
+                    returnKeyType="done"
                 />
 
-                <Button title={isEditing ? 'Salvar Alterações' : 'Cadastrar Quadra'} onPress={handleSubmit} />
+                <Input
+                    className='mb-5'
+                    ref={valorInputRef}
+                    label="Valor:"
+                    errorMessage={errorValor}
+                    value={quadraData.valor}
+                    onChangeText={(text) => handleInputChange('valor', text)}
+                    autoComplete="off"
+                    returnKeyType="done"
+                />
+
+                <Input
+                    className='mb-5'
+                    ref={larguraInputRef}
+                    label="Largura:"
+                    errorMessage={errorLargura}
+                    value={quadraData.largura}
+                    onChangeText={(text) => handleInputChange('largura', text)}
+                    autoComplete="off"
+                    returnKeyType="done"
+                />
+
+                <Input
+                    className='mb-5'
+                    ref={comprimentoInputRef}
+                    label="Valor:"
+                    errorMessage={errorComprimento}
+                    value={quadraData.comprimento}
+                    onChangeText={(text) => handleInputChange('comprimento', text)}
+                    autoComplete="off"
+                    keyboardType='numeric'
+                    returnKeyType="done"
+                />
+
+                <Checkbox
+                    label="Quadra coberta"
+                    value={quadraData.coberta || false}  // Inicializa com o valor vindo da API
+                    onValueChange={(newValue) => setQuadraData((prevData) => ({ ...prevData, coberta: newValue }))}
+                />
+
+                <BotaoTouchableOpacity
+                    title={isEditing ? 'Salvar Alterações' : 'Cadastrar Quadra'}
+                    className="bg-primary p-4 rounded-xl mt-4"
+                    classNameTitle="text-white text-center text-lg"
+                    onPress={handleSubmit}
+                />
+
+                <UploadImage
+                    ref={uploadImageRef}
+                    pastaBucket="usuario"
+                    multipasImagens={false}
+                    imagensExistentes={imagensExistentes}
+                    linksImagens={handleLinksImagens}
+                    btClassName='mt-1 bg-roxo p-2 rounded-2xl active:bg-roxo/80 mx-4 w-[100%]'
+                    btClassNameTitle="text-white text-center text-lg"
+                />
+
+                {isEditing && (
+                    <BotaoTouchableOpacity
+                        title="Remover Quadra"
+                        className="bg-red-500 p-4 rounded-xl mt-4"
+                        classNameTitle="text-white text-center text-lg"
+                        onPress={handleDelete}
+                    />
+                )}
+
                 {loading && <ActivityIndicator size="large" color="#FF6600" style={{ marginTop: 16 }} />}
             </ScrollView>
         </SafeAreaView>
