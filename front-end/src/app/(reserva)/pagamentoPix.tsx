@@ -7,7 +7,7 @@ import Loading from '@components/loading';
 
 const { bucketUrl } = Constants.expoConfig.extra;
 
-export default function UsuarioLogin() {
+export default function PagamentoPix() {
     const [loading, setLoading] = useState(false);
     const [aprovado, setAprovado] = useState(false);
 
@@ -36,7 +36,7 @@ export default function UsuarioLogin() {
                     <Image className='w-80 h-80' source={{ uri: `${bucketUrl}/public-storage/outros/qrcode.png` }} />
                     <Text className="text-xl font-semibold text-center mt-7">ou copie o código:</Text>
                     <View className='w-[80%] h-24 bg-gray-200 rounded-2xl px-4 py-2'>
-                        <Text className='font-semibold'>00020126330017BR.GOV.BCB.PIX01121284545699352040700534398654040.015802BR5911AlugueQUadras6007Maringa62070503***630405F9</Text>
+                        <Text selectable className='font-semibold'>00020126330017BR.GOV.BCB.PIX01121284545699352040700534398654040.015802BR5911AlugueQUadras6007Maringa62070503***630405F9</Text>
                     </View>
                 </View>
             </View>
