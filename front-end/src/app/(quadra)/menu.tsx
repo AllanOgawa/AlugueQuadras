@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, SafeAreaView, ScrollView, ActivityIndicator, StatusBar, Modal, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, Text, SafeAreaView, ScrollView, ActivityIndicator, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router, useLocalSearchParams } from 'expo-router';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useLocalSearchParams, router } from 'expo-router';
 import SetaVoltar from '@/src/components/setaVoltar';
 import { CardConfig } from '@components/cardConfig';
 import Constants from 'expo-constants';
@@ -17,17 +18,8 @@ export default function MenuQuadra() {
     const [quadras, setQuadras] = useState<QuadraProps[]>([]);
     const [loadingQuadras, setLoadingQuadras] = useState(true);
 
-    useEffect(() => {
-        if (idEstabelecimento) {
-            fetchQuadras(Number(idEstabelecimento));
-            console.log('ID do estabelecimento:', idEstabelecimento);
-        } else {
-            console.log('ID do estabelecimento não encontrado.');
-            setLoadingQuadras(false); // Caso não haja ID do estabelecimento, para evitar carregamento infinito
-        }
-    }, [idEstabelecimento]);
-
     const fetchQuadras = async (id: number) => {
+        setLoadingQuadras(true); // Adicione isto para mostrar o indicador de carregamento
         try {
             const access_token = await AsyncStorage.getItem('access_token');
             if (!access_token) {
@@ -61,6 +53,14 @@ export default function MenuQuadra() {
         }
     };
 
+    useFocusEffect(
+        useCallback(() => {
+            if (idEstabelecimento) {
+                fetchQuadras(Number(idEstabelecimento));
+            }
+        }, [idEstabelecimento])
+    );
+
     if (loadingQuadras) {
         return (
             <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -74,10 +74,15 @@ export default function MenuQuadra() {
             <SetaVoltar />
             <CardConfig
                 icon="add-circle-outline"
-                title="Novo Quadra"
+                title="Nova Quadra"
                 subtitle="Cadastrar uma nova quadra"
                 style="h-16 w-full rounded-2xl flex-row items-center justify-between px-4"
-                onPress={() => router.push('/cadastrar')}
+                onPress={() => router.push({
+                    pathname: '/(quadra)/cadastrar',
+                    params: {
+                        idEstabelecimento: Number(idEstabelecimento), // Passar o ID como número
+                    },
+                })}
             />
             <Text style={{ fontSize: 24, paddingHorizontal: 16, paddingTop: 10, paddingBottom: 20 }}>Quadras cadastradas</Text>
             <ScrollView className="w-full px-3" showsVerticalScrollIndicator={false}>
@@ -86,10 +91,10 @@ export default function MenuQuadra() {
                         quadras={quadras}
                         onClick={(quadra) =>
                             router.push({
-                                pathname: '/(quadra)/cadastrar',
+                                pathname: '/(quadra)/editar',
                                 params: {
-                                    estabelecimento: JSON.stringify(idEstabelecimento),
-                                    quadra: JSON.stringify(quadra)  // Passando quadra como JSON para mais detalhes
+                                    idEstabelecimento: Number(idEstabelecimento), // Passar o ID como número
+                                    quadra: JSON.stringify(quadra) // Passar a quadra como JSON
                                 },
                             })
                         }

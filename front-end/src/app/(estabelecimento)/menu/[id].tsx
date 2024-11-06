@@ -190,7 +190,7 @@ export default function MenuEstabelecimento() {
                         quadras={quadras}
                         onClick={(quadra) =>
                             router.push({
-                                pathname: '/(quadra)/menu',
+                                pathname: '/(quadra)/editar',
                                 params: {
                                     estabelecimento: JSON.stringify(estabelecimento),
                                     quadra: JSON.stringify(quadra)  // Passando quadra como JSON para mais detalhes

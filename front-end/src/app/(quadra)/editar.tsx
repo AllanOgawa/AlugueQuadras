@@ -13,65 +13,32 @@ import Checkbox from '@/src/components/checkbox';
 
 const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
 
-export default function CadastroQuadra() {
+export default function EditarQuadra() {
+    const { quadra: quadraParam, idEstabelecimento } = useLocalSearchParams();
+    const [quadraData, setQuadraData] = useState<Partial<QuadraProps>>({});
+    const [isCovered, setIsCovered] = useState(false);
     const [errorNome, setErrorNome] = useState('');
     const [errorValor, setErrorValor] = useState('');
     const [errorLargura, setErrorLargura] = useState('');
     const [errorComprimento, setErrorComprimento] = useState('');
-    const [isCovered, setIsCovered] = useState(false);
-    const [imagensToAdd, setImagensToAdd] = useState<string[]>([]);
-    const [imagensToRemove, setImagensToRemove] = useState<string[]>([]);
     const [loadingEsportes, setLoadingEsportes] = useState(true);
     const [esportes, setEsportes] = useState<{ idkey: number; descricao: string }[]>([]);
-    const uploadImageRef = useRef<{ uploadAllImages: () => Promise<string[]> } | null>(null);
-    const [imagensExistentes, setImagensExistentes] = useState<string[]>([]);
-    const [okHandleLinksImagens, setOkHandleLinksImagens] = useState(false);
-
-    const { idEstabelecimento } = useLocalSearchParams();
-    const [quadraData, setQuadraData] = useState<Partial<QuadraProps>>({
-        nome: '',
-        informacoesAdicionais: '',
-        valor: 0,
-        largura: 0,
-        comprimento: 0,
-        coberta: false,
-        imagens: []
-    });
     const [selectedEsportes, setSelectedEsportes] = useState<number[]>([]);
+    const [originalEsportes, setOriginalEsportes] = useState<number[]>([]);
+    const [imagensToAdd, setImagensToAdd] = useState<string[]>([]);
+    const [imagensToRemove, setImagensToRemove] = useState<string[]>([]);
+    const uploadImageRef = useRef<{ uploadAllImages: () => Promise<string[]> } | null>(null);
     const [loading, setLoading] = useState(false);
 
-    const handleInputChange = (field: keyof QuadraProps, value: string) => {
-        setQuadraData((prevData) => ({ ...prevData, [field]: value }));
-    };
-
-    const handleSelectEsporte = (idkey: number) => {
-        if (selectedEsportes.includes(idkey)) {
-            setSelectedEsportes(selectedEsportes.filter((id) => id !== idkey));
-        } else {
-            setSelectedEsportes([...selectedEsportes, idkey]);
+    useEffect(() => {
+        if (quadraParam) {
+            const parsedQuadra = typeof quadraParam === 'string' ? JSON.parse(quadraParam) : quadraParam;
+            setQuadraData(parsedQuadra);
+            setIsCovered(parsedQuadra.coberta || false);
+            setSelectedEsportes(parsedQuadra.tiposEsporte.map(esporte => esporte.idkey));
+            setOriginalEsportes(parsedQuadra.tiposEsporte.map(esporte => esporte.idkey));
         }
-    };
-
-    async function handleImageUpload() {
-        if (uploadImageRef.current) {
-            try {
-                const uploadedImages = await uploadImageRef.current.uploadAllImages();
-                setImagensToAdd(uploadedImages);
-                return uploadedImages;
-            } catch (error) {
-                console.error('Erro ao carregar imagens', error);
-            }
-        } else {
-            console.error('UploadImage ref não está definida.');
-        }
-        return [];
-    }
-
-    async function handleLinksImagens(imagensToAdd: string[], imagensToRemove: string[]) {
-        setImagensToAdd(imagensToAdd || []);
-        setImagensToRemove(imagensToRemove || []);
-        setOkHandleLinksImagens(true);
-    }
+    }, [quadraParam]);
 
     useEffect(() => {
         const fetchEsportes = async () => {
@@ -107,6 +74,18 @@ export default function CadastroQuadra() {
         fetchEsportes();
     }, [idEstabelecimento]);
 
+    const handleInputChange = (field: keyof QuadraProps, value: string) => {
+        setQuadraData((prevData) => ({ ...prevData, [field]: value }));
+    };
+
+    const handleSelectEsporte = (idkey: number) => {
+        if (selectedEsportes.includes(idkey)) {
+            setSelectedEsportes(selectedEsportes.filter((id) => id !== idkey));
+        } else {
+            setSelectedEsportes([...selectedEsportes, idkey]);
+        }
+    };
+
     const handleSubmit = async () => {
         if (!quadraData.nome) {
             setErrorNome('Campo obrigatório');
@@ -139,12 +118,15 @@ export default function CadastroQuadra() {
         setLoading(true);
         try {
             const access_token = await AsyncStorage.getItem('access_token');
-            const url = `${apiUrl}/estabelecimento/quadra/new`;
+            const url = `${apiUrl}/estabelecimento/quadra/edit/${quadraData.idkey}`;
 
             let uploadedImages: string[] = [];
             if (uploadImageRef.current) {
-                uploadedImages = await uploadImageRef.current.uploadAllImages() || []; // Adicione || [] para garantir que seja um array
+                uploadedImages = await uploadImageRef.current.uploadAllImages();
             }
+
+            const tiposEsporteToRemove = originalEsportes.filter(id => !selectedEsportes.includes(id));
+            const tiposEsporteToAdd = selectedEsportes.filter(id => !originalEsportes.includes(id));
 
             const payload = {
                 nome: quadraData.nome,
@@ -152,16 +134,17 @@ export default function CadastroQuadra() {
                 valor: Number(quadraData.valor),
                 largura: Number(quadraData.largura),
                 comprimento: Number(quadraData.comprimento),
-                idkeyEstabelecimento: Number(idEstabelecimento),
+                tipoEsporteToAdd: tiposEsporteToAdd,
+                tipoEsporteToRemove: tiposEsporteToRemove,
+                imagensToAdd: uploadedImages,
+                imagensToRemove: imagensToRemove,
                 coberta: isCovered,
-                tiposEsporteToAdd: selectedEsportes,
-                imagensToAdd: uploadedImages, // Certifique-se de que este campo é um array, mesmo que vazio
             };
 
             console.log('Objeto enviado:', payload);
 
             const response = await fetch(url, {
-                method: 'POST',
+                method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${access_token}`,
@@ -172,17 +155,14 @@ export default function CadastroQuadra() {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error('Erro ao cadastrar a quadra');
+                throw new Error('Erro ao editar a quadra');
             }
 
             Toast.show({
                 type: 'success',
-                text1: 'Quadra cadastrada com sucesso!',
+                text1: 'Quadra editada com sucesso!',
             });
-            setTimeout(() => router.replace({
-                pathname: '/(quadra)/menu',
-                params: { idEstabelecimento },
-            }), 600);
+            setTimeout(() => router.back(), 600);
         } catch (error) {
             Toast.show({
                 type: 'error',
@@ -194,12 +174,55 @@ export default function CadastroQuadra() {
         }
     };
 
+    const handleDelete = () => {
+        Alert.alert(
+            'Confirmação',
+            'Deseja realmente remover esta quadra?',
+            [
+                { text: 'Cancelar', style: 'cancel' },
+                {
+                    text: 'Remover',
+                    onPress: async () => {
+                        setLoading(true);
+                        try {
+                            const access_token = await AsyncStorage.getItem('access_token');
+                            const response = await fetch(`${apiUrl}/estabelecimento/quadra/remove/${quadraData.idkey}`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'Authorization': `Bearer ${access_token}`,
+                                },
+                            });
+
+                            if (!response.ok) {
+                                throw new Error('Erro ao remover a quadra');
+                            }
+
+                            Toast.show({
+                                type: 'success',
+                                text1: 'Quadra removida com sucesso!',
+                            });
+                            setTimeout(() => router.back(), 600);
+                        } catch (error) {
+                            Toast.show({
+                                type: 'error',
+                                text1: 'Erro ao remover a quadra',
+                                text2: error.message,
+                            });
+                        } finally {
+                            setLoading(false);
+                        }
+                    },
+                },
+            ],
+            { cancelable: true }
+        );
+    };
 
     return (
         <SafeAreaView className="flex-1 bg-white" style={{ marginTop: Constants.statusBarHeight }}>
             <SetaVoltar />
             <ScrollView contentContainerStyle={{ padding: 16 }}>
-                <Text className="text-4xl font-semibold mb-5">Cadastrar Quadra</Text>
+                <Text className="text-4xl font-semibold mb-5">Editar Quadra</Text>
 
                 <Input
                     className='mb-5'
@@ -271,17 +294,25 @@ export default function CadastroQuadra() {
                     ref={uploadImageRef}
                     pastaBucket="quadra"
                     multipasImagens={true}
-                    imagensExistentes={imagensExistentes}
-                    linksImagens={handleLinksImagens}
-                    btClassName='mt-1 bg-roxo p-2 rounded-2xl active:bg-roxo/80 mx-4 w-[100%]'
-                    btClassNameTitle="text-white text-center text-lg"
+                    imagensExistentes={quadraData.imagens || []}
+                    linksImagens={(imagensAdd, imagensRemove) => {
+                        setImagensToAdd(imagensAdd);
+                        setImagensToRemove(imagensRemove);
+                    }}
                 />
 
                 <BotaoTouchableOpacity
-                    title="Cadastrar Quadra"
+                    title="Salvar Alterações"
                     className="bg-primary p-4 rounded-xl mt-4"
                     classNameTitle="text-white text-center text-lg"
                     onPress={handleSubmit}
+                />
+
+                <BotaoTouchableOpacity
+                    title="Remover Quadra"
+                    className="bg-red-500 p-4 rounded-xl mt-4"
+                    classNameTitle="text-white text-center text-lg"
+                    onPress={handleDelete}
                 />
 
                 {loading && <ActivityIndicator size="large" color="#FF6600" style={{ marginTop: 16 }} />}
