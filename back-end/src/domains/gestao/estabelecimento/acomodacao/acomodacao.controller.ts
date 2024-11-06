@@ -53,12 +53,19 @@ export class AcomodacaoController {
         }
     }
 
-    @Get()
-    @ApiOperation({ summary: 'Buscar todas as acomodacoes' })
-    @ApiResponse({ status: 200, description: 'Acomodacoes encontradas' })
+    @Get('list')
+    @ApiOperation({
+        summary: 'Buscar todas as acomodacoes com campos específicos',
+    })
+    @ApiResponse({
+        status: 200,
+        description: 'Acomodacoes encontradas',
+        type: Acomodacao,
+        isArray: true,
+    })
     @ApiResponse({ status: 404, description: 'Acomodacoes não encontradas' })
     @ApiResponse({ status: 500, description: 'Erro ao buscar acomodacoes' })
-    async findAll(): Promise<Acomodacao[]> {
+    async findAll(): Promise<Partial<Acomodacao>[]> {
         try {
             return this.acomodacaoService.findAll();
         } catch (error) {

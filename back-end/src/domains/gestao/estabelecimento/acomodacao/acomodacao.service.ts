@@ -11,7 +11,6 @@ export class AcomodacaoService {
         @InjectRepository(Acomodacao)
         private readonly acomodacaoRepository: Repository<Acomodacao>,
     ) {}
-
     async create(
         createAcomodacaoDto: CreateAcomodacaoDto,
     ): Promise<Acomodacao> {
@@ -60,9 +59,11 @@ export class AcomodacaoService {
         }
     }
 
-    async findAll(): Promise<Acomodacao[]> {
+    async findAll(): Promise<Partial<Acomodacao>[]> {
         try {
-            return await this.acomodacaoRepository.find();
+            return await this.acomodacaoRepository.find({
+                select: ['idkey', 'descricao', 'icone'],
+            });
         } catch (error) {
             throw new HttpException(
                 'Erro ao buscar Acomodacoes',
