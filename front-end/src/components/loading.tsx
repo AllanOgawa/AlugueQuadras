@@ -1,9 +1,10 @@
 
 import { View, ActivityIndicator } from 'react-native';
 
-export default function Loading() {
+
+export default function Loading({ cobrirTela = false }: { cobrirTela?: boolean }) {
     return (
-        <View className='
+        <View className={`
         absolute 
         top-0 
         left-0 
@@ -11,7 +12,7 @@ export default function Loading() {
         bottom-0 
         justify-center 
         items-center 
-        bg-black/30'>
+        ${cobrirTela ? "bg-white/90" : "bg-black/30"}`}>
             <ActivityIndicator size="large" className="color-primary" />
         </View>
     );

@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, FlatList, Dimensions, Pressable } from 'react-native';
+import { View, Text, FlatList, Dimensions, Pressable } from 'react-native';
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br';
+import { MaterialIcons } from '@expo/vector-icons';
+import { Colors } from '../constants/Colors';
 
-interface DatePickerProps {
-    minDate: Date;
-    maxDate: Date;
+interface SelecionaDataProps {
+    minDate: dayjs;
+    maxDate: dayjs;
     onDateSelect: (date: Date) => void;
 }
 
 dayjs.locale('pt-br');
 
-const DatePicker: React.FC<DatePickerProps> = ({ minDate, maxDate, onDateSelect }) => {
+const SelecionaData: React.FC<SelecionaDataProps> = ({ minDate, maxDate, onDateSelect }) => {
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [visibleDates, setVisibleDates] = useState<Date[]>([]);
     const [pageIndex, setPageIndex] = useState(0);
@@ -58,7 +60,7 @@ const DatePicker: React.FC<DatePickerProps> = ({ minDate, maxDate, onDateSelect 
     const renderDateItem = (date: Date) => (
         <Pressable
             key={date.toISOString()}
-            className={`flex items-center justify-center mx-1 p-2 px-5 rounded-lg ${date.toDateString() === selectedDate.toDateString() ? 'bg-primary' : 'bg-roxo'}`}
+            className={`flex items-center justify-center mx-1 py-2 px-[23.5px] rounded-lg ${date.toDateString() === selectedDate.toDateString() ? 'bg-primary' : 'bg-roxo'}`}
             onPress={() => handleDateChange(date)}
         >
             <Text className="text-xs text-white">{dayjs(date).format('ddd').toUpperCase()}</Text>
@@ -69,22 +71,19 @@ const DatePicker: React.FC<DatePickerProps> = ({ minDate, maxDate, onDateSelect 
     );
 
     return (
-        <View className="absolute top-0 w-full p-4 bg-white flex-row items-center justify-between">
-            <Pressable onPress={handlePreviousPage} className="p-2">
-                <Text className="text-blue-500 text-lg">{'<'}</Text>
-            </Pressable>
+        <View className="w-full bg-white flex-row items-center justify-between">
+            <MaterialIcons onPress={handlePreviousPage} name='arrow-back-ios' size={22} color={Colors.primary} />
             <FlatList
                 data={visibleDates}
                 keyExtractor={(item) => item.toISOString()}
                 horizontal
+                showsHorizontalScrollIndicator={false}
                 renderItem={({ item }) => renderDateItem(item)}
                 contentContainerStyle={{ display: "flex", justifyContent: "center" }}
             />
-            <Pressable onPress={handleNextPage} className="p-2">
-                <Text className="text-blue-500 text-lg">{'>'}</Text>
-            </Pressable>
+            <MaterialIcons onPress={handleNextPage} name='arrow-forward-ios' size={22} color={Colors.primary} />
         </View>
     );
 };
 
-export default DatePicker;
+export default SelecionaData;
