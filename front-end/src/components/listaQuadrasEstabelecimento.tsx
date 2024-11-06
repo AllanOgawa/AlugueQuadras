@@ -3,6 +3,7 @@ import { View, Text, Modal, Image, Dimensions, TouchableOpacity, StyleSheet, Pre
 import { QuadraProps } from '@src/interfaces/quadra';
 import HorizontalLine from './horizontalLine';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import ImageQuadra from './image';
 
 const { width, height } = Dimensions.get('window');
 
@@ -37,50 +38,61 @@ const ListaQuadrasEstabelecimento: React.FC<ListaQuadrasEstabelecimentoProps> = 
 
     return (
         <View>
-            <Text className='font-bold text-xl mb-7'>Quadras ({quadras.length})</Text>
+            <Text style={styles.title}>Quadras ({quadras.length})</Text>
             {quadras.length > 0 ? (
-                quadras.map((quadra) => (
-                    <View key={quadra.idkey}>
-                        <View className='flex flex-row w-full'>
-                            <TouchableOpacity className='w-32 h-[120] rounded-2xl justify-self-center'>
-                                {/* Renderização da imagem da quadra */}
-                                {quadra.imagens && quadra.imagens.length > 0 && (
-                                    <Pressable onPress={() => openModal(quadra.imagens[0].path)}>
-                                        <Image source={{ uri: quadra.imagens[0].path }} style={styles.quadraImage} />
-                                    </Pressable>
-                                )}
-                            </TouchableOpacity>
-                            <View className='ml-3 flex-1'>
-                                <Pressable onPress={() => onClick(quadra)}>
-                                    <View className="flex-1">
-                                        <Text className='text-lg leading-5 font-bold' numberOfLines={2}>
-                                            {quadra.nome}
-                                        </Text>
-                                        <Text className='text-sm leading-4 mt-1 color-gray-600' numberOfLines={2}>
-                                            {quadra.tiposEsporte.map((esporte, index) => (
-                                                (index === 0 ? '' : ', ') + esporte.descricao
-                                            ))}
-                                        </Text>
-                                    </View>
-                                    <Text className='text-lg leading-5' numberOfLines={1}>
-                                        {quadra.valor ? `R$ ${quadra.valor}` : 'Valor não disponível'}
-                                    </Text>
-                                    <Text className='text-sm leading-4 color-gray-600' numberOfLines={1}>
-                                        Dimensões: {quadra.largura}m(L) x {quadra.comprimento}m(C)
-                                    </Text>
-                                    {quadra.informacoesAdicionais && (
-                                        <Text className='text-sm leading-4 color-gray-600 mt-1' numberOfLines={2}>
-                                            {quadra.informacoesAdicionais}
-                                        </Text>
+                quadras.map((quadra) => {
+                    // Adicionando console.log para ver o objeto quadra completo
+                    console.log('Objeto quadra:', quadra);
+
+                    const imageUrl = quadra.imagens && quadra.imagens.length > 0 ? quadra.imagens[0].path : null;
+                    console.log('Imagem da quadra:', imageUrl);
+
+                    return (
+                        <View key={quadra.idkey}>
+                            <View style={styles.quadraContainer}>
+                                <TouchableOpacity style={styles.imageContainer}>
+                                    {imageUrl ? (
+                                        <Pressable onPress={() => openModal(imageUrl)}>
+                                            <ImageQuadra image={imageUrl} style={styles.quadraImage} />
+                                        </Pressable>
+                                    ) : (
+                                        <View style={styles.noImageContainer}>
+                                            <Text style={styles.noImageText}>Sem imagem</Text>
+                                        </View>
                                     )}
-                                </Pressable>
+                                </TouchableOpacity>
+                                <View style={styles.infoContainer}>
+                                    <Pressable onPress={() => onClick(quadra)}>
+                                        <View style={styles.textContainer}>
+                                            <Text style={styles.quadraName} numberOfLines={2}>
+                                                {quadra.nome}
+                                            </Text>
+                                            <Text style={styles.esportes} numberOfLines={2}>
+                                                {quadra.tiposEsporte.map((esporte, index) => (
+                                                    (index === 0 ? '' : ', ') + esporte.descricao
+                                                ))}
+                                            </Text>
+                                        </View>
+                                        <Text style={styles.valor} numberOfLines={1}>
+                                            {quadra.valor ? `R$ ${quadra.valor}` : 'Valor não disponível'}
+                                        </Text>
+                                        <Text style={styles.dimensoes} numberOfLines={1}>
+                                            Dimensões: {quadra.largura}m(L) x {quadra.comprimento}m(C)
+                                        </Text>
+                                        {quadra.informacoesAdicionais && (
+                                            <Text style={styles.informacoesAdicionais} numberOfLines={2}>
+                                                {quadra.informacoesAdicionais}
+                                            </Text>
+                                        )}
+                                    </Pressable>
+                                </View>
                             </View>
+                            <HorizontalLine margin={14} />
                         </View>
-                        <HorizontalLine margin={14} />
-                    </View>
-                ))
+                    );
+                })
             ) : (
-                <Text>Nenhuma quadra encontrada.</Text>
+                <Text style={styles.noQuadraText}>Nenhuma quadra encontrada.</Text>
             )}
 
             <Modal
@@ -89,7 +101,7 @@ const ListaQuadrasEstabelecimento: React.FC<ListaQuadrasEstabelecimentoProps> = 
                 animationType="fade"
                 onRequestClose={closeModal}
             >
-                <View className='flex-1 justify-center items-center bg-black/90'>
+                <View style={styles.modalContainer}>
                     <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
                         <Ionicons name="close" size={40} color="white" />
                     </TouchableOpacity>
@@ -101,22 +113,95 @@ const ListaQuadrasEstabelecimento: React.FC<ListaQuadrasEstabelecimentoProps> = 
 };
 
 const styles = StyleSheet.create({
+    title: {
+        fontWeight: 'bold',
+        fontSize: 18,
+        marginBottom: 7,
+    },
+    quadraContainer: {
+        flexDirection: 'row',
+        width: '100%',
+    },
+    imageContainer: {
+        width: 120,
+        height: 120,
+        borderRadius: 10,
+        overflow: 'hidden',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     quadraImage: {
         width: '100%',
         height: '100%',
         borderRadius: 10,
     },
+    noImageContainer: {
+        width: '100%',
+        height: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#ddd',
+        borderRadius: 10,
+    },
+    noImageText: {
+        color: '#888',
+        fontSize: 14,
+    },
+    infoContainer: {
+        marginLeft: 10,
+        flex: 1,
+    },
+    textContainer: {
+        flex: 1,
+    },
+    quadraName: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        lineHeight: 20,
+    },
+    esportes: {
+        fontSize: 14,
+        color: '#666',
+        marginTop: 4,
+        lineHeight: 18,
+    },
+    valor: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginTop: 4,
+    },
+    dimensoes: {
+        fontSize: 14,
+        color: '#666',
+        lineHeight: 18,
+    },
+    informacoesAdicionais: {
+        fontSize: 14,
+        color: '#666',
+        marginTop: 4,
+        lineHeight: 18,
+    },
+    noQuadraText: {
+        textAlign: 'center',
+        color: 'gray',
+        fontSize: 14,
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    },
+    closeButton: {
+        position: 'absolute',
+        top: 40,
+        right: 20,
+        padding: 10,
+    },
     fullscreenImage: {
         width: width,
         height: height * 0.8,
         resizeMode: 'contain',
-    },
-    closeButton: {
-        position: 'absolute',
-        top: 0,
-        right: 0,
-        padding: 10,
-        borderRadius: 16,
     },
 });
 
