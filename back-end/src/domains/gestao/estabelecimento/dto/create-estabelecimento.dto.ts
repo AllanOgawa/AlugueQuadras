@@ -3,6 +3,7 @@ import { IsNotEmpty, IsString, IsEmail, Length, IsArray, ValidateNested } from '
 import { ApiProperty } from '@nestjs/swagger';
 import { CreateEnderecoDto } from '@src/domains/geral/endereco/dto/create-endereco.dto';
 import { Type } from 'class-transformer';
+import { CreateHorarioFuncionamentoDto } from '../horario-funcionamento/dto/create-horario-funcionamento.dto';
 
 export class CreateEstabelecimentoDto {
 
@@ -89,4 +90,13 @@ export class CreateEstabelecimentoDto {
   @IsArray()
   @IsString({ each: true })
   imagensToAdd?: string[];
+
+  @ApiProperty({
+    description: 'Horários de funcionamento do estabelecimento',
+    type: CreateHorarioFuncionamentoDto
+  })
+  @ValidateNested()
+  @Type(() => CreateHorarioFuncionamentoDto)
+  @IsNotEmpty({ message: 'O campo horarioFuncionamento não pode estar vazio.' })
+  horariosFuncionamento: CreateHorarioFuncionamentoDto[];
 }

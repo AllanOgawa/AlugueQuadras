@@ -9,7 +9,7 @@ export class ImagemService {
   constructor(
     @InjectRepository(Imagem)
     private readonly imagemRepository: Repository<Imagem>,
-  ) {}
+  ) { }
 
   async createImagem(path: string): Promise<Imagem> {
     const novaImagem = this.imagemRepository.create({ path });
@@ -88,7 +88,7 @@ export class ImagemService {
   async removeImagem(path: string): Promise<void> {
     try {
       const resultado = await this.imagemRepository.delete({ path });
-  
+
       if (resultado.affected === 0) {
         throw new NotFoundException('Imagem não encontrada.');
       }
@@ -97,13 +97,13 @@ export class ImagemService {
       throw new BadRequestException('Erro ao remover a imagem.');
     }
   }
-  
+
   async removeImagens(paths: string[]): Promise<void> {
     try {
       await this.searchPathsImagens(paths);
-      
+
       const resultado = await this.imagemRepository.delete({ path: In(paths) });
-  
+
       if (resultado.affected === 0) {
         throw new NotFoundException('Nenhuma imagem encontrada para exclusão.');
       }

@@ -7,11 +7,11 @@ export class CreateHorarioFuncionamentoDto {
 
   @IsNotEmpty()
   @IsString()
-  @Matches(/^([0-1]\d|2[0-3]):([0-5]\d)$/) // Validação para formato HH:MM
+  @Matches(/^([0-1]\d|2[0-3]):([0-5]\d):([0-5]\d)$/) // Formato HH:MM:SS
   horaAbertura: string;
 
   @IsNotEmpty()
   @IsString()
-  @Matches(/^([0-1]\d|2[0-3]):([0-5]\d)$/) // Validação para formato HH:MM
+  @Matches(/^([0-1]\d|2[0-3]):([0-5]\d):([0-5]\d)$/) // Formato HH:MM:SS
   horaFechamento: string;
 }

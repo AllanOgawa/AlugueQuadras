@@ -2,6 +2,7 @@ import { IsString, IsEmail, IsOptional, IsArray, ValidateNested } from 'class-va
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { UpdateEnderecoDto } from '@src/domains/geral/endereco/dto/update-endereco.dto';
 import { Type } from 'class-transformer';
+import { UpdateHorarioFuncionamentoDto } from '../horario-funcionamento/dto/update-horario-funcionamento.dto';
 
 export class UpdateEstabelecimentoDto {
   @ApiPropertyOptional({
@@ -76,4 +77,12 @@ export class UpdateEstabelecimentoDto {
   @IsArray()
   @IsString({ each: true })
   imagensToRemove?: string[];
+
+  @ApiPropertyOptional({
+    description: 'Horários de funcionamento do estabelecimento',
+    type: UpdateHorarioFuncionamentoDto
+  })
+  @ValidateNested()
+  @Type(() => UpdateHorarioFuncionamentoDto)
+  horariosFuncionamento?: UpdateHorarioFuncionamentoDto[];
 }

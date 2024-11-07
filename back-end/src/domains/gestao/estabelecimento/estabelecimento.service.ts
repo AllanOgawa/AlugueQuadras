@@ -10,6 +10,7 @@ import { ImagemService } from "@src/domains/storage/imagem/imagem.service";
 import { EnderecoService } from "@src/domains/geral/endereco/endereco.service";
 import { Quadra } from "./quadra/entities/quadra.entity";
 import { SearchEstabelecimentoDto } from "./dto/search.dto";
+import { HorarioFuncionamentoService } from "./horario-funcionamento/horario-funcionamento.service";
 
 @Injectable()
 export class EstabelecimentoService {
@@ -18,17 +19,17 @@ export class EstabelecimentoService {
     private readonly estabelecimentoRepository: Repository<Estabelecimento>,
     private imagemService: ImagemService,
     private enderecoService: EnderecoService,
+    private horarioFuncionamentoService: HorarioFuncionamentoService,
   ) { }
 
   async create(createEstabelecimentoDto: CreateEstabelecimentoDto, usuario: Usuario): Promise<Estabelecimento> {
     let estabelecimento: Estabelecimento;
     let novasImagens = [];
-    let novosHorarios = [];
 
     try {
       estabelecimento = this.estabelecimentoRepository.create({
         ...createEstabelecimentoDto,
-        usuario,
+        usuario
       });
 
       estabelecimento = await this.estabelecimentoRepository.save(estabelecimento);
@@ -137,6 +138,16 @@ export class EstabelecimentoService {
     }
   }
 
+  async findByIdkeyAndUser(idkey: number, usuario: Usuario): Promise<Estabelecimento> {
+    try {
+      return await this.estabelecimentoRepository.findOne({
+        where: { idkey, usuario: { idkey: usuario.idkey } }
+      });
+    } catch (error) {
+      throw new HttpException('Erro ao buscar estabelecimento', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   async updateFields(idkey: number, updateEstabelecimentoDto: UpdateEstabelecimentoDto): Promise<void> {
     const { nome, telefone, email, alvara, sobre } = updateEstabelecimentoDto;
 
@@ -208,11 +219,15 @@ export class EstabelecimentoService {
       await this.enderecoService.update(estabelecimento.endereco.idkey, updateEstabelecimentoDto.endereco);
     }
 
+    if (updateEstabelecimentoDto.horariosFuncionamento && updateEstabelecimentoDto.horariosFuncionamento.length > 0) {
+      await this.horarioFuncionamentoService.updateBatch(updateEstabelecimentoDto.horariosFuncionamento);
+    }
+
     return this.findByIdkey(idkey);
   }
 
   async remove(idkey: number, usuario: Usuario): Promise<void> {
-    const estabelecimento = await this.findByIdkey(idkey);
+    const estabelecimento = await this.findByIdkeyAndUser(idkey, usuario);
 
     // Remove as imagens associadas
     if (estabelecimento.imagens && estabelecimento.imagens.length > 0) {
@@ -220,8 +235,18 @@ export class EstabelecimentoService {
       await this.imagemService.removeImagens(caminhosImagens);
     }
 
+    if (estabelecimento.horariosFuncionamento && estabelecimento.horariosFuncionamento.length > 0) {
+      await this.horarioFuncionamentoService.removeBatch(estabelecimento.horariosFuncionamento.map(horario => horario.idkey));
+    }
+
+    //remover as quadras
+
     try {
       await this.estabelecimentoRepository.remove(estabelecimento);
+
+      if (estabelecimento.endereco) {
+        await this.enderecoService.remove(estabelecimento.endereco.idkey);
+      }
     } catch (error) {
       console.error(error);
       throw new HttpException('Erro ao remover estabelecimento.', HttpStatus.INTERNAL_SERVER_ERROR);
