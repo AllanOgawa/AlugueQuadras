@@ -84,7 +84,7 @@ const removerEstabelecimento = async (id: number | undefined) => {
     }
 };
 
-export default function MenuQuadraEstabelecimento() {
+export default function MenuEstabelecimento() {
     const { estabelecimento: estabelecimentoParam } = useLocalSearchParams();
     const [estabelecimento, setEstabelecimento] = useState<EstabelecimentoProps | null>(null);
     const [quadras, setQuadras] = useState<QuadraProps[]>([]);
@@ -148,6 +148,20 @@ export default function MenuQuadraEstabelecimento() {
                             onPress={handleReservas}
                         />
                         <CardConfig
+                            icon={'sports-tennis'}
+                            title={'Quadras'}
+                            subtitle={'Ver quadras cadastradas'}
+                            style="h-16 w-full rounded-2xl flex-row items-center justify-between"
+                            onPress={() => {
+                                if (estabelecimento?.idkey) {
+                                    console.log('ID do estabelecimento enviado:', estabelecimento.idkey);
+                                    router.push({ pathname: '/(quadra)/menu', params: { idEstabelecimento: estabelecimento.idkey.toString() } });
+                                } else {
+                                    console.warn('ID do estabelecimento não encontrado');
+                                }
+                            }}
+                        />
+                        <CardConfig
                             icon={'create'}
                             title={'Editar Estabelecimento'}
                             subtitle={'Editar um estabelecimento'}
@@ -170,13 +184,13 @@ export default function MenuQuadraEstabelecimento() {
 
             <Text style={{ fontSize: 24, paddingHorizontal: 16, paddingVertical: 20 }}>Quadras cadastradas</Text>
 
-            <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+            <ScrollView className="w-full px-3" showsVerticalScrollIndicator={false}>
                 {quadras.length > 0 ? (
                     <ListaQuadrasEstabelecimento
                         quadras={quadras}
                         onClick={(quadra) =>
                             router.push({
-                                pathname: '/(quadra)/menu',
+                                pathname: '/(quadra)/editar',
                                 params: {
                                     estabelecimento: JSON.stringify(estabelecimento),
                                     quadra: JSON.stringify(quadra)  // Passando quadra como JSON para mais detalhes

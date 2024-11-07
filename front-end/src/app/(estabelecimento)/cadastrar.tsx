@@ -1,7 +1,7 @@
-import { ActivityIndicator, SafeAreaView, ScrollView, StatusBar, Text, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, SafeAreaView, ScrollView, StatusBar, ActivityIndicator } from 'react-native';
 import Constants from 'expo-constants';
-import { useState, useEffect } from 'react';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router } from 'expo-router';
 import Input from '@components/inputs/input';
 import BotaoTouchableOpacity from '@components/botoes/botaoTouchableOpacity';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -11,7 +11,8 @@ import globalStyles from '@/src/styles/globalStyles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import MultiSelect from '@/src/components/IconService';
-import { EstabelecimentoProps, EnderecoProps } from '@/src/interfaces/estabelecimento';
+import { EnderecoProps } from '@/src/interfaces/estabelecimento';
+import UploadImage from '@components/UploadImagem';
 
 const statusBarHeight = Constants.statusBarHeight;
 const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
@@ -29,7 +30,6 @@ const initialEnderecoState: EnderecoProps = {
     dataAtualizacao: ''
 };
 
-// Funções auxiliares para formatação
 function formatCNPJ(value: string) {
     return value
         .replace(/\D/g, '')
@@ -56,28 +56,26 @@ function formatTelefone(value: string) {
 }
 
 function removePontuacao(value: string) {
-    return value.replace(/\D/g, ''); // Remove tudo que não for dígito
+    return value.replace(/\D/g, '');
 }
 
-
-export default function EstabelecimentoCadastro() {
-    const { estabelecimento } = useLocalSearchParams();
-    const [isEditing, setIsEditing] = useState(false);
+export default function CadastroEstabelecimento() {
     const [loading, setLoading] = useState(false);
-    const [idkey, setIdkey] = useState<number | null>(null);
-    const [estabelecimentoData, setEstabelecimentoData] = useState<Omit<EstabelecimentoProps, 'endereco' | 'imagens' | 'quadras'>>({
-        idkey: 0,
+    const [imagensExistentes, setImagensExistentes] = useState<string[]>([]);
+    const [imagensToRemove, setImagensToRemove] = useState<string[]>([]);
+    const [estabelecimentoData, setEstabelecimentoData] = useState({
         nome: '',
-        cnpj: ''.replace(/\D/g, ''),
-        telefone: ''.replace(/\D/g, ''),
+        cnpj: '',
+        telefone: '',
         razaoSocial: '',
         email: '',
         alvara: '',
-        dataCadastro: '',
-        dataAtualizacao: ''
+        imagens: []
     });
     const [enderecoData, setEnderecoData] = useState<EnderecoProps>(initialEnderecoState);
     const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
+    const [imagensToAdd, setImagensToAdd] = useState<string[]>([]);
+    const uploadImageRef = useRef<{ uploadAllImages: () => Promise<string[]> } | null>(null);
 
     const options = [
         { id: '1', label: 'Banheiros' },
@@ -87,24 +85,7 @@ export default function EstabelecimentoCadastro() {
         { id: '5', label: 'Estacionamento' }
     ];
 
-
-
-    useEffect(() => {
-        if (estabelecimento) {
-            const parsedEstabelecimento: EstabelecimentoProps = typeof estabelecimento === 'string'
-                ? JSON.parse(estabelecimento)
-                : estabelecimento;
-
-            setIsEditing(true);
-            setIdkey(parsedEstabelecimento.idkey);
-            setEstabelecimentoData(parsedEstabelecimento);
-            setEnderecoData(parsedEstabelecimento.endereco);
-        } else {
-            setIsEditing(false);
-        }
-    }, [estabelecimento]);
-
-    const handleInputChange = (field: keyof EstabelecimentoProps, value: string) => {
+    const handleInputChange = (field: keyof typeof estabelecimentoData, value: string) => {
         setEstabelecimentoData(prev => ({ ...prev, [field]: value }));
     };
 
@@ -112,7 +93,11 @@ export default function EstabelecimentoCadastro() {
         setEnderecoData(prev => ({ ...prev, [field]: value }));
     };
 
-    // Manipuladores de formatação para atualização de estado
+    const handleLinksImagens = (imagensToAdd: string[], imagensToRemove: string[]) => {
+        setImagensToAdd(imagensToAdd || []);
+        setImagensToRemove(imagensToRemove || []);
+    };
+
     const handleTelefoneChange = (value: string) => handleInputChange('telefone', formatTelefone(value));
     const handleCEPChange = (value: string) => handleEnderecoChange('cep', formatCEP(value));
     const handleCNPJChange = (value: string) => handleInputChange('cnpj', formatCNPJ(value));
@@ -125,10 +110,15 @@ export default function EstabelecimentoCadastro() {
         if (!nome) errors.nome = "O campo Nome é obrigatório.";
         if (!cnpj) errors.cnpj = "O campo CNPJ é obrigatório.";
         if (!telefone) errors.telefone = "O campo Telefone é obrigatório.";
-        if (!cep) errors.cep = "Informe um CEP";
-        if (!alvara) errors.alvara = "O campo Alvará é obrigatório";
-        if (!email) errors.email = "O campo Email é obrigatório.";
         if (!razaoSocial) errors.razaoSocial = "O campo Razão Social é obrigatório.";
+        if (!email) errors.email = "O campo Email é obrigatório.";
+        if (!alvara) errors.alvara = "O campo Alvará é obrigatório.";
+        if (!cep) errors.cep = "O campo CEP é obrigatório.";
+        if (!logradouro) errors.logradouro = "O campo Logradouro é obrigatório.";
+        if (!estado) errors.estado = "O campo Estado é obrigatório.";
+        if (!cidade) errors.cidade = "O campo Cidade é obrigatório.";
+        if (!bairro) errors.bairro = "O campo Bairro é obrigatório.";
+        if (!numero) errors.numero = "O campo Número é obrigatório.";
 
         return Object.keys(errors).length ? errors : null;
     };
@@ -136,131 +126,180 @@ export default function EstabelecimentoCadastro() {
     const handleSubmit = async () => {
         const errors = validateFields();
         if (!errors) {
-            isEditing ? await editarEstabelecimento() : await cadastrarEstabelecimento();
-        } else {
-            Object.keys(errors).forEach(key => {
-                Toast.show({ type: 'error', text1: errors[key] });
-            });
-        }
-    };
+            setLoading(true);
+            try {
+                const token = await AsyncStorage.getItem('access_token');
 
-    const cadastrarEstabelecimento = async () => {
-        setLoading(true);
-        try {
-            const token = await AsyncStorage.getItem('access_token');
+                let uploadedImages: string[] = [];
+                if (uploadImageRef.current) {
+                    uploadedImages = (await uploadImageRef.current.uploadAllImages()) || []; // Garante que é um array
+                    console.log('Imagens enviadas:', uploadedImages);
+                }
 
-            // Estruturando o objeto com os campos necessários
-            const payload = {
-                cnpj: removePontuacao(estabelecimentoData.cnpj),          // Remove pontuação do CNPJ
-                razaoSocial: estabelecimentoData.razaoSocial,
-                nome: estabelecimentoData.nome,
-                telefone: estabelecimentoData.telefone,
-                email: estabelecimentoData.email,
-                alvara: estabelecimentoData.alvara,
-                endereco: {
-                    logradouro: enderecoData.logradouro,
-                    numero: enderecoData.numero,
-                    complemento: enderecoData.complemento,
-                    bairro: enderecoData.bairro,
-                    cidade: enderecoData.cidade,
-                    estado: enderecoData.estado,
-                    cep: removePontuacao(enderecoData.cep)                // Remove pontuação do CEP
-                },
-                imagensToAdd: [
-                    "estabelecimento/imagem1.jpg",
-                    "estabelecimento/imagem2.png"
-                ]
-            };
-
-            console.log('Dados enviados no cadastro:', payload);
-
-            const response = await fetch(`${apiUrl}/estabelecimento/new`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify(payload),
-            });
-
-            const data = await response.json();
-            if (response.ok) {
-                Toast.show({ type: 'success', text1: 'Cadastro Realizado com Sucesso' });
-                router.replace('/menu');
-            } else {
-                Toast.show({ type: 'error', text1: 'Falha no Cadastro', text2: data.message });
-            }
-        } catch (error) {
-            console.error('Erro no cadastro', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const editarEstabelecimento = async () => {
-        setLoading(true);
-        try {
-            const token = await AsyncStorage.getItem('access_token');
-            const response = await fetch(`${apiUrl}/estabelecimento/edit/${idkey}`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify({
+                const payload = {
                     ...estabelecimentoData,
                     cnpj: removePontuacao(estabelecimentoData.cnpj),
                     telefone: removePontuacao(estabelecimentoData.telefone),
                     endereco: {
                         ...enderecoData,
                         cep: removePontuacao(enderecoData.cep)
-                    }
-                }),
-            });
-            const data = await response.json();
-            response.ok
-                ? Toast.show({ type: 'success', text1: 'Edição Realizada com Sucesso' })
-                : Toast.show({ type: 'error', text1: 'Falha na Edição', text2: data.message });
-            router.replace('/menu');
-        } catch (error) {
-            console.error('Erro na edição', error);
-        } finally {
-            setLoading(false);
+                    },
+                    imagensToAdd: uploadedImages, // Certifique-se de que isso é um array de strings
+                    imagensToRemove: imagensToRemove // Certifique-se de que isso também é um array de strings
+                };
+
+                console.log('Dados enviados no cadastro:', payload);
+
+                const response = await fetch(`${apiUrl}/estabelecimento/new`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    body: JSON.stringify(payload),
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    Toast.show({ type: 'success', text1: 'Cadastro realizado com sucesso!' });
+                    router.replace('/menu');
+                } else {
+                    Toast.show({ type: 'error', text1: 'Falha no cadastro', text2: data.message });
+                }
+            } catch (error) {
+                console.error('Erro no cadastro:', error);
+                Toast.show({ type: 'error', text1: 'Erro no cadastro', text2: error.message });
+            } finally {
+                setLoading(false);
+            }
+        } else {
+            Object.keys(errors).forEach(key => Toast.show({ type: 'error', text1: errors[key] }));
         }
     };
 
+
+
     return (
-        <SafeAreaView className="flex-1 bg-white" style={{ marginTop: statusBarHeight }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: 'white', marginTop: statusBarHeight }}>
             <StatusBar barStyle="dark-content" backgroundColor="white" />
             <SetaVoltar />
             <ScrollView showsVerticalScrollIndicator={false}>
-                <View className="w-full px-3">
-                    <Text className="text-4xl font-semibold mt-5 mb-5">
-                        {isEditing ? "Editar Estabelecimento" : "Cadastro Estabelecimento"}
-                    </Text>
-                    <Input label="Nome do Estabelecimento" value={estabelecimentoData.nome} onChangeText={value => handleInputChange('nome', value)} className='mt-5' />
-                    <Input label="CNPJ" value={estabelecimentoData.cnpj} onChangeText={handleCNPJChange} keyboardType="numeric" maxLength={18} className='mt-5' />
-                    <Input label="Telefone" value={estabelecimentoData.telefone} onChangeText={handleTelefoneChange} keyboardType="phone-pad" className='mt-5' />
-                    <Input label="Razão Social" value={estabelecimentoData.razaoSocial} onChangeText={value => handleInputChange('razaoSocial', value)} className='mt-5' />
-                    <Input label="Email" value={estabelecimentoData.email} onChangeText={value => handleInputChange('email', value)} keyboardType="email-address" className='mt-5' />
-                    <Input label="Alvará de Funcionamento" value={estabelecimentoData.alvara} onChangeText={value => handleInputChange('alvara', value)} className='mt-5' />
+                <View style={{ padding: 16 }}>
+                    <Text className='text-2xl font-bold py-3'>Cadastro de Estabelecimento</Text>
+                    <Input
+                        className='py-3'
+                        label="Nome"
+                        value={estabelecimentoData.nome}
+                        onChangeText={value => handleInputChange('nome', value)}
+                    />
+                    <Input
+                        className='py-3'
+                        label="CNPJ"
+                        value={estabelecimentoData.cnpj}
+                        onChangeText={handleCNPJChange}
+                        keyboardType="numeric"
+                        maxLength={18}
+                    />
+                    <Input
+                        className='py-3'
+                        label="Telefone"
+                        value={estabelecimentoData.telefone}
+                        onChangeText={handleTelefoneChange}
+                        keyboardType="phone-pad"
+                    />
+                    <Input
+                        className='py-3'
+                        label="Razão Social"
+                        value={estabelecimentoData.razaoSocial}
+                        onChangeText={value => handleInputChange('razaoSocial', value)}
+                    />
+                    <Input
+                        className='py-3'
+                        label="Email"
+                        value={estabelecimentoData.email}
+                        onChangeText={value => handleInputChange('email', value)}
+                        keyboardType="email-address"
+                    />
+                    <Input
+                        className='py-3'
+                        label="Alvará"
+                        value={estabelecimentoData.alvara}
+                        onChangeText={value => handleInputChange('alvara', value)}
+                    />
 
-                    <Text className="text-2xl font-semibold mt-6">Endereço:</Text>
-                    <Input label="CEP" value={enderecoData.cep} onChangeText={handleCEPChange} keyboardType="numeric" className='mt-5' />
-                    <Input label="Estado" value={enderecoData.estado} onChangeText={value => handleEnderecoChange('estado', value)} maxLength={2} className='mt-5' />
-                    <Input label="Cidade" value={enderecoData.cidade} onChangeText={value => handleEnderecoChange('cidade', value)} className='mt-5' />
-                    <Input label="Bairro" value={enderecoData.bairro} onChangeText={value => handleEnderecoChange('bairro', value)} className='mt-5' />
-                    <Input label="Logradouro" value={enderecoData.logradouro} onChangeText={value => handleEnderecoChange('logradouro', value)} className='mt-5' />
-                    <Input label="Número" value={enderecoData.numero} onChangeText={value => handleEnderecoChange('numero', value)} keyboardType="numeric" className='mt-5' />
-                    <Input label="Complemento" value={enderecoData.complemento} onChangeText={value => handleEnderecoChange('complemento', value)} className='mt-5' />
+                    <Text className='text-2xl font-bold py-3'>Endereço:</Text>
+                    <Input
+                        className='py-3'
+                        label="CEP"
+                        value={enderecoData.cep}
+                        onChangeText={handleCEPChange}
+                        keyboardType="numeric"
+                    />
+                    <Input
+                        className='py-3'
+                        label="Estado"
+                        value={enderecoData.estado}
+                        onChangeText={value => handleEnderecoChange('estado', value)}
+                        maxLength={2}
+                    />
+                    <Input
+                        className='py-3'
+                        label="Cidade"
+                        value={enderecoData.cidade}
+                        onChangeText={value => handleEnderecoChange('cidade', value)}
+                    />
+                    <Input
+                        className='py-3'
+                        label="Bairro"
+                        value={enderecoData.bairro}
+                        onChangeText={value => handleEnderecoChange('bairro', value)}
+                    />
+                    <Input
+                        className='py-3'
+                        label="Logradouro"
+                        value={enderecoData.logradouro}
+                        onChangeText={value => handleEnderecoChange('logradouro', value)}
+                    />
+                    <Input
+                        className='py-3'
+                        label="Número"
+                        value={enderecoData.numero}
+                        onChangeText={value => handleEnderecoChange('numero', value)}
+                        keyboardType="numeric"
+                    />
+                    <Input
+                        className='py-3'
+                        label="Complemento"
+                        value={enderecoData.complemento}
+                        onChangeText={value => handleEnderecoChange('complemento', value)}
+                    />
 
-                    <Text className="text-2xl font-semibold mt-6">Acomodações:</Text>
-                    <MultiSelect options={options} selectedOptions={selectedOptions} onSelectionChange={setSelectedOptions} icon={<MaterialIcons name="check-box" size={24} color="black" />} />
+                    <Text className='text-2xl font-bold py-3'>Acomodações:</Text>
+                    <MultiSelect
+                        options={options}
+                        selectedOptions={selectedOptions}
+                        onSelectionChange={setSelectedOptions}
+                        icon={<MaterialIcons name="check-box" size={24} color="black" />}
+                    />
+
+                    <Text className='text-2xl font-bold py-3'>Imagens:</Text>
+                    <UploadImage
+                        ref={uploadImageRef}
+                        pastaBucket="estabelecimento"
+                        multipasImagens={true}
+                        imagensExistentes={imagensExistentes}
+                        linksImagens={handleLinksImagens}
+                        btClassName='mt-1 bg-roxo p-2 rounded-2xl active:bg-roxo/80 mx-4 w-[100%]'
+                        btClassNameTitle="text-white text-center text-lg"
+                    />
+                    <BotaoTouchableOpacity
+                        title="Cadastrar"
+                        onPress={handleSubmit}
+                        className='bg-primary p-4 rounded-2xl active:bg-secondary mx-4'
+                        classNameTitle="text-white text-center text-xl"
+                    />
                 </View>
             </ScrollView>
-            <View style={globalStyles.buttonContainer}>
-                <BotaoTouchableOpacity title={isEditing ? 'Salvar Alterações' : 'Cadastrar'} onPress={handleSubmit} className='bg-primary p-4 rounded-2xl active:bg-secondary mx-4' classNameTitle="text-white text-center text-xl" />
-            </View>
             {loading && <Loading />}
         </SafeAreaView>
     );
