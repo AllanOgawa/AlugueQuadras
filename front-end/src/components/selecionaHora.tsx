@@ -16,7 +16,7 @@ const SelecionaHora: React.FC<SelecionaHoraProps> = ({ horariosDisponiveis, onTi
     const renderTimeItem = ({ item }: { item: TimeSlot }) => (
 
         <View
-            className="mb-2 py-2 bg-secondary active:bg-secondary/80 rounded-2xl">
+            className="mb-2 py-2 bg-roxo active:bg-primary rounded-2xl">
             <TouchableOpacity
                 className='w-full h-full'
                 onPress={() => onTimeSelect(item)}
@@ -24,7 +24,7 @@ const SelecionaHora: React.FC<SelecionaHoraProps> = ({ horariosDisponiveis, onTi
                 <View className='items-center justify-between'>
                     <MaterialIcons name="access-time" size={20} color="white" />
                     <Text className="text-white text-lg font-bold">
-                        {item.start} h - {item.end} h
+                        {item.start}h - {item.end}h
                     </Text>
                 </View>
             </TouchableOpacity>

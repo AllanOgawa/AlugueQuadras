@@ -54,7 +54,7 @@ export default function Inicio() {
 						<View className="relative mb-2">
 							<Pressable
 								onPress={() => {
-									if (logado) router.push('/(reserva)/selecaoDataHora');
+									if (logado) router.push('/(reserva)/selecaoQuadra');
 									// if (logado) router.push('/(tabs)/perfil');
 									else router.push('/(usuario)/login');
 								}}

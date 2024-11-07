@@ -1,6 +1,6 @@
 import globalStyles from '@/src/styles/globalStyles';
 import { Text, View, StyleSheet, Animated } from 'react-native';
-import { useNavigation, useLocalSearchParams } from 'expo-router';
+import { useNavigation, useLocalSearchParams, router } from 'expo-router';
 import { useState, useEffect } from 'react';
 import CarouselQuadra from '@components/carouselQuadra';
 import HorizontalLine from '@components/horizontalLine';
@@ -127,7 +127,148 @@ export default function Estabelecimento() {
                     title={'Alugar Quadra'}
                     className='bg-primary p-4 rounded-2xl active:bg-secondary mx-4'
                     classNameTitle="text-white text-center text-xl"
-                    onPress={() => { }}
+                    onPress={() => {
+                        router.push({
+                            pathname: '/(reserva)/selecaoQuadra',
+                            params: {
+                                estabelecimento: JSON.stringify(
+                                    {
+                                        idKey: 1,
+                                        nome: "Beach Park Maringá",
+                                        quadras: [
+                                            {
+                                                idkey: 1,
+                                                nome: "Quadra 1",
+                                                informacoesAdicionais: "Quadra coberta com iluminação",
+                                                valor: "80.50",
+                                                largura: "8",
+                                                comprimento: "3.90",
+                                                tiposEsporte: [
+                                                    { idkey: 1, descricao: "tennis" },
+                                                    { idkey: 4, descricao: "beach tennis" }
+                                                ],
+                                                imagens: [{ path: "public-storage/quadra/5ceee16e6e73f59f3876f51c14cd82f6823350b4cd8c85af15d00133e0f546b0.jpeg" }],
+                                            },
+                                            {
+                                                idkey: 2,
+                                                nome: "Quadra 2",
+                                                informacoesAdicionais: "Quadra de areia para beach volley",
+                                                valor: "70.00",
+                                                largura: "10",
+                                                comprimento: "5.0",
+                                                tiposEsporte: [
+                                                    { idkey: 2, descricao: "volleyball" },
+                                                    { idkey: 4, descricao: "beach tennis" }
+                                                ],
+                                                imagens: [{ path: "public-storage/quadra/5ceee16e6e73f59f3876f51c14cd82f6823350b4cd8c85af15d00133e0f546b0.jpeg" }],
+                                            },
+                                            {
+                                                idkey: 3,
+                                                nome: "Quadra 3",
+                                                informacoesAdicionais: "Quadra ao ar livre com vista para o parque",
+                                                valor: "90.00",
+                                                largura: "9",
+                                                comprimento: "4.5",
+                                                tiposEsporte: [
+                                                    { idkey: 1, descricao: "tennis" }
+                                                ],
+                                                imagens: [{ path: "public-storage/quadra/5ceee16e6e73f59f3876f51c14cd82f6823350b4cd8c85af15d00133e0f546b0.jpeg" }],
+                                            },
+                                            {
+                                                idkey: 4,
+                                                nome: "Quadra 4",
+                                                informacoesAdicionais: "Quadra de grama sintética para futebol",
+                                                valor: "100.00",
+                                                largura: "12",
+                                                comprimento: "6.0",
+                                                tiposEsporte: [
+                                                    { idkey: 3, descricao: "soccer" }
+                                                ],
+                                                imagens: [{ path: "public-storage/quadra/5ceee16e6e73f59f3876f51c14cd82f6823350b4cd8c85af15d00133e0f546b0.jpeg" }],
+                                            },
+                                            {
+                                                idkey: 5,
+                                                nome: "Quadra 5",
+                                                informacoesAdicionais: "Quadra com arquibancada",
+                                                valor: "120.00",
+                                                largura: "10",
+                                                comprimento: "5.0",
+                                                tiposEsporte: [
+                                                    { idkey: 2, descricao: "volleyball" },
+                                                    { idkey: 4, descricao: "beach tennis" }
+                                                ],
+                                                imagens: [{ path: "public-storage/quadra/5ceee16e6e73f59f3876f51c14cd82f6823350b4cd8c85af15d00133e0f546b0.jpeg" }],
+                                            },
+                                            {
+                                                idkey: 6,
+                                                nome: "Quadra 6",
+                                                informacoesAdicionais: "Quadra com sistema de som",
+                                                valor: "85.00",
+                                                largura: "8.5",
+                                                comprimento: "4.0",
+                                                tiposEsporte: [
+                                                    { idkey: 1, descricao: "tennis" },
+                                                    { idkey: 4, descricao: "beach tennis" }
+                                                ],
+                                                imagens: [{ path: "public-storage/quadra/5ceee16e6e73f59f3876f51c14cd82f6823350b4cd8c85af15d00133e0f546b0.jpeg" }],
+                                            },
+                                            {
+                                                idkey: 7,
+                                                nome: "Quadra 7",
+                                                informacoesAdicionais: "Quadra de areia com redes",
+                                                valor: "75.00",
+                                                largura: "9",
+                                                comprimento: "5.0",
+                                                tiposEsporte: [
+                                                    { idkey: 2, descricao: "volleyball" }
+                                                ],
+                                                imagens: [{ path: "public-storage/quadra/5ceee16e6e73f59f3876f51c14cd82f6823350b4cd8c85af15d00133e0f546b0.jpeg" }],
+                                            },
+                                            {
+                                                idkey: 8,
+                                                nome: "Quadra 8",
+                                                informacoesAdicionais: "Quadra de basquete com cestas de regulagem",
+                                                valor: "110.00",
+                                                largura: "11",
+                                                comprimento: "6.0",
+                                                tiposEsporte: [
+                                                    { idkey: 5, descricao: "basketball" }
+                                                ],
+                                                imagens: [{ path: "public-storage/quadra/5ceee16e6e73f59f3876f51c14cd82f6823350b4cd8c85af15d00133e0f546b0.jpeg" }],
+                                            },
+                                            {
+                                                idkey: 9,
+                                                nome: "Quadra 9",
+                                                informacoesAdicionais: "Quadra poliesportiva com grades de proteção",
+                                                valor: "95.00",
+                                                largura: "10",
+                                                comprimento: "6.5",
+                                                tiposEsporte: [
+                                                    { idkey: 1, descricao: "tennis" },
+                                                    { idkey: 2, descricao: "volleyball" },
+                                                    { idkey: 4, descricao: "beach tennis" }
+                                                ],
+                                                imagens: [{ path: "public-storage/quadra/5ceee16e6e73f59f3876f51c14cd82f6823350b4cd8c85af15d00133e0f546b0.jpeg" }],
+                                            },
+                                            {
+                                                idkey: 10,
+                                                nome: "Quadra 10",
+                                                informacoesAdicionais: "Quadra com iluminação noturna e cobertura",
+                                                valor: "130.00",
+                                                largura: "10",
+                                                comprimento: "5.5",
+                                                tiposEsporte: [
+                                                    { idkey: 3, descricao: "soccer" },
+                                                    { idkey: 2, descricao: "volleyball" }
+                                                ],
+                                                imagens: [{ path: "public-storage/quadra/5ceee16e6e73f59f3876f51c14cd82f6823350b4cd8c85af15d00133e0f546b0.jpeg" }],
+                                            }
+                                        ]
+                                    }
+                                )
+                            },
+                        })
+                    }}
                 />
             </View>
 

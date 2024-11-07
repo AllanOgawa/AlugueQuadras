@@ -19,6 +19,7 @@ const SelecionaData: React.FC<SelecionaDataProps> = ({ minDate, maxDate, onDateS
     const [pageIndex, setPageIndex] = useState(0);
     const [datesPerPage, setDatesPerPage] = useState(5);
 
+
     const handleDateChange = (newDate: Date) => {
         if (newDate >= minDate && newDate <= maxDate) {
             setSelectedDate(newDate);
