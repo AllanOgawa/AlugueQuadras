@@ -1,15 +1,22 @@
-import { InjectRepository } from "@nestjs/typeorm";
-import { ILike, In, Repository } from "typeorm";
-import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
+import { InjectRepository } from '@nestjs/typeorm';
+import { ILike, In, Repository } from 'typeorm';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 
-import { Estabelecimento } from "./entities/estabelecimento.entity";
-import { CreateEstabelecimentoDto } from "./dto/create-estabelecimento.dto";
-import { UpdateEstabelecimentoDto } from "./dto/update-estabelecimento.dto";
-import { Usuario } from "@src/domains/auth/usuario/entities/usuario.entity";
-import { ImagemService } from "@src/domains/storage/imagem/imagem.service";
-import { EnderecoService } from "@src/domains/geral/endereco/endereco.service";
-import { Quadra } from "./quadra/entities/quadra.entity";
-import { SearchEstabelecimentoDto } from "./dto/search.dto";
+import { Estabelecimento } from './entities/estabelecimento.entity';
+import { CreateEstabelecimentoDto } from './dto/create-estabelecimento.dto';
+import { UpdateEstabelecimentoDto } from './dto/update-estabelecimento.dto';
+import { Usuario } from '@src/domains/auth/usuario/entities/usuario.entity';
+import { ImagemService } from '@src/domains/storage/imagem/imagem.service';
+import { EnderecoService } from '@src/domains/geral/endereco/endereco.service';
+import { Quadra } from './quadra/entities/quadra.entity';
+import { SearchEstabelecimentoDto } from './dto/search.dto';
+import { AcomodacaoService } from './acomodacao/acomodacao.service';
 
 @Injectable()
 export class EstabelecimentoService {
@@ -18,11 +25,16 @@ export class EstabelecimentoService {
     private readonly estabelecimentoRepository: Repository<Estabelecimento>,
     private imagemService: ImagemService,
     private enderecoService: EnderecoService,
-  ) { }
+    private acomodacaoService: AcomodacaoService,
+  ) {}
 
-  async create(createEstabelecimentoDto: CreateEstabelecimentoDto, usuario: Usuario): Promise<Estabelecimento> {
+  async create(
+    createEstabelecimentoDto: CreateEstabelecimentoDto,
+    usuario: Usuario,
+  ): Promise<Estabelecimento> {
     let estabelecimento: Estabelecimento;
     let novasImagens = [];
+    let novasAcomodacoes = [];
 
     try {
       estabelecimento = this.estabelecimentoRepository.create({
@@ -30,7 +42,8 @@ export class EstabelecimentoService {
         usuario,
       });
 
-      estabelecimento = await this.estabelecimentoRepository.save(estabelecimento);
+      estabelecimento =
+        await this.estabelecimentoRepository.save(estabelecimento);
     } catch (error) {
       console.log(error);
       throw new HttpException(
@@ -39,9 +52,14 @@ export class EstabelecimentoService {
       );
     }
 
-    if (createEstabelecimentoDto.imagensToAdd && createEstabelecimentoDto.imagensToAdd.length > 0) {
+    if (
+      createEstabelecimentoDto.imagensToAdd &&
+      createEstabelecimentoDto.imagensToAdd.length > 0
+    ) {
       try {
-        novasImagens = await this.imagemService.createImagens(createEstabelecimentoDto.imagensToAdd);
+        novasImagens = await this.imagemService.createImagens(
+          createEstabelecimentoDto.imagensToAdd,
+        );
 
         await this.estabelecimentoRepository
           .createQueryBuilder()
@@ -50,15 +68,44 @@ export class EstabelecimentoService {
           .add(novasImagens);
       } catch (error) {
         console.log(error);
-        throw new BadRequestException('Erro ao associar imagens ao estabelecimento.');
+        throw new BadRequestException(
+          'Erro ao associar imagens ao estabelecimento.',
+        );
+      }
+    }
+
+    if (
+      createEstabelecimentoDto.acomodacoesToAdd &&
+      createEstabelecimentoDto.acomodacoesToAdd.length > 0
+    ) {
+      try {
+        novasAcomodacoes = await this.acomodacaoService.createAcomodacoes(
+          createEstabelecimentoDto.acomodacoesToAdd.map((descricao) => ({
+            descricao,
+          })),
+        );
+        await this.estabelecimentoRepository
+          .createQueryBuilder()
+          .relation(Estabelecimento, 'acomodacoes')
+          .of(estabelecimento)
+          .add(novasAcomodacoes);
+      } catch (error) {
+        console.log(error);
+        throw new BadRequestException(
+          'Erro ao associar acomodações ao estabelecimento.',
+        );
       }
     }
 
     return this.findByIdkey(estabelecimento.idkey);
   }
 
-
-  async searchByCriteria(query: SearchEstabelecimentoDto): Promise<{ data: Estabelecimento[]; total: number; page: number; limit: number }> {
+  async searchByCriteria(query: SearchEstabelecimentoDto): Promise<{
+    data: Estabelecimento[];
+    total: number;
+    page: number;
+    limit: number;
+  }> {
     const { idkey, page = 1, limit = 10, ...filters } = query;
     const whereConditions: any = {};
 
@@ -81,12 +128,13 @@ export class EstabelecimentoService {
     });
 
     if (!data || data.length === 0) {
-      throw new NotFoundException('Nenhum estabelecimento encontrado com os critérios fornecidos');
+      throw new NotFoundException(
+        'Nenhum estabelecimento encontrado com os critérios fornecidos',
+      );
     }
 
     return { data, total, page, limit };
   }
-
 
   async findQuadrasByIdkeyEstabelecimento(idkey: number): Promise<Quadra[]> {
     const estabelecimento = await this.estabelecimentoRepository.findOne({
@@ -95,13 +143,17 @@ export class EstabelecimentoService {
     });
 
     if (!estabelecimento) {
-      throw new NotFoundException(`Estabelecimento com idkey ${idkey} não encontrado`);
+      throw new NotFoundException(
+        `Estabelecimento com idkey ${idkey} não encontrado`,
+      );
     }
 
     const quadras = estabelecimento.quadras;
 
     if (!quadras || quadras.length === 0) {
-      throw new NotFoundException(`Nenhuma quadra encontrada para o estabelecimento com idkey ${idkey}`);
+      throw new NotFoundException(
+        `Nenhuma quadra encontrada para o estabelecimento com idkey ${idkey}`,
+      );
     }
 
     return quadras;
@@ -111,7 +163,10 @@ export class EstabelecimentoService {
     try {
       return await this.estabelecimentoRepository.find();
     } catch (error) {
-      throw new HttpException('Erro ao buscar estabelecimentos', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Erro ao buscar estabelecimentos',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -120,23 +175,31 @@ export class EstabelecimentoService {
       return await this.estabelecimentoRepository.find({
         where: { usuario: { idkey: usuario.idkey } },
       });
-    }
-    catch (error) {
-      throw new HttpException('Erro ao buscar estabelecimentos', HttpStatus.INTERNAL_SERVER_ERROR);
+    } catch (error) {
+      throw new HttpException(
+        'Erro ao buscar estabelecimentos',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
   async findByIdkey(idkey: number): Promise<Estabelecimento> {
     try {
       return await this.estabelecimentoRepository.findOne({
-        where: { idkey }
+        where: { idkey },
       });
     } catch (error) {
-      throw new HttpException('Erro ao buscar estabelecimento', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Erro ao buscar estabelecimento',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
-  async updateFields(idkey: number, updateEstabelecimentoDto: UpdateEstabelecimentoDto): Promise<void> {
+  async updateFields(
+    idkey: number,
+    updateEstabelecimentoDto: UpdateEstabelecimentoDto,
+  ): Promise<void> {
     const { nome, telefone, email, alvara } = updateEstabelecimentoDto;
 
     const updateData: Partial<Estabelecimento> = {};
@@ -156,15 +219,24 @@ export class EstabelecimentoService {
     }
   }
 
-  async manageImages(estabelecimento: Estabelecimento, imagensToAdd?: string[], imagensToRemove?: string[]): Promise<void> {
-
+  async manageImages(
+    estabelecimento: Estabelecimento,
+    imagensToAdd?: string[],
+    imagensToRemove?: string[],
+  ): Promise<void> {
     if (imagensToAdd && imagensToAdd.length > 0) {
       try {
-        const imagensExistentes = estabelecimento.imagens.map(imagem => imagem.path);
-        const novasImagensParaAdicionar = imagensToAdd.filter(caminho => !imagensExistentes.includes(caminho));
+        const imagensExistentes = estabelecimento.imagens.map(
+          (imagem) => imagem.path,
+        );
+        const novasImagensParaAdicionar = imagensToAdd.filter(
+          (caminho) => !imagensExistentes.includes(caminho),
+        );
 
         if (novasImagensParaAdicionar.length > 0) {
-          const imagensEntities = await this.imagemService.createImagens(novasImagensParaAdicionar);
+          const imagensEntities = await this.imagemService.createImagens(
+            novasImagensParaAdicionar,
+          );
           await this.estabelecimentoRepository
             .createQueryBuilder()
             .relation(Estabelecimento, 'imagens')
@@ -173,13 +245,16 @@ export class EstabelecimentoService {
         }
       } catch (error) {
         console.log(error);
-        throw new BadRequestException('Erro ao adicionar imagens ao estabelecimento.');
+        throw new BadRequestException(
+          'Erro ao adicionar imagens ao estabelecimento.',
+        );
       }
     }
 
     if (imagensToRemove && imagensToRemove.length > 0) {
       try {
-        const imagensParaRemover = await this.imagemService.searchPathsImagens(imagensToRemove);
+        const imagensParaRemover =
+          await this.imagemService.searchPathsImagens(imagensToRemove);
         await this.estabelecimentoRepository
           .createQueryBuilder()
           .relation(Estabelecimento, 'imagens')
@@ -189,21 +264,39 @@ export class EstabelecimentoService {
         await this.imagemService.removeImagens(imagensToRemove);
       } catch (error) {
         console.log(error);
-        throw new BadRequestException('Erro ao remover imagens do estabelecimento.');
+        throw new BadRequestException(
+          'Erro ao remover imagens do estabelecimento.',
+        );
       }
     }
   }
 
-  async update(idkey: number, updateEstabelecimentoDto: UpdateEstabelecimentoDto): Promise<Estabelecimento> {
+  async update(
+    idkey: number,
+    updateEstabelecimentoDto: UpdateEstabelecimentoDto,
+  ): Promise<Estabelecimento> {
     await this.updateFields(idkey, updateEstabelecimentoDto);
 
     const estabelecimento = await this.findByIdkey(idkey);
 
-    const { imagensToAdd, imagensToRemove } = updateEstabelecimentoDto;
+    const {
+      imagensToAdd,
+      imagensToRemove,
+      acomodacaoToAdd,
+      acomodacoesToRemove,
+    } = updateEstabelecimentoDto;
     await this.manageImages(estabelecimento, imagensToAdd, imagensToRemove);
+    await this.manageAcomodacoes(
+      estabelecimento,
+      acomodacaoToAdd,
+      acomodacoesToRemove,
+    );
 
     if (updateEstabelecimentoDto.endereco) {
-      await this.enderecoService.update(estabelecimento.endereco.idkey, updateEstabelecimentoDto.endereco);
+      await this.enderecoService.update(
+        estabelecimento.endereco.idkey,
+        updateEstabelecimentoDto.endereco,
+      );
     }
 
     return this.findByIdkey(idkey);
@@ -214,15 +307,81 @@ export class EstabelecimentoService {
 
     // Remove as imagens associadas
     if (estabelecimento.imagens && estabelecimento.imagens.length > 0) {
-      const caminhosImagens = estabelecimento.imagens.map(imagem => imagem.path);
+      const caminhosImagens = estabelecimento.imagens.map(
+        (imagem) => imagem.path,
+      );
       await this.imagemService.removeImagens(caminhosImagens);
+    }
+    if (estabelecimento.acomodacoes && estabelecimento.acomodacoes.length > 0) {
+      const acomodacoesNomes = estabelecimento.acomodacoes.map(
+        (acomodacao) => acomodacao.descricao,
+      );
+      await this.acomodacaoService.removeAcomodacoes(acomodacoesNomes);
     }
 
     try {
       await this.estabelecimentoRepository.remove(estabelecimento);
     } catch (error) {
       console.error(error);
-      throw new HttpException('Erro ao remover estabelecimento.', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Erro ao remover estabelecimento.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async manageAcomodacoes(
+    estabelecimento: Estabelecimento,
+    acomodacoesToAdd?: string[],
+    acomodacoesToRemove?: string[],
+  ): Promise<void> {
+    if (acomodacoesToAdd && acomodacoesToAdd.length > 0) {
+      try {
+        const acomodacoesExistentes = estabelecimento.acomodacoes.map(
+          (acomodacao) => acomodacao.descricao,
+        );
+        const novasAcomodacoesParaAdicionar = acomodacoesToAdd.filter(
+          (descricao) => !acomodacoesExistentes.includes(descricao),
+        );
+
+        if (novasAcomodacoesParaAdicionar.length > 0) {
+          const acomodacoesEntities =
+            await this.acomodacaoService.createAcomodacoes(
+              novasAcomodacoesParaAdicionar.map((descricao) => ({
+                descricao,
+              })),
+            );
+          await this.estabelecimentoRepository
+            .createQueryBuilder()
+            .relation(Estabelecimento, 'acomodacoes')
+            .of(estabelecimento)
+            .add(acomodacoesEntities);
+        }
+      } catch (error) {
+        console.log(error);
+        throw new BadRequestException(
+          'Erro ao adicionar acomodações ao estabelecimento.',
+        );
+      }
+    }
+
+    if (acomodacoesToRemove && acomodacoesToRemove.length > 0) {
+      try {
+        const acomodacoesParaRemover =
+          await this.acomodacaoService.searchAcomodacoes(acomodacoesToRemove);
+        await this.estabelecimentoRepository
+          .createQueryBuilder()
+          .relation(Estabelecimento, 'acomodacoes')
+          .of(estabelecimento)
+          .remove(acomodacoesParaRemover);
+
+        await this.acomodacaoService.removeAcomodacoes(acomodacoesToRemove);
+      } catch (error) {
+        console.log(error);
+        throw new BadRequestException(
+          'Erro ao remover acomodações do estabelecimento.',
+        );
+      }
     }
   }
 }

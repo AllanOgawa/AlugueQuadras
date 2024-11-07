@@ -1,79 +1,107 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateAcomodacaoDto } from './dto/create-acomodacao.dto';
-import { In } from 'typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Acomodacao } from './entities/acomodacao.entity';
 import { UpdateAcomodacaoDto } from './dto/update-acomodacao.dto';
-
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class AcomodacaoService {
-  remove(arg0: number) {
-    throw new Error('Method not implemented.');
-  }
-  update(arg0: number, updateAcomodacaoDto: UpdateAcomodacaoDto) {
-    throw new Error('Method not implemented.');
-  }
-  findOne(arg0: number) {
-    throw new Error('Method not implemented.');
-  }
-
   constructor(
-    @InjectableRepository(Acomodacao)
+    @InjectRepository(Acomodacao)
     private readonly acomodacaoRepository: Repository<Acomodacao>,
-  ) { };
-
-
+  ) {}
   async create(createAcomodacaoDto: CreateAcomodacaoDto): Promise<Acomodacao> {
     try {
       const acomodacao = this.acomodacaoRepository.create(createAcomodacaoDto);
-      const createAcomodacao = await this.acomodacaoRepository.save(acomodacao)
-      return createAcomodacao;
+      return await this.acomodacaoRepository.save(acomodacao);
     } catch (error) {
-      throw new HttpException('Erro ao criar Acomodacao', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Erro ao criar Acomodacao',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
-  async findAll(): Promise<Acomodacao[]> {
+  async createAcomodacoes(
+    createAcomodacaoDto: CreateAcomodacaoDto[],
+  ): Promise<Acomodacao[]> {
     try {
-      return await this.acomodacaoRepository.find();
-    } catch (error) {
-      import { In } from 'typeorm';
+      const acomodacoesExistentes = createAcomodacaoDto.map((a) => a.descricao);
+      const existeAcomodacao = await this.acomodacaoRepository.find({
+        where: { descricao: In(acomodacoesExistentes) },
+      });
 
-      throw new HttpException('Erro ao buscaar Acomodacoes', HttpStatus.INTERNAL_SERVER_ERROR);
+      const descricoesExistentes = existeAcomodacao.map(
+        (descricaoAcomodacao) => descricaoAcomodacao.descricao,
+      );
+
+      const novasAcomodacoes = createAcomodacaoDto.filter(
+        (criarNovasAcomodacoes) =>
+          !descricoesExistentes.includes(criarNovasAcomodacoes.descricao),
+      );
+
+      const acomodacoesCriadas =
+        this.acomodacaoRepository.create(novasAcomodacoes);
+      return await this.acomodacaoRepository.save(acomodacoesCriadas);
+    } catch (error) {
+      throw new HttpException(
+        'Erro ao criar acomodações',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
-  async findByIdKey(id: number): Promise<Acomodacao> {
+  async findAll(): Promise<Partial<Acomodacao>[]> {
+    try {
+      return await this.acomodacaoRepository.find({
+        select: ['idkey', 'descricao', 'icone'],
+      });
+    } catch (error) {
+      throw new HttpException(
+        'Erro ao buscar Acomodacoes',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async findByIdKey(idkey: number): Promise<Acomodacao> {
     try {
       const acomodacao = await this.acomodacaoRepository.findOne({
-        where: { idkey: id }
+        where: { idkey },
       });
 
       if (!acomodacao) {
-        throw new HttpException('Acomodação não encontrada', HttpStatus.NOT_FOUND);
+        throw new HttpException(
+          'Acomodação não encontrada',
+          HttpStatus.NOT_FOUND,
+        );
       }
 
       return acomodacao;
-
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       }
 
-      throw new HttpException('Erro ao buscar acomodacao', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Erro ao buscar acomodacao',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
-
-  async findByIdKeys(idKeys: number[]): Promise<Acomodacao[]> {
+  async findByIdKeys(idkeys: number[]): Promise<Acomodacao[]> {
     try {
       const acomodacao = await this.acomodacaoRepository.find({
-        where: { idKey: In(idKeys) }
+        where: { idkey: In(idkeys) },
       });
 
       if (acomodacao.length === 0) {
-        throw new HttpException('Nenhuma acomodação foi encontrada', HttpStatus.NOT_FOUND);
+        throw new HttpException(
+          'Nenhuma acomodação foi encontrada',
+          HttpStatus.NOT_FOUND,
+        );
       }
 
       return acomodacao;
@@ -82,74 +110,66 @@ export class AcomodacaoService {
         throw error;
       }
 
-      throw new HttpException('Erro ao buscar acomodações', HttpStatus.INTERNAL_SERVER_ERROR)
+      throw new HttpException(
+        'Erro ao buscar acomodações',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
-  async updateAcomodacao(idKey: number, updateData: UpdateAcomodacaoDto): Promise<Acomodacao> {
+  async update(
+    idKey: number,
+    updateData: UpdateAcomodacaoDto,
+  ): Promise<Acomodacao> {
     try {
       const acomodacao = await this.findByIdKey(idKey);
+
       Object.assign(acomodacao, updateData);
 
-      if (!acomodacao) {
-        throw new HttpException('Acomodacao não encontrada', HttpStatus.NOT_FOUND);
-      }
-
-      if (updateData.acomodacao && updateData.acomodacao.length > 0) {
-        const acomods = await this.acomodacaoRepository.findBy({
-          idKey: In(updateData.acomodacao),
+      if (updateData.descricao && updateData.descricao.length > 0) {
+        await this.acomodacaoRepository.findBy({
+          idkey: idKey,
         });
       }
 
-      await this.acomodacaoRepository.save(acomodacao);
+      return await this.acomodacaoRepository.save(acomodacao);
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       }
-
-      throw new HttpException('Erro ao atualizar acomodação', HttpStatus.INTERNAL_SERVER_ERROR)
+      throw new HttpException(
+        'Erro ao atualizar acomodação',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
-
   }
-  async deleteAcomodacao(idKey: number): Promise<void> {
+
+  async remove(idkey: number): Promise<void> {
     try {
-      const acomodacao = await this.findByIdKey(idKey);
+      const acomodacao = await this.findByIdKey(idkey);
 
-      if (!acomodacao) {
-        throw new HttpException('Acomodacao não encontrada', HttpStatus.NOT_FOUND);
-      }
-
-      await this.acomodacaoRepository.delete({ idKey });
-
+      await this.acomodacaoRepository.remove(acomodacao);
     } catch (error) {
-      if (error HttpException) {
+      if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('Erro ao deletar acomodação', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Erro ao deletar acomodação',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
-  async removeAcomodacao(id: number): Promise<void> {
-    const acomodacao = await this.findByIdKey(id);
-    if (!acomodacao) {
-      throw new HttpException('Acomodação não encontrada', HttpStatus.NOT_FOUND);
-    }
-    await this.acomodacaoRepository.remove(acomodacao);
+  async searchAcomodacoes(descricoes: string[]): Promise<Acomodacao[]> {
+    return await this.acomodacaoRepository.find({
+      where: { descricao: In(descricoes) },
+    });
   }
-  
-  async updateAcomodacao(id: number, updateAcomodacaoDto: UpdateAcomodacaoDto): Promise<Acomodacao> {
-    const acomodacao = await this.findByIdKey(id);
-    if (!acomodacao) {
-      throw new HttpException('Acomodação não encontrada', HttpStatus.NOT_FOUND);
-    }
-    Object.assign(acomodacao, updateAcomodacaoDto);
-    return await this.acomodacaoRepository.save(acomodacao);
+
+  async removeAcomodacoes(descricoes: string[]): Promise<void> {
+    const acomodacoesParaRemover = await this.acomodacaoRepository.find({
+      where: { descricao: In(descricoes) },
+    });
+    await this.acomodacaoRepository.remove(acomodacoesParaRemover);
   }
-  
-}
-
-
-
-function InjectableRepository(Acomodacao: typeof Acomodacao): (target: typeof AcomodacaoService, propertyKey: undefined, parameterIndex: 0) => void {
-  throw new Error('Function not implemented.');
 }
