@@ -137,6 +137,7 @@ export default function CadastroQuadra() {
         }
 
         setLoading(true);
+        console.log(imagensToAdd)
         try {
             const access_token = await AsyncStorage.getItem('access_token');
             const url = `${apiUrl}/estabelecimento/quadra/new`;
@@ -144,6 +145,7 @@ export default function CadastroQuadra() {
             let uploadedImages: string[] = [];
             if (uploadImageRef.current) {
                 uploadedImages = await uploadImageRef.current.uploadAllImages() || []; // Adicione || [] para garantir que seja um array
+                console.log('Imagens enviadas:', uploadedImages);
             }
 
             const payload = {

@@ -132,11 +132,8 @@ export default function CadastroEstabelecimento() {
 
                 let uploadedImages: string[] = [];
                 if (uploadImageRef.current) {
-                    uploadedImages = await uploadImageRef.current.uploadAllImages();
-                    // Garantindo que `uploadedImages` é um array de strings
-                    if (!Array.isArray(uploadedImages) || !uploadedImages.every(img => typeof img === 'string')) {
-                        throw new Error('Erro no formato das imagens: `uploadedImages` deve ser um array de strings.');
-                    }
+                    uploadedImages = (await uploadImageRef.current.uploadAllImages()) || []; // Garante que é um array
+                    console.log('Imagens enviadas:', uploadedImages);
                 }
 
                 const payload = {
@@ -147,8 +144,8 @@ export default function CadastroEstabelecimento() {
                         ...enderecoData,
                         cep: removePontuacao(enderecoData.cep)
                     },
-                    imagensToAdd: uploadedImages,
-                    imagensToRemove: imagensToRemove
+                    imagensToAdd: uploadedImages, // Certifique-se de que isso é um array de strings
+                    imagensToRemove: imagensToRemove // Certifique-se de que isso também é um array de strings
                 };
 
                 console.log('Dados enviados no cadastro:', payload);
@@ -179,6 +176,7 @@ export default function CadastroEstabelecimento() {
             Object.keys(errors).forEach(key => Toast.show({ type: 'error', text1: errors[key] }));
         }
     };
+
 
 
     return (
