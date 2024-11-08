@@ -31,14 +31,16 @@ export default function SelecaoDataHora() {
             <StatusBar barStyle="dark-content" backgroundColor="white" />
             <SetaVoltar />
             {parsedEstabelecimento ? (
-                <View>
+                <View className='flex-1'>
                     <Text className="text-2xl text-center font-semibold mt-4"> {parsedEstabelecimento.nome} </Text>
 
-                    <ScrollView contentContainerStyle={{
-                        paddingHorizontal: 16,
-                        paddingTop: 16,
-                        flexGrow: 1,
-                    }}>
+                    <ScrollView
+                        className='flex-1'
+                        contentContainerStyle={{
+                            paddingHorizontal: 16,
+                            paddingTop: 16,
+                            flexGrow: 1,
+                        }}>
                         {/* <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}> */}
                         {parsedEstabelecimento.quadras ? (
                             <ListaQuadrasReserva
@@ -47,7 +49,6 @@ export default function SelecaoDataHora() {
                         ) : (
                             <Text className='text-4xl text-black'>Nenhuma quadra encontrada.</Text>
                         )}
-                        {/* </ScrollView> */}
                     </ScrollView>
                 </View>
             ) : (

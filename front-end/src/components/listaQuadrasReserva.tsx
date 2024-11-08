@@ -7,7 +7,7 @@ import Constants from 'expo-constants';
 
 const { width, height } = Dimensions.get('window');
 const bucketUrl = Constants.expoConfig?.extra?.bucketUrl || ''; // Pegando o URL da API
-console.log(bucketUrl)
+
 export default function ListaQuadrasReserva({ quadras, onClick }: { quadras: QuadraProps[], onClick: (quadra: QuadraProps) => void }) {
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -27,7 +27,7 @@ export default function ListaQuadrasReserva({ quadras, onClick }: { quadras: Qua
             <Text className='font-bold text-xl mb-7'>Quadras ({quadras.length})</Text>
             {quadras.map((quadra) => (
                 <View key={quadra.idkey}>
-                    <View className='flex flex-row w-full'>
+                    <Pressable onPress={() => onClick(quadra)} className='flex flex-row w-full'>
                         <TouchableOpacity className='w-32 h-[120] rounded-2xl justify-self-center' onPress={() => openModal(`${bucketUrl}/${quadra.imagens[0].path}`)}>
                             <Image
                                 source={{ uri: `${bucketUrl}/${quadra.imagens[0].path}` }}
@@ -35,28 +35,31 @@ export default function ListaQuadrasReserva({ quadras, onClick }: { quadras: Qua
                             />
                         </TouchableOpacity>
                         <View className='ml-3 flex-1'>
-                            <Pressable onPress={() => onClick(quadra)}>
-                                <View className="flex-1">
-                                    <Text className='text-lg leading-5 font-bold' numberOfLines={2}>
-                                        {quadra.nome}
+                            <View className="flex-1">
+                                <Text className='text-lg leading-5 font-bold' numberOfLines={2}>
+                                    {quadra.nome}
+                                </Text>
+                                <Text className='text-sm leading-4 mt-1 color-gray-600' numberOfLines={2}>
+                                    {quadra.tiposEsporte.map((esporte, index) => (
+                                        (index === 0 ? '' : ', ') + esporte.descricao
+                                    ))}
+                                </Text>
+                            </View>
+                            <View>
+                                <Text className='text-lg leading-5' numberOfLines={1}>
+                                    {quadra.valor ? `R$ ${quadra.valor}` : 'Valor não disponível'}
+                                </Text>
+                                <Text className='text-sm leading-4 color-gray-600' numberOfLines={1}>
+                                    Dimensões: {quadra.largura}m(L) x {quadra.comprimento}m(C)
+                                </Text>
+                                {quadra.informacoesAdicionais && (
+                                    <Text className='text-sm leading-4 color-gray-600' numberOfLines={2}>
+                                        {quadra.informacoesAdicionais}
                                     </Text>
-                                    <Text className='text-sm leading-4 mt-1 color-gray-600' numberOfLines={2}>
-                                        {quadra.tiposEsporte.map((esporte, index) => (
-                                            (index === 0 ? '' : ', ') + esporte.descricao
-                                        ))}
-                                    </Text>
-                                </View>
-                                <View>
-                                    <Text className='text-lg leading-5' numberOfLines={1}>
-                                        {quadra.valor ? `R$ ${quadra.valor}` : 'Valor não disponível'}
-                                    </Text>
-                                    <Text className='text-sm leading-4 color-gray-600' numberOfLines={1}>
-                                        Dimensões: {quadra.largura}m(L) x {quadra.comprimento}m(C)
-                                    </Text>
-                                </View>
-                            </Pressable>
+                                )}
+                            </View>
                         </View>
-                    </View>
+                    </Pressable>
                     <HorizontalLine margin={14} />
                 </View>
             ))}
