@@ -1,14 +1,8 @@
-import {
-  IsString,
-  IsEmail,
-  IsOptional,
-  IsArray,
-  ValidateNested,
-  ArrayUnique,
-} from 'class-validator';
+import { IsString, IsEmail, IsOptional, IsArray, ValidateNested, ArrayUnique } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { UpdateEnderecoDto } from '@src/domains/geral/endereco/dto/update-endereco.dto';
 import { Type } from 'class-transformer';
+import { UpdateHorarioFuncionamentoDto } from '../horario-funcionamento/dto/update-horario-funcionamento.dto';
 
 export class UpdateEstabelecimentoDto {
   @ApiPropertyOptional({
@@ -51,6 +45,15 @@ export class UpdateEstabelecimentoDto {
   alvara?: string;
 
   @ApiPropertyOptional({
+    description: 'Informações do estabelecimento',
+    example: 'O Tenis Club é um estabelecimento que oferece quadras de tênis para locação.',
+    type: String
+  })
+  @IsString({ message: 'O campo sobre deve ser uma string.' })
+  @IsOptional()
+  sobre?: string;
+
+  @ApiPropertyOptional({
     description: 'Endereço do estabelecimento',
     type: UpdateEnderecoDto,
   })
@@ -61,8 +64,7 @@ export class UpdateEstabelecimentoDto {
 
   @ApiPropertyOptional({
     description: 'Lista de imagens para adicionar.',
-    example: ['estabelecimento/imagem3.jpg'],
-    required: false,
+    example: ['estabelecimento/imagem3.jpg'], required: false
   })
   @IsOptional()
   @IsArray()
@@ -98,4 +100,12 @@ export class UpdateEstabelecimentoDto {
   @IsArray({ message: 'O campo acomodacoesToRemove deve ser um array de IDs.' })
   @ArrayUnique({ message: 'O campo acomodacoesToRemove deve conter apenas valores únicos.' })
   acomodacoesToRemove?: number[];
+
+  @ApiPropertyOptional({
+    description: 'Horários de funcionamento do estabelecimento',
+    type: UpdateHorarioFuncionamentoDto
+  })
+  @ValidateNested()
+  @Type(() => UpdateHorarioFuncionamentoDto)
+  horariosFuncionamento?: UpdateHorarioFuncionamentoDto[];
 }

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 
@@ -76,32 +76,24 @@ export class UsuarioService {
     return novoUsuario;
   }
 
-  async update(idkey: number, updateProfileDto: UpdateProfileDto): Promise<Usuario> {
-    const { nome, username, imagensToAdd, imagensToRemove } = updateProfileDto;
-    const usuario = await this.findByIdkey(idkey);
-
-    if (nome) {
-      usuario.nome = nome;
-      await this.usuarioRepository.save(usuario);
-    };
-
-    if (username) {
-      usuario.username = username;
-      await this.usuarioRepository.save(usuario);
-    };
+  async manageImages(usuario: Usuario, imagensToAdd?: string[], imagensToRemove?: string[]): Promise<void> {
 
     if (imagensToAdd && imagensToAdd.length > 0) {
       try {
-        const imagensEntities = await this.imagemService.createImagens(imagensToAdd);
+        const imagensExistentes = usuario.imagens.map(imagem => imagem.path);
+        const novasImagensParaAdicionar = imagensToAdd.filter(caminho => !imagensExistentes.includes(caminho));
 
-        await this.usuarioRepository
-          .createQueryBuilder()
-          .relation(Usuario, 'imagens')
-          .of(usuario)
-          .add(imagensEntities);
+        if (novasImagensParaAdicionar.length > 0) {
+          const imagensEntities = await this.imagemService.createImagens(novasImagensParaAdicionar);
+          await this.usuarioRepository
+            .createQueryBuilder()
+            .relation(Usuario, 'imagens')
+            .of(usuario)
+            .add(imagensEntities);
+        }
       } catch (error) {
         console.log(error);
-        throw new BadRequestException('Erro ao atualizar imagens do usuário.');
+        throw new BadRequestException('Erro ao adicionar imagens ao estabelecimento.');
       }
     }
 
@@ -117,9 +109,50 @@ export class UsuarioService {
         await this.imagemService.removeImagens(imagensToRemove);
       } catch (error) {
         console.log(error);
-        throw new BadRequestException('Erro ao remover imagens do usuário.');
+        throw new BadRequestException('Erro ao remover imagens do estabelecimento.');
       }
     }
+  }
+
+  async updateFields(idkey: number, updateProfileDto: UpdateProfileDto): Promise<void> {
+    const { nome, username } = updateProfileDto;
+  
+    const updateData: Partial<Usuario> = {};
+    if (nome) updateData.nome = nome;
+  
+    if (username) {
+      const usuario = await this.findByUsername(username);
+      if (usuario) {
+        throw new HttpException(
+          'Erro ao atualizar usuario (username já existe).',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+      updateData.username = username;
+    }
+  
+    if (updateData.username || updateData.nome) {
+      try {
+        await this.usuarioRepository.update(idkey, updateData);
+      } catch (error) {
+        console.log(error);
+        throw new HttpException(
+          'Erro ao atualizar usuario.',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
+  }
+  
+
+  async update(idkey: number, updateProfileDto: UpdateProfileDto): Promise<Usuario> {
+
+    await this.updateFields(idkey, updateProfileDto);
+
+    const usuario = await this.findByIdkey(idkey);
+
+    const { imagensToAdd, imagensToRemove } = updateProfileDto;
+    await this.manageImages(usuario, imagensToAdd, imagensToRemove);
 
     return this.findByIdkey(idkey);
   }
