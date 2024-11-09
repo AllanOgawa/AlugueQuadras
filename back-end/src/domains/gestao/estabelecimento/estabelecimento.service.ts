@@ -266,14 +266,7 @@ export class EstabelecimentoService {
     await this.updateFields(idkey, updateEstabelecimentoDto);
 
     const estabelecimento = await this.findByIdkey(idkey);
-    const { imagensToAdd, imagensToRemove, horariosFuncionamento } = updateEstabelecimentoDto;
-
-    const {
-      imagensToAdd,
-      imagensToRemove,
-      acomodacoesToAdd,
-      acomodacoesToRemove,
-    } = updateEstabelecimentoDto;
+    const { imagensToAdd, imagensToRemove, horariosFuncionamento, acomodacoesToAdd, acomodacoesToRemove } = updateEstabelecimentoDto;
 
     await this.manageImages(estabelecimento, imagensToAdd, imagensToRemove);
     await this.manageAcomodacoes(estabelecimento, acomodacoesToAdd, acomodacoesToRemove);
