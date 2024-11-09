@@ -107,7 +107,7 @@ export class EstabelecimentoController {
       await this.estabelecimentoService.findByIdkey(idkey);
       return await this.estabelecimentoService.update(idkey, updateEstabelecimentoDto);
     } catch (error) {
-      if (error.status === HttpStatus.NOT_FOUND) {
+      if (error instanceof HttpException) {
         throw error;
       } else {
         throw new HttpException('Erro ao atualizar estabelecimento', HttpStatus.INTERNAL_SERVER_ERROR);
