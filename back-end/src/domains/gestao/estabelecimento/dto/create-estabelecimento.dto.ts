@@ -92,11 +92,10 @@ export class CreateEstabelecimentoDto {
   imagensToAdd?: string[];
 
   @ApiProperty({
-    description: 'Lista de acomodacoes para adicionar.',
-    examples: ['espaço kids, wifi, estacionamento'],
-    required: false,
+    description: 'Array com IDs das acomodacoes a serem adicionados à quadra',
+    example: [1, 2, 3],
+    type: [Number],
   })
-  @IsArray()
-  @IsString({ each: true })
-  acomodacoesToAdd?: string[];
+  @IsArray({ message: 'O campo acomodacoesToAdd deve ser um array de IDs.' })
+  acomodacoesToAdd?: number[];
 }

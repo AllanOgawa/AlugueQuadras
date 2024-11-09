@@ -29,7 +29,7 @@ import { Quadra } from '../quadra/entities/quadra.entity';
 @Controller('estabelecimento/acomodacao')
 @UseGuards(JwtAuthGuard)
 export class AcomodacaoController {
-  constructor(private readonly acomodacaoService: AcomodacaoService) {}
+  constructor(private readonly acomodacaoService: AcomodacaoService) { }
 
   @Post('new')
   @ApiBearerAuth('access-token')
@@ -88,9 +88,9 @@ export class AcomodacaoController {
   })
   @ApiResponse({ status: 404, description: 'Acomodacao não encontrada' })
   @ApiResponse({ status: 50, description: 'Erro ao buscar acomodacao' })
-  async findByIdKey(@Param('id') id: number) {
+  async findByIdKey(@Param('idkey') idkey: number) {
     try {
-      return await this.acomodacaoService.findByIdKey(id);
+      return await this.acomodacaoService.findByIdkey(idkey);
     } catch (error) {
       throw new HttpException(
         'Erro ao buscar acomodacao',
@@ -116,11 +116,11 @@ export class AcomodacaoController {
   @ApiResponse({ status: 404, description: 'Acomodacao não encontrada' })
   @ApiResponse({ status: 500, description: 'Erro ao atualizar acomodacao' })
   async update(
-    @Param('idkey') id: number,
+    @Param('idkey') idkey: number,
     @Body(ValidationPipe) updateAcomodacaoDto: UpdateAcomodacaoDto,
   ): Promise<Acomodacao> {
     try {
-      return this.acomodacaoService.update(+id, updateAcomodacaoDto);
+      return this.acomodacaoService.update(idkey, updateAcomodacaoDto);
     } catch (error) {
       throw new HttpException(
         'Erro ao atualizar acomodacao',
@@ -143,9 +143,9 @@ export class AcomodacaoController {
   })
   @ApiResponse({ status: 404, description: 'Acomodacao não encontrada' })
   @ApiResponse({ status: 500, description: 'Erro ao remover acomodacao' })
-  remove(@Param('idkey') id: number) {
+  remove(@Param('idkey') idkey: number) {
     try {
-      return this.acomodacaoService.remove(id);
+      return this.acomodacaoService.remove(idkey);
     } catch (error) {
       throw new HttpException(
         'Erro ao remover acomodacao',

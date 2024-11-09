@@ -4,6 +4,7 @@ import {
   IsOptional,
   IsArray,
   ValidateNested,
+  ArrayUnique,
 } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { UpdateEnderecoDto } from '@src/domains/geral/endereco/dto/update-endereco.dto';
@@ -79,22 +80,22 @@ export class UpdateEstabelecimentoDto {
   imagensToRemove?: string[];
 
   @ApiPropertyOptional({
-    description: 'Lista de acomodacoes para adicionar.',
-    example: ['wifi, estacionamento, espaço kids'],
-    required: false,
+    description: 'Array com IDs das acomodacoes a adicionar da quadra',
+    example: [1, 2],
+    type: [Number],
   })
   @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  acomodacaoToAdd?: string[];
+  @IsArray({ message: 'O campo acomodacoesToAdd deve ser um array de IDs.' })
+  @ArrayUnique({ message: 'O campo acomodacoesToAdd deve conter apenas valores únicos.' })
+  acomodacoesToAdd?: number[];
 
   @ApiPropertyOptional({
-    description: 'Lista de acomodacoes para remover',
-    example: ['wifi, estacionamento'],
-    required: false,
+    description: 'Array com IDs  das acomodacoes a remover da quadra',
+    example: [3, 4],
+    type: [Number],
   })
   @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  acomodacoesToRemove?: string[];
+  @IsArray({ message: 'O campo acomodacoesToRemove deve ser um array de IDs.' })
+  @ArrayUnique({ message: 'O campo acomodacoesToRemove deve conter apenas valores únicos.' })
+  acomodacoesToRemove?: number[];
 }

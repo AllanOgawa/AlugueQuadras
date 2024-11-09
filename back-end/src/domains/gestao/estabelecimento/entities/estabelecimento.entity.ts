@@ -15,6 +15,7 @@ import { Quadra } from '../quadra/entities/quadra.entity';
 import { Usuario } from '@src/domains/auth/usuario/entities/usuario.entity';
 import { Imagem } from '@src/domains/storage/imagem/entities/imagem.entity';
 import { Endereco } from '@src/domains/geral/endereco/entities/endereco.entity';
+import { Acomodacao } from '../acomodacao/entities/acomodacao.entity';
 
 @Entity({ schema: 'gestao', name: 'estabelecimento' })
 export class Estabelecimento {
@@ -81,5 +82,15 @@ export class Estabelecimento {
     inverseJoinColumn: { name: 'idkey_imagem', referencedColumnName: 'idkey' },
   })
   imagens: Imagem[];
-  acomodacoes: any;
+
+  @ManyToMany(() => Acomodacao, { eager: true, nullable: true, cascade: true })
+  @JoinTable({
+    name: 'rel_estabelecimento_acomodacao',
+    joinColumn: {
+      name: 'idkey_estabelecimento',
+      referencedColumnName: 'idkey',
+    },
+    inverseJoinColumn: { name: 'idkey_acomodacao', referencedColumnName: 'idkey' },
+  })
+  acomodacoes: Acomodacao[];
 }

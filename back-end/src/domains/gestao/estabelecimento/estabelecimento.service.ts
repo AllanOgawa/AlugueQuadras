@@ -26,7 +26,7 @@ export class EstabelecimentoService {
     private imagemService: ImagemService,
     private enderecoService: EnderecoService,
     private acomodacaoService: AcomodacaoService,
-  ) {}
+  ) { }
 
   async create(
     createEstabelecimentoDto: CreateEstabelecimentoDto,
@@ -34,11 +34,16 @@ export class EstabelecimentoService {
   ): Promise<Estabelecimento> {
     let estabelecimento: Estabelecimento;
     let novasImagens = [];
-    let novasAcomodacoes = [];
+    let acomodacoes = [];
+
+    if (createEstabelecimentoDto.acomodacoesToAdd && createEstabelecimentoDto.acomodacoesToAdd.length > 0) {
+      acomodacoes = await this.acomodacaoService.findByIdkeys(createEstabelecimentoDto.acomodacoesToAdd);
+    }
 
     try {
       estabelecimento = this.estabelecimentoRepository.create({
         ...createEstabelecimentoDto,
+        acomodacoes,
         usuario,
       });
 
@@ -70,29 +75,6 @@ export class EstabelecimentoService {
         console.log(error);
         throw new BadRequestException(
           'Erro ao associar imagens ao estabelecimento.',
-        );
-      }
-    }
-
-    if (
-      createEstabelecimentoDto.acomodacoesToAdd &&
-      createEstabelecimentoDto.acomodacoesToAdd.length > 0
-    ) {
-      try {
-        novasAcomodacoes = await this.acomodacaoService.createAcomodacoes(
-          createEstabelecimentoDto.acomodacoesToAdd.map((descricao) => ({
-            descricao,
-          })),
-        );
-        await this.estabelecimentoRepository
-          .createQueryBuilder()
-          .relation(Estabelecimento, 'acomodacoes')
-          .of(estabelecimento)
-          .add(novasAcomodacoes);
-      } catch (error) {
-        console.log(error);
-        throw new BadRequestException(
-          'Erro ao associar acomodações ao estabelecimento.',
         );
       }
     }
@@ -282,15 +264,12 @@ export class EstabelecimentoService {
     const {
       imagensToAdd,
       imagensToRemove,
-      acomodacaoToAdd,
+      acomodacoesToAdd,
       acomodacoesToRemove,
     } = updateEstabelecimentoDto;
+    
     await this.manageImages(estabelecimento, imagensToAdd, imagensToRemove);
-    await this.manageAcomodacoes(
-      estabelecimento,
-      acomodacaoToAdd,
-      acomodacoesToRemove,
-    );
+    await this.manageAcomodacoes(estabelecimento, acomodacoesToAdd, acomodacoesToRemove);
 
     if (updateEstabelecimentoDto.endereco) {
       await this.enderecoService.update(
@@ -312,12 +291,6 @@ export class EstabelecimentoService {
       );
       await this.imagemService.removeImagens(caminhosImagens);
     }
-    if (estabelecimento.acomodacoes && estabelecimento.acomodacoes.length > 0) {
-      const acomodacoesNomes = estabelecimento.acomodacoes.map(
-        (acomodacao) => acomodacao.descricao,
-      );
-      await this.acomodacaoService.removeAcomodacoes(acomodacoesNomes);
-    }
 
     try {
       await this.estabelecimentoRepository.remove(estabelecimento);
@@ -330,58 +303,48 @@ export class EstabelecimentoService {
     }
   }
 
-  async manageAcomodacoes(
-    estabelecimento: Estabelecimento,
-    acomodacoesToAdd?: string[],
-    acomodacoesToRemove?: string[],
-  ): Promise<void> {
+  async manageAcomodacoes(estabelecimento: Estabelecimento, acomodacoesToAdd?: number[], acomodacoesToRemove?: number[]): Promise<Estabelecimento> {
     if (acomodacoesToAdd && acomodacoesToAdd.length > 0) {
       try {
-        const acomodacoesExistentes = estabelecimento.acomodacoes.map(
-          (acomodacao) => acomodacao.descricao,
-        );
-        const novasAcomodacoesParaAdicionar = acomodacoesToAdd.filter(
-          (descricao) => !acomodacoesExistentes.includes(descricao),
-        );
+        const acomodacoesEntities = await this.acomodacaoService.findByIdkeys(acomodacoesToAdd);
 
-        if (novasAcomodacoesParaAdicionar.length > 0) {
-          const acomodacoesEntities =
-            await this.acomodacaoService.createAcomodacoes(
-              novasAcomodacoesParaAdicionar.map((descricao) => ({
-                descricao,
-              })),
-            );
+        // Obter os IDs das acomodações já associadas
+        const existingAcomodacaoIds = estabelecimento.acomodacoes.map(a => a.idkey);
+
+        // Filtrar para evitar duplicações
+        const novasAcomodacoes = acomodacoesEntities.filter(a => !existingAcomodacaoIds.includes(a.idkey));
+
+        if (novasAcomodacoes.length > 0) {
           await this.estabelecimentoRepository
             .createQueryBuilder()
             .relation(Estabelecimento, 'acomodacoes')
             .of(estabelecimento)
-            .add(acomodacoesEntities);
+            .add(novasAcomodacoes);
         }
       } catch (error) {
-        console.log(error);
-        throw new BadRequestException(
-          'Erro ao adicionar acomodações ao estabelecimento.',
-        );
+        if (error instanceof HttpException) {
+          throw error;
+        }
+        throw new BadRequestException('Erro ao adicionar acomodações ao estabelecimento.');
       }
     }
 
     if (acomodacoesToRemove && acomodacoesToRemove.length > 0) {
       try {
-        const acomodacoesParaRemover =
-          await this.acomodacaoService.searchAcomodacoes(acomodacoesToRemove);
+        const acomodacoesEntities = await this.acomodacaoService.findByIdkeys(acomodacoesToRemove);
+
         await this.estabelecimentoRepository
           .createQueryBuilder()
           .relation(Estabelecimento, 'acomodacoes')
           .of(estabelecimento)
-          .remove(acomodacoesParaRemover);
-
-        await this.acomodacaoService.removeAcomodacoes(acomodacoesToRemove);
+          .remove(acomodacoesEntities);
       } catch (error) {
         console.log(error);
-        throw new BadRequestException(
-          'Erro ao remover acomodações do estabelecimento.',
-        );
+        throw new BadRequestException('Erro ao remover acomodações do estabelecimento.');
       }
     }
+
+    return estabelecimento;
   }
+
 }
