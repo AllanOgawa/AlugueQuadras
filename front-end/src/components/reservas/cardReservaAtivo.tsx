@@ -1,6 +1,6 @@
+import globalStyles from '@src/styles/globalStyles';
 import { Pressable, Text, Image, View } from 'react-native';
 import { ReservasProps } from '@src/interfaces/reservas';
-import { estilo } from '@src/styles/style';
 import { router } from 'expo-router';
 
 export function CardReservaAtivo({ reserva }: { reserva: ReservasProps }) {
@@ -9,7 +9,7 @@ export function CardReservaAtivo({ reserva }: { reserva: ReservasProps }) {
     };
     return (
         <Pressable
-            style={estilo.box}
+            style={globalStyles.box}
             className='
                 flex flex-row-reverse items-center 
                 justify-between px-2 rounded-2xl w-[99%] h-auto bg-white p-3'

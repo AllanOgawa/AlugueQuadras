@@ -2,23 +2,27 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
 import { DatabaseModule } from './database/database.module';
-
-import { AuthModule } from './auth/auth.module';
-import { EstabelecimentoModule } from './domains/gestao/estabelecimento/estabelecimento.module';
-import { QuadraModule } from './domains/gestao/estabelecimento/quadra/quadra.module';
+import { DomainsModule } from './domains/domains.module';
+import { HealthModule } from './common/health/health.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath:  process.env.NODE_ENV === 'production' ? '.env.prod'
-        : process.env.NODE_ENV === 'test' ? '.env.test' 
-        : '.env',
-      isGlobal: true, 
+      isGlobal: true,
+      envFilePath: [
+        'env/common.env',
+        process.env.NODE_ENV === 'production'
+          ? 'env/production.env'
+          : process.env.NODE_ENV === 'test'
+            ? 'env/test.env'
+            : process.env.NODE_ENV === 'homologation'
+              ? 'env/homologation.env'
+              : 'env/development.env'
+      ],
     }),
     DatabaseModule,
-    AuthModule,
-    EstabelecimentoModule,
-    QuadraModule,
+    DomainsModule,
+    HealthModule
   ],
   controllers: [],
   providers: [],

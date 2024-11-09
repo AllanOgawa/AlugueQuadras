@@ -1,18 +1,23 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, ValidationPipe, HttpStatus, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, ValidationPipe, HttpStatus, UseGuards, ParseIntPipe } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '@src/domains/auth/guard/jwt-auth.guard';
+
+import { Quadra } from './entities/quadra.entity';
 import { QuadraService } from './quadra.service';
 import { CreateQuadraDto } from './dto/create-quadra.dto';
 import { UpdateQuadraDto } from './dto/update-quadra.dto';
-import { Quadra } from './entities/quadra.entity';
-import { ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '@src/auth/guard/jwt-auth.guard';
 
 @ApiTags('Quadra')
-@UseGuards(JwtAuthGuard)
 @Controller('estabelecimento/quadra')
 export class QuadraController {
-  constructor(private readonly quadraService: QuadraService) {}
+  constructor(private readonly quadraService: QuadraService) { }
 
-  @Post()
+  @Post('new')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Criar uma nova quadra' })
+  @ApiResponse({ status: 201, description: 'Quadra criada com sucesso', type: Quadra })
+  @ApiResponse({ status: 500, description: 'Erro ao criar quadra' })
   async create(@Body(ValidationPipe) createQuadraDto: CreateQuadraDto): Promise<Quadra> {
     try {
       return await this.quadraService.create(createQuadraDto);
@@ -24,8 +29,12 @@ export class QuadraController {
     }
   }
 
-
-  @Get(':idkey')
+  @Get('search/:idkey')
+  @ApiOperation({ summary: 'Buscar uma quadra por ID' })
+  @ApiParam({ name: 'idkey', description: 'ID da quadra a ser buscada', example: 1 })
+  @ApiResponse({ status: 200, description: 'Quadra encontrada', type: Quadra })
+  @ApiResponse({ status: 404, description: 'Quadra não encontrada' })
+  @ApiResponse({ status: 500, description: 'Erro ao buscar quadra' })
   async findByIdkey(@Param('idkey') idkey: number): Promise<Quadra> {
     try {
       const quadra = await this.quadraService.findByIdkey(idkey);
@@ -46,7 +55,14 @@ export class QuadraController {
     }
   }
 
-  @Patch(':idkey')
+  @Patch('edit/:idkey')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Atualizar uma quadra existente por ID' })
+  @ApiParam({ name: 'idkey', description: 'ID da quadra a ser atualizada', example: 1 })
+  @ApiResponse({ status: 200, description: 'Quadra atualizada com sucesso', type: Quadra })
+  @ApiResponse({ status: 404, description: 'Quadra não encontrada' })
+  @ApiResponse({ status: 500, description: 'Erro ao atualizar quadra' })
   async update(@Param('idkey') idkey: number, @Body(ValidationPipe) updateQuadraDto: UpdateQuadraDto): Promise<Quadra> {
     try {
       await this.findByIdkey(idkey);
@@ -63,7 +79,13 @@ export class QuadraController {
     }
   }
 
-  @Delete(':idkey')
+  @Delete('remove/:idkey')
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Remover uma quadra por ID' })
+  @ApiParam({ name: 'idkey', description: 'ID da quadra a ser removida', example: 1 })
+  @ApiResponse({ status: 200, description: 'Quadra removida com sucesso' })
+  @ApiResponse({ status: 404, description: 'Quadra não encontrada' })
+  @ApiResponse({ status: 500, description: 'Erro ao remover quadra' })
   async remove(@Param('idkey') idkey: number): Promise<void> {
     try {
       await this.findByIdkey(idkey);
