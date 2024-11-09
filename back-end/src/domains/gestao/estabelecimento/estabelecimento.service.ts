@@ -211,16 +211,16 @@ export class EstabelecimentoService {
     await this.updateFields(idkey, updateEstabelecimentoDto);
 
     const estabelecimento = await this.findByIdkey(idkey);
+    const { imagensToAdd, imagensToRemove, horariosFuncionamento } = updateEstabelecimentoDto;
 
-    const { imagensToAdd, imagensToRemove } = updateEstabelecimentoDto;
     await this.manageImages(estabelecimento, imagensToAdd, imagensToRemove);
 
     if (updateEstabelecimentoDto.endereco) {
       await this.enderecoService.update(estabelecimento.endereco.idkey, updateEstabelecimentoDto.endereco);
     }
 
-    if (updateEstabelecimentoDto.horariosFuncionamento && updateEstabelecimentoDto.horariosFuncionamento.length > 0) {
-      await this.horarioFuncionamentoService.updateBatch(updateEstabelecimentoDto.horariosFuncionamento);
+    if (horariosFuncionamento && horariosFuncionamento.length > 0) {
+      await this.horarioFuncionamentoService.syncHorariosFuncionamento(estabelecimento, horariosFuncionamento);
     }
 
     return this.findByIdkey(idkey);

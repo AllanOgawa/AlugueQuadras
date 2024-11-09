@@ -2,8 +2,9 @@ import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Matches } from 'cla
 import { DiaSemana } from '@src/domains/gestao/estabelecimento/horario-funcionamento/enums/dia-semana.enum';
 
 export class UpdateHorarioFuncionamentoDto {
+  @IsOptional()
   @IsNumber()
-  idkey: number;
+  idkey?: number;
 
   @IsOptional()
   @IsEnum(DiaSemana)

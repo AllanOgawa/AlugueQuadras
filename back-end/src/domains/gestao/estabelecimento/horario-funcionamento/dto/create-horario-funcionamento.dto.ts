@@ -7,11 +7,15 @@ export class CreateHorarioFuncionamentoDto {
 
   @IsNotEmpty()
   @IsString()
-  @Matches(/^([0-1]\d|2[0-3]):([0-5]\d):([0-5]\d)$/) // Formato HH:MM:SS
+  @Matches(/^([0-1]\d|2[0-3]):([0-5]\d):([0-5]\d)$/, {
+    message: 'A hora de abertura deve estar no formato HH:MM:SS, entre 00:00:00 e 23:59:59',
+  }) // Formato HH:MM:SS
   horaAbertura: string;
 
   @IsNotEmpty()
   @IsString()
-  @Matches(/^([0-1]\d|2[0-3]):([0-5]\d):([0-5]\d)$/) // Formato HH:MM:SS
+  @Matches(/^([0-1]\d|2[0-3]):([0-5]\d):([0-5]\d)$/, {
+    message: 'A hora de abertura deve estar no formato HH:MM:SS, entre 00:00:00 e 23:59:59',
+  }) // Formato HH:MM:SS
   horaFechamento: string;
 }
