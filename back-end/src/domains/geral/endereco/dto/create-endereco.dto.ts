@@ -78,4 +78,21 @@ export class CreateEnderecoDto {
   @IsNotEmpty({ message: 'O campo CEP não pode estar vazio.' })
   @Length(8, 8, { message: 'O campo CEP deve ter exatamente 8 caracteres.' })
   cep: string;
+
+  @ApiProperty({
+    description: 'Latitude do endereço',
+    example: '-23.550520',
+    type: String,
+  })
+  @IsString({ message: 'O campo latitude deve ser uma string.' })
+  latitude: string;
+  
+  @ApiProperty({
+    description: 'Longitude do endereço',
+    example: '-46.633308',
+    type: String,
+  })
+  @IsString({ message: 'O campo longitude deve ser uma string.' })
+  longitude: string;
+  
 }

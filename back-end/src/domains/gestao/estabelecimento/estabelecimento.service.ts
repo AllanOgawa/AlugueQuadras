@@ -10,6 +10,7 @@ import { ImagemService } from "@src/domains/storage/imagem/imagem.service";
 import { EnderecoService } from "@src/domains/geral/endereco/endereco.service";
 import { Quadra } from "./quadra/entities/quadra.entity";
 import { SearchEstabelecimentoDto } from "./dto/search.dto";
+import { HorarioFuncionamentoService } from "./horario-funcionamento/horario-funcionamento.service";
 
 @Injectable()
 export class EstabelecimentoService {
@@ -18,6 +19,7 @@ export class EstabelecimentoService {
     private readonly estabelecimentoRepository: Repository<Estabelecimento>,
     private imagemService: ImagemService,
     private enderecoService: EnderecoService,
+    private horarioFuncionamentoService: HorarioFuncionamentoService,
   ) { }
 
   async create(createEstabelecimentoDto: CreateEstabelecimentoDto, usuario: Usuario): Promise<Estabelecimento> {
@@ -27,7 +29,7 @@ export class EstabelecimentoService {
     try {
       estabelecimento = this.estabelecimentoRepository.create({
         ...createEstabelecimentoDto,
-        usuario,
+        usuario
       });
 
       estabelecimento = await this.estabelecimentoRepository.save(estabelecimento);
@@ -136,14 +138,25 @@ export class EstabelecimentoService {
     }
   }
 
+  async findByIdkeyAndUser(idkey: number, usuario: Usuario): Promise<Estabelecimento> {
+    try {
+      return await this.estabelecimentoRepository.findOne({
+        where: { idkey, usuario: { idkey: usuario.idkey } }
+      });
+    } catch (error) {
+      throw new HttpException('Erro ao buscar estabelecimento', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   async updateFields(idkey: number, updateEstabelecimentoDto: UpdateEstabelecimentoDto): Promise<void> {
-    const { nome, telefone, email, alvara } = updateEstabelecimentoDto;
+    const { nome, telefone, email, alvara, sobre } = updateEstabelecimentoDto;
 
     const updateData: Partial<Estabelecimento> = {};
     if (nome) updateData.nome = nome;
     if (telefone) updateData.telefone = telefone;
     if (email) updateData.email = email;
     if (alvara) updateData.alvara = alvara;
+    if (sobre) updateData.sobre = sobre;
 
     try {
       await this.estabelecimentoRepository.update(idkey, updateData);
@@ -198,19 +211,23 @@ export class EstabelecimentoService {
     await this.updateFields(idkey, updateEstabelecimentoDto);
 
     const estabelecimento = await this.findByIdkey(idkey);
+    const { imagensToAdd, imagensToRemove, horariosFuncionamento } = updateEstabelecimentoDto;
 
-    const { imagensToAdd, imagensToRemove } = updateEstabelecimentoDto;
     await this.manageImages(estabelecimento, imagensToAdd, imagensToRemove);
 
     if (updateEstabelecimentoDto.endereco) {
       await this.enderecoService.update(estabelecimento.endereco.idkey, updateEstabelecimentoDto.endereco);
     }
 
+    if (horariosFuncionamento && horariosFuncionamento.length > 0) {
+      await this.horarioFuncionamentoService.syncHorariosFuncionamento(estabelecimento, horariosFuncionamento);
+    }
+
     return this.findByIdkey(idkey);
   }
 
   async remove(idkey: number, usuario: Usuario): Promise<void> {
-    const estabelecimento = await this.findByIdkey(idkey);
+    const estabelecimento = await this.findByIdkeyAndUser(idkey, usuario);
 
     // Remove as imagens associadas
     if (estabelecimento.imagens && estabelecimento.imagens.length > 0) {
@@ -218,8 +235,18 @@ export class EstabelecimentoService {
       await this.imagemService.removeImagens(caminhosImagens);
     }
 
+    if (estabelecimento.horariosFuncionamento && estabelecimento.horariosFuncionamento.length > 0) {
+      await this.horarioFuncionamentoService.removeBatch(estabelecimento.horariosFuncionamento.map(horario => horario.idkey));
+    }
+
+    //remover as quadras
+
     try {
       await this.estabelecimentoRepository.remove(estabelecimento);
+
+      if (estabelecimento.endereco) {
+        await this.enderecoService.remove(estabelecimento.endereco.idkey);
+      }
     } catch (error) {
       console.error(error);
       throw new HttpException('Erro ao remover estabelecimento.', HttpStatus.INTERNAL_SERVER_ERROR);

@@ -1,7 +1,8 @@
-import { IsString, IsEmail, IsOptional, IsArray, ValidateNested }  from 'class-validator';
-import { ApiPropertyOptional }            from '@nestjs/swagger';
+import { IsString, IsEmail, IsOptional, IsArray, ValidateNested } from 'class-validator';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { UpdateEnderecoDto } from '@src/domains/geral/endereco/dto/update-endereco.dto';
 import { Type } from 'class-transformer';
+import { UpdateHorarioFuncionamentoDto } from '../horario-funcionamento/dto/update-horario-funcionamento.dto';
 
 export class UpdateEstabelecimentoDto {
   @ApiPropertyOptional({
@@ -41,6 +42,15 @@ export class UpdateEstabelecimentoDto {
   alvara?: string;
 
   @ApiPropertyOptional({
+    description: 'Informações do estabelecimento',
+    example: 'O Tenis Club é um estabelecimento que oferece quadras de tênis para locação.',
+    type: String
+  })
+  @IsString({ message: 'O campo sobre deve ser uma string.' })
+  @IsOptional()
+  sobre?: string;
+
+  @ApiPropertyOptional({
     description: 'Endereço do estabelecimento',
     type: UpdateEnderecoDto
   })
@@ -48,23 +58,31 @@ export class UpdateEstabelecimentoDto {
   @ValidateNested()
   @Type(() => UpdateEnderecoDto)
   endereco?: UpdateEnderecoDto;
-  
-  @ApiPropertyOptional({ 
-    description: 'Lista de imagens para adicionar.', 
-    example: ['estabelecimento/imagem3.jpg'], required: false 
+
+  @ApiPropertyOptional({
+    description: 'Lista de imagens para adicionar.',
+    example: ['estabelecimento/imagem3.jpg'], required: false
   })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
   imagensToAdd?: string[];
 
-  @ApiPropertyOptional({ 
-    description: 'Lista de imagens para remover.', 
-    example: ['estabelecimento/imagem1.jpg'], 
-    required: false 
+  @ApiPropertyOptional({
+    description: 'Lista de imagens para remover.',
+    example: ['estabelecimento/imagem1.jpg'],
+    required: false
   })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
   imagensToRemove?: string[];
+
+  @ApiPropertyOptional({
+    description: 'Horários de funcionamento do estabelecimento',
+    type: UpdateHorarioFuncionamentoDto
+  })
+  @ValidateNested()
+  @Type(() => UpdateHorarioFuncionamentoDto)
+  horariosFuncionamento?: UpdateHorarioFuncionamentoDto[];
 }

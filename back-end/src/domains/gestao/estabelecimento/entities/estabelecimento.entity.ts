@@ -4,6 +4,7 @@ import { Quadra } from "../quadra/entities/quadra.entity";
 import { Usuario } from "@src/domains/auth/usuario/entities/usuario.entity";
 import { Imagem } from "@src/domains/storage/imagem/entities/imagem.entity";
 import { Endereco } from "@src/domains/geral/endereco/entities/endereco.entity";
+import { HorarioFuncionamento } from "@src/domains/gestao/estabelecimento/horario-funcionamento/entities/horario-funcionamento.entity";
 
 @Entity({ schema: 'gestao', name: 'estabelecimento' })
 export class Estabelecimento {
@@ -29,6 +30,9 @@ export class Estabelecimento {
   @Column({ type: 'text', nullable: true })
   alvara: string;
 
+  @Column({ type: 'text', nullable: false })
+  sobre: string
+
   @Column({ type: 'timestamp', name: 'data_cadastro', nullable: true, default: () => 'CURRENT_TIMESTAMP' })
   dataCadastro: Date;
 
@@ -53,4 +57,7 @@ export class Estabelecimento {
     inverseJoinColumn: { name: 'idkey_imagem', referencedColumnName: 'idkey' }
   })
   imagens: Imagem[];
+
+  @OneToMany(() => HorarioFuncionamento, horario => horario.estabelecimento, { cascade: true, eager: true })
+  horariosFuncionamento: HorarioFuncionamento[];
 }
