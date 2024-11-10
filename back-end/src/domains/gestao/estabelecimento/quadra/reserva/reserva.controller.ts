@@ -18,6 +18,7 @@ import { JwtAuthGuard } from '@src/domains/auth/guard/jwt-auth.guard';
 import {
   ApiBearerAuth,
   ApiOperation,
+  ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -77,6 +78,34 @@ export class ReservaController {
       console.log(error.stack);
       throw new HttpException(
         'Erro ao buscar reservas do usuário',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Patch('cancelarReserva/:idkey')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('acess-token')
+  @ApiOperation({ summary: 'Cancelar uma reserva por ID' })
+  @ApiParam({
+    name: 'idkey',
+    description: 'ID da reserva a ser cancelada',
+    example: 21,
+  })
+  @ApiResponse({ status: 400, description: 'Acesso não autorizado' })
+  @ApiResponse({ status: 404, description: 'Reserva não encontrada' })
+  @ApiResponse({ status: 500, description: 'Erro ao cancelar reserva' })
+  async cancelarReserva(
+    @Param('idkey') idkey: number,
+    @Request() req,
+  ): Promise<void> {
+    try {
+      const usuario = req.user;
+      await this.reservaService.cancelarReserva(idkey);
+    } catch (error) {
+      console.error('Erro ao cancelar reserva:', error.message);
+      throw new HttpException(
+        'Erro ao cancelar reserva',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

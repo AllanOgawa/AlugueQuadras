@@ -89,7 +89,7 @@ export class ReservaService {
   async findAllByUser(userId: number): Promise<Reserva[]> {
     try {
       const reservas = await this.reservaRepository.find({
-        where: { usuario: { idkey: userId } },
+        where: { usuario: { idkey: userId }, cancelada: false },
         relations: ['quadra', 'quadra.estabelecimento'],
       });
 
@@ -105,7 +105,7 @@ export class ReservaService {
     }
   }
 
-  async cancel(id: number): Promise<void> {
+  async cancelarReserva(id: number): Promise<void> {
     try {
       const reserva = await this.reservaRepository.findOne({
         where: { idkey: id },
@@ -125,6 +125,7 @@ export class ReservaService {
       reserva.cancelada = true;
       await this.reservaRepository.save(reserva);
     } catch (error) {
+      console.error('Erro ao cancelar reserva:', error.message);
       throw new HttpException(
         'Erro ao cancelar reserva',
         HttpStatus.INTERNAL_SERVER_ERROR,
