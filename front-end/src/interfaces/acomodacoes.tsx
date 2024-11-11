@@ -1,5 +1,5 @@
 export interface AcomodacoesProps {
-    id: string;
-    text: string;
-    icon: string;
+    idkey: number;
+    descricao: string;
+    icone: string;
 }

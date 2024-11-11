@@ -1,6 +1,8 @@
 import { Pressable, View, Text } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import Octicons from '@expo/vector-icons/Octicons';
+import HorizontalLine from '../horizontalLine';
+import { Colors } from '@/src/constants/Colors';
 
 type MaterialIconName =
     | 'person'
@@ -38,9 +40,9 @@ export function CardConfig({ icon, title, subtitle, style, onPress }: CardConfig
                         <Text className="text-black text-lg ml-4">{subtitle}</Text>
                     </View>
                 </View>
-                <MaterialIcons name="keyboard-arrow-right" size={30} color="#FF7300" />
+                <MaterialIcons name="keyboard-arrow-right" size={30} color={Colors.primary} />
             </Pressable>
-            <View className="border-b border-gray-300 my-2 mx-8" />
+            <HorizontalLine margin={8} />
         </View>
     );
 }

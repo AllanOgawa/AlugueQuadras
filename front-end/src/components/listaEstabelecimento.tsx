@@ -1,109 +1,104 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, ActivityIndicator } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Image, ActivityIndicator, Pressable, Modal, Dimensions } from 'react-native';
 import { EstabelecimentoProps } from '../interfaces/estabelecimento';
+import Constants from 'expo-constants';
+import HorizontalLine from './horizontalLine';
+import { Ionicons } from '@expo/vector-icons';
+import Loading from './loading';
+
+const { width, height } = Dimensions.get('window');
+const bucketUrl = Constants.expoConfig?.extra?.bucketUrl || '';
 
 interface Props {
-    estabelecimentos: EstabelecimentoProps[];  // Lista de estabelecimentos
-    onPress: (estabelecimento: EstabelecimentoProps) => void;  // Função para lidar com o clique
-    loading: boolean;  // Indica se está carregando
-    error?: string | null;  // Mensagem de erro opcional
+    estabelecimentos: EstabelecimentoProps[];
+    onPress: (estabelecimento: EstabelecimentoProps) => void;
+    loading: boolean;
+    error?: string | null;
 }
 
 const ListaEstabelecimento: React.FC<Props> = ({ estabelecimentos, onPress, loading, error }) => {
-    // Renderiza um estabelecimento individual com imagem
-    const renderEstabelecimento = (item: EstabelecimentoProps) => (
-        <TouchableOpacity style={styles.card} onPress={() => onPress(item)} key={item.idkey}>
-            <Image
-                source={{ uri: item.imagem ? item.imagem : 'https://via.placeholder.com/150' }}  // Substitua 'imagem' pelo campo correto
-                style={styles.image}
-            />
-            <View style={styles.infoContainer}>
-                <Text style={styles.name}>{item.nome}</Text>
-                <Text style={styles.endereco}>
-                    {item.endereco.logradouro}, {item.endereco.numero} - {item.endereco.bairro}, {item.endereco.cidade} - {item.endereco.estado}
-                </Text>
-            </View>
-        </TouchableOpacity>
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+    const openModal = (uri: string) => {
+        setSelectedImage(uri);
+        setModalVisible(true);
+    };
+
+    const closeModal = () => {
+        setModalVisible(false);
+        setSelectedImage(null);
+    };
+
+    const renderEstabelecimento = (estabelecimento: EstabelecimentoProps) => (
+        <View key={estabelecimento.idkey}>
+            <Pressable onPress={() => onPress(estabelecimento)} className='flex flex-row w-full'>
+                <TouchableOpacity className='w-32 h-[120] rounded-2xl justify-self-center' onPress={() => openModal(`${bucketUrl}/${estabelecimento.imagens[0].path}`)}>
+                    <Image
+                        source={{ uri: `${bucketUrl}/${estabelecimento.imagens[0].path}` }}
+                        className='w-[7.6rem] h-[7.6rem] rounded-2xl'
+                    />
+                </TouchableOpacity>
+                <View className='ml-3 flex-1'>
+                    <View className="flex-1">
+                        <Text className='text-lg leading-5 font-bold' numberOfLines={2}>
+                            {estabelecimento.nome}
+                        </Text>
+                        <Text className='text-base leading-4 mt-1 color-gray-600' numberOfLines={2}>
+                            {estabelecimento.endereco.logradouro}, {estabelecimento.endereco.numero} - {estabelecimento.endereco.bairro}, {estabelecimento.endereco.cidade} - {(estabelecimento.endereco.estado).toLocaleUpperCase()}
+                        </Text>
+                    </View>
+                    <View>
+                        <Text className='text-base leading-4 color-gray-600' numberOfLines={2}>
+                            {estabelecimento.email}
+                        </Text>
+                        <Text className='text-base leading-4 color-gray-600' numberOfLines={2}>
+                            {estabelecimento.telefone}
+                        </Text>
+                    </View>
+                </View>
+            </Pressable>
+            <HorizontalLine margin={14} />
+        </View>
     );
 
-    // Exibe o indicador de carregamento se `loading` for verdadeiro
-    if (loading) {
-        return (
-            <View style={styles.loaderContainer}>
-                <ActivityIndicator size="large" color="#FF6600" />
-            </View>
-        );
-    }
-
-    // Exibe uma mensagem de erro, se houver
-    if (error) {
-        return <Text style={styles.errorText}>{error}</Text>;
-    }
-
     return (
-        <View style={styles.container}>
+        <View className='p-4'>
             {estabelecimentos.length > 0 ? (
                 estabelecimentos.map(item => renderEstabelecimento(item))
             ) : (
-                <Text style={styles.emptyText}>Nenhum estabelecimento encontrado.</Text>
+                <Text className='text-center color-gray-600 text-2xl mt-6'>Nenhum estabelecimento encontrado.</Text>
             )}
+            <Modal
+                visible={modalVisible}
+                transparent={true}
+                animationType="fade"
+                onRequestClose={closeModal}
+            >
+                <View className='flex-1 justify-center items-center bg-black/90'>
+                    <Image source={{ uri: selectedImage ?? '' }} style={styles.fullscreenImage} />
+                    <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
+                        <Ionicons name="close" size={40} color="white" />
+                    </TouchableOpacity>
+                </View>
+            </Modal>
+            {loading && <Loading />}
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        padding: 16,
+    fullscreenImage: {
+        width: width,
+        height: height * 0.8,
+        resizeMode: 'contain',
     },
-    card: {
-        backgroundColor: '#fff',
-        borderRadius: 8,
-        flexDirection: 'row',
-        padding: 16,
-        marginBottom: 16,
-        shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 3,
-        alignItems: 'center',
-    },
-    image: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        marginRight: 16,
-    },
-    infoContainer: {
-        flex: 1,
-        justifyContent: 'center',
-    },
-    name: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#FF6600',
-        marginBottom: 8,
-    },
-    endereco: {
-        fontSize: 14,
-        color: '#666',
-    },
-    emptyText: {
-        textAlign: 'center',
-        color: '#666',
-        fontSize: 16,
-        marginTop: 20,
-    },
-    loaderContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 50,
-    },
-    errorText: {
-        textAlign: 'center',
-        color: 'red',
-        fontSize: 16,
-        marginTop: 20,
+    closeButton: {
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        padding: 10,
+        borderRadius: 16,
     },
 });
 

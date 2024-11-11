@@ -6,8 +6,7 @@ import SetaVoltar from '@components/setaVoltar';
 
 import HorizontalLine from '@/src/components/horizontalLine';
 import { router, useLocalSearchParams } from 'expo-router';
-import ListaQuadrasEstabelecimento from '@/src/components/listaQuadrasEstabelecimento';
-import ListaQuadrasReserva from '@/src/components/listaQuadrasReserva';
+import ListaQuadras from '@/src/components/listaQuadras';
 
 export default function SelecaoDataHora() {
     const { estabelecimento } = useLocalSearchParams();
@@ -43,7 +42,8 @@ export default function SelecaoDataHora() {
                         }}>
                         {/* <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}> */}
                         {parsedEstabelecimento.quadras ? (
-                            <ListaQuadrasReserva
+                            <ListaQuadras
+                                showTitle={true}
                                 quadras={parsedEstabelecimento.quadras}
                                 onClick={(quadra) => console.log(quadra)} />
                         ) : (

@@ -8,7 +8,6 @@ import Constants from 'expo-constants';
 import SetaVoltar from '@/src/components/setaVoltar';
 
 const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
-const statusBarHeight = Constants.statusBarHeight;
 
 // Função para carregar o ID do estabelecimento do AsyncStorage
 const loadEstabelecimentoFromStorage = async (setSelectedEstabelecimento: React.Dispatch<React.SetStateAction<string | null>>) => {
@@ -68,10 +67,10 @@ const MenuGeralEstabelecimento = () => {
     }, []);
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: 'white', marginTop: statusBarHeight }}>
+        <SafeAreaView className='flex-1 bg-white' style={{ marginTop: Constants.statusBarHeight }}>
             <SetaVoltar />
-            <View style={{ flex: 1, paddingHorizontal: 16 }}>
-                <Text style={{ fontSize: 24, fontWeight: 'bold', marginVertical: 16 }}>Estabelecimentos</Text>
+            <View className='flex-1 px-4'>
+                <Text className='font-bold text-3xl mt-6 mb-5'>Estabelecimentos</Text>
                 <CardConfig
                     icon="add-circle-outline"
                     title="Novo Estabelecimento"
@@ -80,7 +79,7 @@ const MenuGeralEstabelecimento = () => {
                     onPress={() => router.push('/cadastrar')}
                 />
 
-                <Text style={{ fontSize: 24, marginVertical: 16 }}>Estabelecimentos Ativos</Text>
+                <Text className='mt-5 mb-2 text-2xl'>Estabelecimentos Ativos</Text>
 
                 <ScrollView showsVerticalScrollIndicator={false}>
                     {loading ? (

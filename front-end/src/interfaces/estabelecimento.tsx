@@ -1,3 +1,6 @@
+import { AcomodacoesProps } from "./acomodacoes";
+import { AvaliacaoProps } from "./avaliacao";
+import { HorarioProps } from "./horario";
 import { QuadraProps } from "./quadra";
 
 export interface EnderecoProps {

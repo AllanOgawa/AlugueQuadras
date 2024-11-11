@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { Colors } from '../constants/Colors';
 
 interface CheckboxProps {
     label: string;
@@ -34,13 +35,13 @@ const styles = StyleSheet.create({
         height: 24,
         borderRadius: 4,
         borderWidth: 2,
-        borderColor: '#FF6600',
+        borderColor: Colors.secondary,
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: 8,
     },
     checked: {
-        backgroundColor: '#FF6600',
+        backgroundColor: Colors.secondary,
     },
     label: {
         fontSize: 16,

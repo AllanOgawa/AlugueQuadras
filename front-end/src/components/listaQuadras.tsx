@@ -6,9 +6,9 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import Constants from 'expo-constants';
 
 const { width, height } = Dimensions.get('window');
-const bucketUrl = Constants.expoConfig?.extra?.bucketUrl || ''; // Pegando o URL da API
+const bucketUrl = Constants.expoConfig?.extra?.bucketUrl || '';
 
-export default function ListaQuadrasReserva({ quadras, onClick }: { quadras: QuadraProps[], onClick: (quadra: QuadraProps) => void }) {
+export default function ListaQuadras({ quadras, onClick, showTitle = false }: { showTitle?: boolean, quadras: QuadraProps[], onClick: (quadra: QuadraProps) => void }) {
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
@@ -24,7 +24,7 @@ export default function ListaQuadrasReserva({ quadras, onClick }: { quadras: Qua
 
     return (
         <View>
-            <Text className='font-bold text-xl mb-7'>Quadras ({quadras.length})</Text>
+            {showTitle && <Text className='font-bold text-xl mb-7'>Quadras ({quadras.length})</Text>}
             {quadras.map((quadra) => (
                 <View key={quadra.idkey}>
                     <Pressable onPress={() => onClick(quadra)} className='flex flex-row w-full'>
@@ -50,8 +50,13 @@ export default function ListaQuadrasReserva({ quadras, onClick }: { quadras: Qua
                                     {quadra.valor ? `R$ ${quadra.valor}` : 'Valor não disponível'}
                                 </Text>
                                 <Text className='text-sm leading-4 color-gray-600' numberOfLines={1}>
-                                    Dimensões: {quadra.largura}m(L) x {quadra.comprimento}m(C)
+                                    Dimensões: {quadra.comprimento}m x {quadra.largura}m
                                 </Text>
+                                {quadra.coberta && (
+                                    <Text className='text-sm leading-4 color-gray-600' numberOfLines={2}>
+                                        Quadra Coberta
+                                    </Text>
+                                )}
                                 {quadra.informacoesAdicionais && (
                                     <Text className='text-sm leading-4 color-gray-600' numberOfLines={2}>
                                         {quadra.informacoesAdicionais}

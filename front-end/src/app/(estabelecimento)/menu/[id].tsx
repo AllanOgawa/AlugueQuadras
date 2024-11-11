@@ -13,44 +13,6 @@ import { QuadraProps } from '@/src/interfaces/quadra';
 const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
 const statusBarHeight = Constants.statusBarHeight;
 
-const fetchQuadras = async (
-    id: number,
-    setQuadras: React.Dispatch<React.SetStateAction<QuadraProps[]>>,
-    setLoadingQuadras: React.Dispatch<React.SetStateAction<boolean>>
-) => {
-    try {
-        const access_token = await AsyncStorage.getItem('access_token');
-        if (!access_token) {
-            throw new Error('Token de acesso não encontrado. Faça login novamente.');
-        }
-
-        const response = await fetch(`${apiUrl}/estabelecimento/${id}/quadras`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${access_token}`,
-            },
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.message || `Erro ao buscar as quadras: ${response.status}`);
-        }
-
-        const data = await response.json();
-        setQuadras(data);
-    } catch (error: any) {
-        console.error('Erro detalhado:', error);
-        Toast.show({
-            type: 'error',
-            text1: 'Erro ao carregar as quadras',
-            text2: error.message || 'Ocorreu um erro inesperado.',
-        });
-    } finally {
-        setLoadingQuadras(false);
-    }
-};
-
 const removerEstabelecimento = async (id: number | undefined) => {
     try {
         const access_token = await AsyncStorage.getItem('access_token');
@@ -95,8 +57,8 @@ export default function MenuEstabelecimento() {
         if (estabelecimentoParam) {
             const parsedEstabelecimento = typeof estabelecimentoParam === 'string' ? JSON.parse(estabelecimentoParam) : estabelecimentoParam;
             setEstabelecimento(parsedEstabelecimento);
-            fetchQuadras(parsedEstabelecimento.idkey, setQuadras, setLoadingQuadras);
         }
+        setLoadingQuadras(false);
     }, [estabelecimentoParam]);
 
     const handleRemoverEstabelecimento = () => {
@@ -150,7 +112,7 @@ export default function MenuEstabelecimento() {
                         <CardConfig
                             icon={'sports-tennis'}
                             title={'Quadras'}
-                            subtitle={'Ver quadras cadastradas'}
+                            subtitle={'Ver Quadras cadastradas'}
                             style="h-16 w-full rounded-2xl flex-row items-center justify-between"
                             onPress={() => {
                                 if (estabelecimento?.idkey) {
@@ -164,7 +126,7 @@ export default function MenuEstabelecimento() {
                         <CardConfig
                             icon={'create'}
                             title={'Editar Estabelecimento'}
-                            subtitle={'Editar um estabelecimento'}
+                            subtitle={'Editar o Estabelecimento Atual'}
                             style='h-16 w-full rounded-2xl flex-row items-center justify-between'
                             onPress={() => router.push({
                                 pathname: '/(estabelecimento)/cadastrar',
@@ -173,37 +135,14 @@ export default function MenuEstabelecimento() {
                         />
                         <CardConfig
                             icon={'highlight-remove'}
-                            title={'Remover Estabelecimento'}
-                            subtitle={'Remover o estabelecimento atual'}
+                            title={'Deletar Estabelecimento'}
+                            subtitle={'Deletar o Estabelecimento Atual'}
                             style='h-16 w-full rounded-2xl flex-row items-center justify-between'
                             onPress={handleRemoverEstabelecimento}
                         />
                     </>
                 )}
             </View>
-
-            <Text style={{ fontSize: 24, paddingHorizontal: 16, paddingVertical: 20 }}>Quadras cadastradas</Text>
-
-            <ScrollView className="w-full px-3" showsVerticalScrollIndicator={false}>
-                {quadras.length > 0 ? (
-                    <ListaQuadrasEstabelecimento
-                        quadras={quadras}
-                        onClick={(quadra) =>
-                            router.push({
-                                pathname: '/(quadra)/editar',
-                                params: {
-                                    estabelecimento: JSON.stringify(estabelecimento),
-                                    quadra: JSON.stringify(quadra)  // Passando quadra como JSON para mais detalhes
-                                },
-                            })
-                        }
-                        loading={false}
-                    />
-                ) : (
-                    <Text style={{ textAlign: 'center', color: 'gray' }}>Nenhuma quadra cadastrada.</Text>
-                )}
-            </ScrollView>
-
 
             {/* Modal de Confirmação */}
             <Modal
