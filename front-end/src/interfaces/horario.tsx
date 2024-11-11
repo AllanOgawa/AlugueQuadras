@@ -1,6 +1,5 @@
 export interface HorarioProps {
-    dia: string;
-    horario1: string;
-    horario2: string;
-    valor: string;
+    diaSemana: number;
+    horaAbertura: string;
+    horaFechamento: string;
 }

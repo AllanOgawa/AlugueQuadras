@@ -1,63 +1,114 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, RefreshControl } from 'react-native';
 import Constants from 'expo-constants';
 import ListaEstabelecimento from '@/src/components/listaEstabelecimento';
 import { MaterialIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-toast-message';
 
+const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
 const statusBarHeight = Constants.statusBarHeight;
-
-interface SearchBarProps {
-    search: string;
-    setSearch: (text: string) => void;
-}
-interface FilterButtonProps {
-    title: string;
-}
 
 export default function Busca() {
     const [search, setSearch] = useState('');
+    const [estabelecimentos, setEstabelecimentos] = useState([]);
+    const [filteredEstabelecimentos, setFilteredEstabelecimentos] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
+    const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
 
-    function handleEstablishmentPress(estabelecimento: any) {
+    // Função para buscar todos os estabelecimentos
+    const fetchEstabelecimentos = async () => {
+        setLoading(true);
+        try {
+            const access_token = await AsyncStorage.getItem('access_token');
+            const response = await fetch(`${apiUrl}/estabelecimento/usuario`, {
+                headers: { 'Authorization': `Bearer ${access_token}` },
+            });
+            const data = await response.json();
+            setEstabelecimentos(data);
+            setFilteredEstabelecimentos(data);
+        } catch (error) {
+            console.error('Erro ao buscar estabelecimentos:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Atualiza os resultados conforme a pesquisa ou filtro
+    useEffect(() => {
+        const results = estabelecimentos.filter((estabelecimento) =>
+            estabelecimento.nome.toLowerCase().includes(search.toLowerCase()) &&
+            (!selectedFilter || estabelecimento.tipo.includes(selectedFilter))
+        );
+        setFilteredEstabelecimentos(results);
+    }, [search, selectedFilter, estabelecimentos]);
+
+    // Função para puxar e atualizar ao arrastar para baixo
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        fetchEstabelecimentos().then(() => setRefreshing(false));
+    }, []);
+
+    // Carregar estabelecimentos na montagem do componente
+    useEffect(() => {
+        fetchEstabelecimentos();
+    }, []);
+
+    const handleEstablishmentPress = (estabelecimento) => {
         console.log('clicado', estabelecimento);
-    }
+    };
 
     return (
         <View style={styles.container}>
             <Header />
             <SearchBar search={search} setSearch={setSearch} />
-            <ScrollView>
+            <ScrollView
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                }>
                 <ListaEstabelecimento
+                    estabelecimentos={filteredEstabelecimentos}
                     onPress={handleEstablishmentPress}
-                    options={{
-                        showImage: true,
-                        showAvaliacao: true,
-                        showPreco: true,
-                        showAcomodacoes: true,
-                    }} />
+                    loading={loading}
+                />
             </ScrollView>
         </View>
     );
 }
 
+function setSelectedFilter(arg0: (prev: any) => string | null): void {
+    Toast.show({
+        type: 'error',
+        text1: 'Função não implementada',
+        text2: 'Erro ao selecionar filtro',
+        swipeable: true,
+        visibilityTime: 1000,
+    });
+}
+
 const Header = () => (
     <View style={styles.header}>
-        <MaterialIcons name='location-pin' size={20} color={"#FF6600"} />
+        <MaterialIcons name='location-pin' size={20} color="#FF6600" />
         <Text style={styles.locationText}> Localização atual</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterContainer}>
-            {['Beach Tennis', 'Voleibol', 'Tênis', 'Coberto'].map((filter, index) => (
-                <FilterButton key={index} title={filter} />
+            {['Beach Tennis', 'Voleibol', 'Tênis', 'Coberto'].map((filter) => (
+                <FilterButton key={filter} title={filter} />
             ))}
         </ScrollView>
     </View>
 );
 
-const FilterButton: React.FC<FilterButtonProps> = ({ title }) => (
-    <TouchableOpacity style={styles.filterButton}>
+const FilterButton: React.FC<{ title: string }> = ({ title }) => (
+    <TouchableOpacity
+        style={styles.filterButton}
+        onPress={() => setSelectedFilter((prev) => (prev === title ? null : title))}
+    >
         <Text style={styles.filterText}>{title}</Text>
     </TouchableOpacity>
 );
 
-const SearchBar: React.FC<SearchBarProps> = ({ search, setSearch }) => (
+const SearchBar: React.FC<{ search: string; setSearch: (text: string) => void }> = ({ search, setSearch }) => (
     <View style={styles.searchContainer}>
         <MaterialIcons name="search" size={20} color="#666" style={styles.icon} />
         <TextInput
@@ -117,3 +168,5 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
 });
+
+
