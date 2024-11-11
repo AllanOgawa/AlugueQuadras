@@ -11,7 +11,7 @@ export class EnderecoService {
   constructor(
     @InjectRepository(Endereco)
     private enderecoRepository: Repository<Endereco>,
-  ) {}
+  ) { }
 
   async create(createEnderecoDto: CreateEnderecoDto): Promise<Endereco> {
     const endereco = this.enderecoRepository.create(createEnderecoDto);
@@ -34,6 +34,10 @@ export class EnderecoService {
 
   async remove(idkey: number): Promise<void> {
     const endereco = await this.findOne(idkey);
-    await this.enderecoRepository.remove(endereco);
+    try {
+      await this.enderecoRepository.remove(endereco);
+    } catch (error) {
+      throw new Error('Erro ao remover endereço');
+    }
   }
 }

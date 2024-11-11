@@ -32,8 +32,6 @@ export class EstabelecimentoController {
   }
 
   @Get('list')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Listar todos os estabelecimentos' })
   @ApiResponse({ status: 200, description: 'Lista de estabelecimentos', type: [Estabelecimento] })
   @ApiResponse({ status: 401, description: 'Não autorizado' })
@@ -48,10 +46,7 @@ export class EstabelecimentoController {
     }
   }
 
-
   @Get('search')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Buscar estabelecimentos por múltiplos critérios com paginação' })
   @ApiResponse({ status: 200, description: 'Lista de estabelecimentos encontrados', type: [Estabelecimento] })
   @ApiResponse({ status: 401, description: 'Não autorizado' })
@@ -82,8 +77,6 @@ export class EstabelecimentoController {
   }
 
   @Get(':idkey/quadras')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Listar todas as quadras de um estabelecimento' })
   @ApiParam({ name: 'idkey', description: 'Identificador do estabelecimento', type: Number })
   @ApiResponse({ status: 200, description: 'Lista de quadras', type: [Quadra] })
@@ -101,7 +94,6 @@ export class EstabelecimentoController {
     }
   }
 
-
   @Patch('edit/:idkey')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
@@ -115,7 +107,7 @@ export class EstabelecimentoController {
       await this.estabelecimentoService.findByIdkey(idkey);
       return await this.estabelecimentoService.update(idkey, updateEstabelecimentoDto);
     } catch (error) {
-      if (error.status === HttpStatus.NOT_FOUND) {
+      if (error instanceof HttpException) {
         throw error;
       } else {
         throw new HttpException('Erro ao atualizar estabelecimento', HttpStatus.INTERNAL_SERVER_ERROR);
@@ -134,13 +126,14 @@ export class EstabelecimentoController {
   async remove(@Param('idkey') idkey: number, @Request() req): Promise<void> {
     try {
       const usuario = req.user;
-      await this.estabelecimentoService.findByIdkey(idkey);
       await this.estabelecimentoService.remove(idkey, usuario);
     } catch (error) {
       if (error.status === HttpStatus.NOT_FOUND) {
         throw error;
+      } else if (error instanceof HttpException) {
+        throw error;
       } else {
-        throw new HttpException('Erro ao remover usuário', HttpStatus.INTERNAL_SERVER_ERROR);
+        throw new HttpException('Erro ao remover estabelecimento', HttpStatus.INTERNAL_SERVER_ERROR);
       }
     }
   }
