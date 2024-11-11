@@ -116,7 +116,6 @@ export default function MenuEstabelecimento() {
                             style="h-16 w-full rounded-2xl flex-row items-center justify-between"
                             onPress={() => {
                                 if (estabelecimento?.idkey) {
-                                    console.log('ID do estabelecimento enviado:', estabelecimento.idkey);
                                     router.push({ pathname: '/(quadra)/menu', params: { idEstabelecimento: estabelecimento.idkey.toString() } });
                                 } else {
                                     console.warn('ID do estabelecimento não encontrado');
@@ -129,7 +128,7 @@ export default function MenuEstabelecimento() {
                             subtitle={'Editar o Estabelecimento Atual'}
                             style='h-16 w-full rounded-2xl flex-row items-center justify-between'
                             onPress={() => router.push({
-                                pathname: '/(estabelecimento)/cadastrar',
+                                pathname: '/(estabelecimento)/cadastrarEditar',
                                 params: { estabelecimento: JSON.stringify(estabelecimento) }
                             })}
                         />

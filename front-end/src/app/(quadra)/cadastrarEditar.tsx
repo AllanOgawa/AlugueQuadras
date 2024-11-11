@@ -61,7 +61,7 @@ export default function CadastroQuadra() {
         try {
             if (typeof quadra === 'string') {
                 const parsedQuadra = (JSON.parse(quadra));
-                console.log("parsedQuadra", parsedQuadra)
+
                 if (quadra) {
                     setIdkey(parsedQuadra.idkey || null);
                     setNome(parsedQuadra.nome || '');

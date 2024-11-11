@@ -76,7 +76,7 @@ const MenuGeralEstabelecimento = () => {
                     title="Novo Estabelecimento"
                     subtitle="Cadastrar um novo estabelecimento"
                     style="h-16 w-full rounded-2xl flex-row items-center justify-between"
-                    onPress={() => router.push('/cadastrar')}
+                    onPress={() => router.push('/cadastrarEditar')}
                 />
 
                 <Text className='mt-5 mb-2 text-2xl'>Estabelecimentos Ativos</Text>

@@ -7,14 +7,10 @@ import HorizontalLine from '@components/horizontalLine';
 import TextoExpandivel from '@components/textoExpandivel';
 import Acomodacoes from '@components/acomodacoes';
 import LocationEstabelecimento from '@components/localizacaoEstabelecimento';
-import ListaQuadrasEstabelecimento from '@components/listaQuadrasEstabelecimento';
 import HorarioEstabelecimento from '@components/horarioEstabelecimento';
 import BotaoPressable from '@components/botoes/botaoPressable';
 import AvaliacoesEstabelecimento from '@components/avaliacoesEstabelecimento';
 import { EstabelecimentoProps } from '@src/interfaces/estabelecimento';
-
-import { QuadraProps } from '@/src/interfaces/quadra';
-
 
 export default function Estabelecimento() {
     const { estabelecimentoParam } = useLocalSearchParams(); // Obtém o parâmetro 'id' da URL
@@ -24,7 +20,6 @@ export default function Estabelecimento() {
     const [estabelecimento, setEstabelecimento] = useState<EstabelecimentoProps>();
 
     useEffect(() => {
-        console.log(JSON.parse(estabelecimentoParam))
         setEstabelecimento(JSON.parse(estabelecimentoParam))
     }, [])
 
