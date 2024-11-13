@@ -4,6 +4,7 @@ import { JwtAuthGuard } from '@src/domains/auth/guard/jwt-auth.guard';
 
 import { TipoEsporteService } from './tipo-esporte.service';
 import { TipoEsporte } from './entities/tipo-esporte.entity';
+import { CreateTipoEsporteDto } from './dto/create-tipo-esporte.dto';
 import { UpdateTipoEsporteDto } from './dto/update-tipo-esporte.dto';
 import { CreateTipoEsporteArrayDto } from './dto/create-array-tipo-esporte.dto';
 
@@ -14,12 +15,29 @@ export class TipoEsporteController {
   constructor(private readonly tipoEsporteService: TipoEsporteService) { }
 
   @Post('new')
-  @ApiOperation({ summary: 'Criar novos Tipos de Esporte' })
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Criar um novo Tipo de Esporte' })
+  @ApiResponse({ status: 201, description: 'Tipo de Esporte criado com sucesso', type: TipoEsporte })
+  @ApiResponse({ status: 400, description: 'Dados inválidos' })
+  @ApiResponse({ status: 409, description: 'Descrição já existe' })
+  @ApiResponse({ status: 500, description: 'Erro ao criar Tipo de Esporte' })
+  async create(
+    @Body() createTipoEsporteDto: CreateTipoEsporteDto,
+  ): Promise<TipoEsporte> {
+    try {
+      return await this.tipoEsporteService.create(createTipoEsporteDto);
+    } catch (error) {
+      throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Post('new/array')
+  @ApiOperation({ summary: 'Criar novos Tipos de Esporte em lote' })
   @ApiResponse({ status: 201, description: 'Tipos de Esporte criados com sucesso', type: TipoEsporte, isArray: true })
   @ApiResponse({ status: 400, description: 'Dados inválidos' })
   @ApiResponse({ status: 409, description: 'Uma ou mais descrições já existem' })
   @ApiResponse({ status: 500, description: 'Erro ao criar Tipos de Esporte' })
-  async create(
+  async createArray(
     @Body() createTipoEsporteArrayDto: CreateTipoEsporteArrayDto,
   ): Promise<TipoEsporte[]> {
     try {
@@ -28,7 +46,6 @@ export class TipoEsporteController {
       throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-
 
   @Get('list')
   @ApiBearerAuth('access-token')
@@ -42,7 +59,6 @@ export class TipoEsporteController {
       throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-
 
   @Put('edit/:idkey')
   @ApiBearerAuth('access-token')

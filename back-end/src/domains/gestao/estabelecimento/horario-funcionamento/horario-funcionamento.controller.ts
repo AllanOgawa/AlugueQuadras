@@ -13,7 +13,7 @@ export class HorarioFuncionamentoController {
   @Get()
   @ApiOperation({ summary: 'Obter todos os horários de funcionamento de um estabelecimento' })
   @ApiParam({
-    name: 'idkeyEstabelecimento',
+    name: 'idkey',
     type: Number,
     description: 'ID único do estabelecimento',
     example: 1,
@@ -28,7 +28,7 @@ export class HorarioFuncionamentoController {
     description: 'Estabelecimento não encontrado',
   })
   async findAllByEstabelecimento(
-    @Param('idkeyEstabelecimento') idkeyEstabelecimento: number,
+    @Param('idkey') idkeyEstabelecimento: number,
   ): Promise<HorarioFuncionamento[]> {
     return this.horarioFuncionamentoService.findAllByEstabelecimento(idkeyEstabelecimento);
   }
