@@ -33,8 +33,13 @@ export interface EstabelecimentoProps {
     alvara: string;              // "alvara"
     dataCadastro: string;        // "dataCadastro" (ISO string format)
     dataAtualizacao: string;     // "dataAtualizacao" (ISO string format)
+    latitude: string;
+    longitude: string;
+    sobre: string;
     endereco: EnderecoProps;     // Objeto de endereço, conforme detalhado
     imagens: ImagemProps[];      // Lista de imagens
     quadras: QuadraProps[];
+    acomodacoes: AcomodacoesProps[];
+    horariosFuncionamento: HorarioProps[];
 }
 

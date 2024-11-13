@@ -1,6 +1,6 @@
 import { Text, View, ScrollView, SafeAreaView, Pressable, StatusBar } from "react-native";
 import Banner from "@components/banner";
-import LastCourt from "@components/lastCourt";
+import MaisVisitados from "@/src/components/estabelecimentosMaisVisitados";
 import { Feather } from '@expo/vector-icons';
 
 import Constants from 'expo-constants'
@@ -71,7 +71,7 @@ export default function Inicio() {
 					</View>
 					<FilterSport />
 					<Banner />
-					<LastCourt />
+					<MaisVisitados />
 				</View>
 			</ScrollView>
 			{loading && <Loading />}

@@ -1,6 +1,8 @@
+import { EnderecoProps } from "./estabelecimento";
+
 export interface LocationCourtProps {
-    latitude: number;
-    longitude: number;
+    latitude: string;
+    longitude: string;
     markerTitle: string;
-    endereco: string;
+    endereco: EnderecoProps;
 }

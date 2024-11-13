@@ -17,8 +17,8 @@ export default function LocationEstabelecimento({ latitude, longitude, markerTit
     useEffect(() => {
         (async () => {
             setLocation({
-                latitude: latitude,
-                longitude: longitude,
+                latitude: Number(latitude),
+                longitude: Number(longitude),
                 latitudeDelta: 0.009,
                 longitudeDelta: 0.009,
             });
@@ -56,7 +56,7 @@ export default function LocationEstabelecimento({ latitude, longitude, markerTit
             </View>
 
             <Text className='mt-3 color-gray-600'>
-                {endereco}
+                {endereco.logradouro}, {endereco.numero} - {endereco.bairro}, {endereco.cidade} - {endereco.estado.toUpperCase()}
             </Text>
         </View>
     );
