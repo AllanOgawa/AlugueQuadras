@@ -12,6 +12,7 @@ import { Quadra } from "./quadra/entities/quadra.entity";
 import { SearchEstabelecimentoDto } from "./dto/search.dto";
 import { AcomodacaoService } from './acomodacao/acomodacao.service';
 import { HorarioFuncionamentoService } from "./horario-funcionamento/horario-funcionamento.service";
+import { QuadraService } from "./quadra/quadra.service";
 
 @Injectable()
 export class EstabelecimentoService {
@@ -22,6 +23,7 @@ export class EstabelecimentoService {
     private enderecoService: EnderecoService,
     private acomodacaoService: AcomodacaoService,
     private horarioFuncionamentoService: HorarioFuncionamentoService,
+    private quadraService: QuadraService,
   ) { }
 
   async create(
@@ -101,6 +103,7 @@ export class EstabelecimentoService {
 
     const [data, total] = await this.estabelecimentoRepository.findAndCount({
       where: whereConditions,
+      relations: ['quadras'],
       skip: (page - 1) * limit,
       take: limit,
     });
@@ -178,17 +181,18 @@ export class EstabelecimentoService {
   async findByIdkeyAndUser(idkey: number, usuario: Usuario): Promise<Estabelecimento> {
     try {
       return await this.estabelecimentoRepository.findOne({
-        where: { idkey, usuario: { idkey: usuario.idkey } }
+        where: { idkey, usuario: { idkey: usuario.idkey } },
+        relations: ['quadras']
       });
     } catch (error) {
       throw new HttpException('Erro ao buscar estabelecimento', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  
+
   async updateFields(idkey: number, updateEstabelecimentoDto: UpdateEstabelecimentoDto): Promise<void> {
     const { nome, telefone, email, alvara, sobre } = updateEstabelecimentoDto;
-    
+
     const updateData: Partial<Estabelecimento> = {};
     if (nome) updateData.nome = nome;
     if (telefone) updateData.telefone = telefone;
@@ -300,7 +304,9 @@ export class EstabelecimentoService {
       await this.horarioFuncionamentoService.removeBatch(estabelecimento.horariosFuncionamento.map(horario => horario.idkey));
     }
 
-    //remover as quadras
+    if (estabelecimento.quadras && estabelecimento.quadras.length > 0) {
+      await this.quadraService.removeBatch(estabelecimento.quadras.map(quadra => quadra.idkey));
+    }
 
     try {
       await this.estabelecimentoRepository.remove(estabelecimento);
