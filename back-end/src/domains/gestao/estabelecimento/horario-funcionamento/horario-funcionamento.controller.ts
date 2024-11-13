@@ -4,7 +4,7 @@ import { HorarioFuncionamentoService } from './horario-funcionamento.service';
 import { HorarioFuncionamento } from './entities/horario-funcionamento.entity';
 
 @ApiTags('Horário de Funcionamento')
-@Controller('estabelecimento/:idkeyEstabelecimento/horario-funcionamento')
+@Controller('estabelecimento/:idkey/horario-funcionamento')
 export class HorarioFuncionamentoController {
   constructor(
     private readonly horarioFuncionamentoService: HorarioFuncionamentoService,
