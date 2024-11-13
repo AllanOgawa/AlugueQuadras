@@ -1,11 +1,14 @@
 import { Text, View, StyleSheet, ActivityIndicator } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { useState, useEffect } from 'react';
-import { LocationCourtProps } from '@src/interfaces/locationCourt';
+import { EnderecoProps } from '@src/interfaces/endereco';
 
+export interface LocationCourtProps {
+    markerTitle: string;
+    endereco: EnderecoProps;
+}
 
-
-export default function LocationEstabelecimento({ latitude, longitude, markerTitle, endereco }: LocationCourtProps) {
+export default function LocationEstabelecimento({ markerTitle, endereco }: LocationCourtProps) {
     const [location, setLocation] = useState({
         latitude: 0,
         longitude: 0,
@@ -17,8 +20,8 @@ export default function LocationEstabelecimento({ latitude, longitude, markerTit
     useEffect(() => {
         (async () => {
             setLocation({
-                latitude: Number(latitude),
-                longitude: Number(longitude),
+                latitude: Number(endereco.latitude),
+                longitude: Number(endereco.longitude),
                 latitudeDelta: 0.009,
                 longitudeDelta: 0.009,
             });

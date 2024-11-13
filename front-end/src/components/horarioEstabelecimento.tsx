@@ -15,11 +15,11 @@ export default function HorarioEstabelecimento({ horarios }: { horarios: Horario
 
     const diasSemana = [
         { dia: "Domingo", diaSemana: 0 },
-        { dia: "Segunda", diaSemana: 1 },
-        { dia: "Terça", diaSemana: 2 },
-        { dia: "Quarta", diaSemana: 3 },
-        { dia: "Quinta", diaSemana: 4 },
-        { dia: "Sexta", diaSemana: 5 },
+        { dia: "Segunda-Feira", diaSemana: 1 },
+        { dia: "Terça-Feira", diaSemana: 2 },
+        { dia: "Quarta-Feira", diaSemana: 3 },
+        { dia: "Quinta-Feira", diaSemana: 4 },
+        { dia: "Sexta-Feira", diaSemana: 5 },
         { dia: "Sábado", diaSemana: 6 }
     ];
 
@@ -55,13 +55,19 @@ export default function HorarioEstabelecimento({ horarios }: { horarios: Horario
         <View>
             {horariosFormat.map((horario) => (
                 <View key={horario.diaSemana} className='flex-1 flex-row w-full'>
-                    <Text className='text-base leading-5 font-bold w-[25%]' numberOfLines={1} >
+                    <Text className='text-base w-[40%] ' numberOfLines={1} >
                         {horario.dia}
                     </Text>
                     <View>
-                        <Text className='text-base leading-5' numberOfLines={1} >
-                            {horario.horario}
-                        </Text>
+                        {horario.fechado ?
+                            <Text className='text-base font-semibold' numberOfLines={1} >
+                                {horario.horario}
+                            </Text>
+                            :
+                            <Text className='text-base' numberOfLines={1} >
+                                {horario.horario}
+                            </Text>
+                        }
                     </View>
                 </View>
             ))

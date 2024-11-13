@@ -16,7 +16,6 @@ import Loading from '@/src/components/loading';
 import ListaQuadras from '@/src/components/listaQuadras';
 
 const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
-const bucketUrl = Constants.expoConfig?.extra?.bucketUrl || '';
 
 export default function Estabelecimento() {
     const { idEstabelecimento } = useLocalSearchParams(); // Obtém o parâmetro 'id' da URL
@@ -37,7 +36,7 @@ export default function Estabelecimento() {
                 navigation.setOptions({
                     headerTitle: () => (
                         <Animated.Text numberOfLines={1} style={[styles.headerText, { opacity: fadeAnim }]}>
-                            {estabelecimento && estabelecimento.nome ? estabelecimento.nome : ""}
+                            {estabelecimento?.nome || ""}
                         </Animated.Text>
                     ),
                 });
@@ -59,7 +58,7 @@ export default function Estabelecimento() {
         return () => {
             scrollY.removeListener(listener);
         };
-    }, [scrollY, fadeAnim, navigation]);
+    }, [scrollY, fadeAnim, navigation, estabelecimento]);
 
     async function getEstabelecimento() {
         setLoading(true);
@@ -69,10 +68,11 @@ export default function Estabelecimento() {
                 headers: { 'Content-Type': 'application/json' },
             });
             const responseJson = await response.json();
-            const data = responseJson.data || [];
+            const data = responseJson.data && responseJson.data.length > 0 ? responseJson.data[0] : null;
 
             if (!response.ok) throw new Error('Erro ao buscar estabelecimento');
-            console.log("data", data)
+
+            console.log("data", data);
             setEstabelecimento(data);
         } catch (error) {
             console.error('Erro ao buscar estabelecimentos:', error);
@@ -81,109 +81,121 @@ export default function Estabelecimento() {
         }
     }
 
+    if (loading) {
+        return <Loading />; // Mostra o componente de carregamento enquanto busca os dados
+    }
 
-    if (estabelecimento)
+    if (!estabelecimento) {
         return (
-            <View className='flex-1'>
-                <Animated.ScrollView
-                    style={{ flex: 1 }}
-                    className="bg-white"
-                    showsVerticalScrollIndicator={false}
-                    scrollEventThrottle={16}
-                    onScroll={Animated.event(
-                        [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-                        { useNativeDriver: false }
-                    )}
-                >
-                    {/* <CarouselQuadra imagemQuadra={estabelecimento.image} /> */}
+            <View className='flex-1 justify-center items-center'>
+                <Text>Nenhum dado disponível</Text>
+            </View>
+        );
+    } else console.log(estabelecimento.horariosFuncionamento)
 
-                    <View className='px-4 mb-5'>
-                        <View className="flex-row py-4">
-                            <View className="flex-1 justify-center">
-                                <Text numberOfLines={3} className='font-semibold text-2xl color-black'>
-                                    {estabelecimento.nome}
-                                </Text>
-                            </View>
+    return (
+        <View className='flex-1'>
+            <Animated.ScrollView
+                style={{ flex: 1 }}
+                className="bg-white"
+                showsVerticalScrollIndicator={false}
+                scrollEventThrottle={16}
+                onScroll={Animated.event(
+                    [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+                    { useNativeDriver: false }
+                )}
+            >
+                <CarouselQuadra imagemQuadra={estabelecimento.imagens} />
 
-                            <View className='flex justify-center'>
-                                <View className="ml-4 flex justify-center items-center rounded-2xl  bg-secondary h-14 w-14">
-                                    <Text className='font-semibold text-2xl color-white'>
-                                        {/* {estabelecimento.avaliacao} */}
-                                        {4.5}
-                                    </Text>
-                                </View>
-                            </View>
+                <View className='px-4 mb-5'>
+                    <View className="flex-row py-4">
+                        <View className="flex-1 justify-center">
+                            <Text numberOfLines={3} className='font-semibold text-2xl color-black'>
+                                {estabelecimento.nome}
+                            </Text>
                         </View>
 
-                        {estabelecimento.acomodacoes &&
-                            <Acomodacoes acomodacoes={estabelecimento.acomodacoes} />}
-
-
-                        <HorizontalLine margin={28} />
-                        <ScrollView showsVerticalScrollIndicator={false}>
-                            {estabelecimento.quadras && estabelecimento.quadras.length > 0 ? (
-                                <ListaQuadras
-                                    quadras={estabelecimento.quadras}
-                                    showTitle={false}
-                                    onClick={(quadra) => { }}
-                                />
-                            ) : (
-                                <Text className="text-center color-gray-600">Nenhuma quadra cadastrada.</Text>
-                            )}
-                        </ScrollView>
-
-                        {estabelecimento.endereco &&
-                            <View>
-                                <Text className='font-bold text-xl mb-7 mt-2'>Localização do Estabelecimento</Text>
-                                <LocationEstabelecimento
-                                    latitude={estabelecimento.latitude}
-                                    longitude={estabelecimento.longitude}
-                                    markerTitle={estabelecimento.nome}
-                                    endereco={estabelecimento.endereco}
-                                />
+                        <View className='flex justify-center'>
+                            <View className="ml-4 flex justify-center items-center rounded-2xl  bg-secondary h-14 w-14">
+                                <Text className='font-semibold text-2xl color-white'>
+                                    {/* {estabelecimento.avaliacao} */}
+                                    {4.5}
+                                </Text>
                             </View>
-                        }
+                        </View>
+                    </View>
 
-                        <HorizontalLine margin={28} />
-                        <Text className='font-bold text-xl mb-7'>Avaliações</Text>
-                        {/* <AvaliacoesEstabelecimento
+                    {estabelecimento.acomodacoes &&
+                        <Acomodacoes acomodacoes={estabelecimento.acomodacoes} />}
+
+
+                    <HorizontalLine margin={28} />
+                    <ScrollView showsVerticalScrollIndicator={false}>
+                        {estabelecimento.quadras && estabelecimento.quadras.length > 0 ? (
+                            <ListaQuadras
+                                quadras={estabelecimento.quadras}
+                                showTitle={true}
+                                onClick={(quadra) => { }}
+                            />
+                        ) : (
+                            <Text className="text-center color-gray-600">Nenhuma quadra cadastrada.</Text>
+                        )}
+                    </ScrollView>
+                    <View className='mt-4' />
+                    {estabelecimento.endereco &&
+                        <View>
+                            <Text className='font-bold text-xl mb-5 mt-2'>Localização do Estabelecimento</Text>
+                            <LocationEstabelecimento
+                                markerTitle={estabelecimento.nome}
+                                endereco={estabelecimento.endereco}
+                            />
+                        </View>
+                    }
+
+                    <HorizontalLine margin={28} />
+                    {/* <Text className='font-bold text-xl mb-7'>Avaliações</Text> */}
+                    {/* <AvaliacoesEstabelecimento
                         idEstabelecimento={estabelecimento.id}
                         avaliacoes={estabelecimento.avaliacoes}
                         avaliacaoMedia={estabelecimento.avaliacao}
                         telaCheia={false}
                     /> */}
 
-                        <Text className='font-bold text-xl mb-7'>Horário de Funcionamento</Text>
-                        <HorarioEstabelecimento horarios={estabelecimento.horariosFuncionamento} />
+                    <Text className='font-bold text-xl mb-5'>Horário de Funcionamento</Text>
+                    <HorarioEstabelecimento horarios={estabelecimento.horariosFuncionamento} />
 
-                        {estabelecimento.sobre &&
-                            <View>
-                                <HorizontalLine margin={28} />
-                                <Text className='font-bold text-xl mb-7'>Sobre nós</Text>
-                                <TextoExpandivel className='text-lg' text={estabelecimento.sobre} numberOfLines={5} numberOfChar={200} />
-                            </View>
-                        }
+                    {estabelecimento.sobre &&
+                        <View>
+                            <HorizontalLine margin={28} />
+                            <Text className='font-bold text-xl mb-5'>Sobre nós</Text>
+                            <TextoExpandivel className='text-lg' text={estabelecimento.sobre} numberOfLines={5} numberOfChar={200} />
+                        </View>
+                    }
+
+                    <View>
+                        <HorizontalLine margin={28} />
+                        <Text className='font-bold text-xl mb-5'>Nosso Contato</Text>
+
                     </View>
-                </Animated.ScrollView>
-
-                <View style={globalStyles.buttonContainer}>
-                    <BotaoPressable
-                        title={'Alugar Quadra'}
-                        className='bg-primary p-4 rounded-2xl active:bg-secondary mx-4'
-                        classNameTitle="text-white text-center text-xl"
-                        onPress={() => {
-                            router.push({
-                                pathname: '/(reserva)/selecaoQuadra',
-                                params: { estabelecimento: JSON.stringify({}) },
-                            })
-                        }}
-                    />
                 </View>
+            </Animated.ScrollView>
 
-                {loading && <Loading />}
+            <View style={globalStyles.buttonContainer}>
+                <BotaoPressable
+                    title={'Alugar Quadra'}
+                    className='bg-primary p-4 rounded-2xl active:bg-secondary mx-4'
+                    classNameTitle="text-white text-center text-xl"
+                    onPress={() => {
+                        router.push({
+                            pathname: '/(reserva)/selecaoQuadra',
+                            params: { estabelecimento: JSON.stringify({}) },
+                        })
+                    }}
+                />
             </View>
-        );
-    else return (<View><Text>Teste</Text></View>)
+        </View>
+    );
+
 }
 const styles = StyleSheet.create({
     headerText: {
