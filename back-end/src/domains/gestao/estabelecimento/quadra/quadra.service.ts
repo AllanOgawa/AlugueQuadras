@@ -36,6 +36,9 @@ export class QuadraService {
     }
 
     const estabelecimento = await this.estabelecimentoService.findByIdkey(createQuadraDto.idkeyEstabelecimento);
+    if (!estabelecimento) {
+      throw new NotFoundException(`Estabelecimento com idkey ${createQuadraDto.idkeyEstabelecimento} não encontrado.`);
+    }
 
     try {
       quadra = this.quadraRepository.create({
@@ -45,7 +48,8 @@ export class QuadraService {
       });
       await this.quadraRepository.save(quadra);
     } catch (error) {
-      throw new HttpException('Erro ao criar Quadra', HttpStatus.INTERNAL_SERVER_ERROR);
+      console.log(error)
+      throw new HttpException('Erro ao criar Quadra {' + error + '}', HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     if (createQuadraDto.imagensToAdd && createQuadraDto.imagensToAdd.length > 0) {
@@ -162,6 +166,7 @@ export class QuadraService {
       valor,
       largura,
       comprimento,
+      coberta,
       ...otherFields } = updateQuadraDto;
 
     const updateData: Partial<Quadra> = {};
@@ -170,6 +175,7 @@ export class QuadraService {
     if (valor) updateData.valor = valor;
     if (largura) updateData.largura = largura;
     if (comprimento) updateData.comprimento = comprimento;
+    if (coberta !== undefined) updateData.coberta = coberta;
 
     try {
       await this.quadraRepository.update(idkey, updateData);
@@ -188,11 +194,15 @@ export class QuadraService {
 
     // Gerenciar os tipos de esporte
     const { tipoEsporteToAdd, tipoEsporteToRemove } = updateQuadraDto;
-    await this.manageTipoEsporte(quadra, tipoEsporteToAdd, tipoEsporteToRemove);
+    if (tipoEsporteToAdd || tipoEsporteToRemove) {
+      await this.manageTipoEsporte(quadra, tipoEsporteToAdd, tipoEsporteToRemove);
+    }
 
     // Gerenciar as imagens
     const { imagensToAdd, imagensToRemove } = updateQuadraDto;
-    await this.manageImages(quadra, imagensToAdd, imagensToRemove);
+    if (imagensToAdd || imagensToRemove) {
+      await this.manageImages(quadra, imagensToAdd, imagensToRemove);
+    }
 
     // Atualizar os campos da quadra
     await this.updateFields(idkey, updateQuadraDto);

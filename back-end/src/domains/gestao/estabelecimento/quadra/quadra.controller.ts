@@ -22,10 +22,14 @@ export class QuadraController {
     try {
       return await this.quadraService.create(createQuadraDto);
     } catch (error) {
-      throw new HttpException(
-        'Erro ao criar quadra',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        throw new HttpException(
+          'Erro ao criar quadra',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     }
   }
 
@@ -43,7 +47,7 @@ export class QuadraController {
       }
       return quadra;
     } catch (error) {
-      if (error.status === HttpStatus.NOT_FOUND) {
+      if (error instanceof HttpException) {
         throw error;
       } else {
         console.error('Erro ao buscar quadra:', error);
@@ -65,10 +69,9 @@ export class QuadraController {
   @ApiResponse({ status: 500, description: 'Erro ao atualizar quadra' })
   async update(@Param('idkey') idkey: number, @Body(ValidationPipe) updateQuadraDto: UpdateQuadraDto): Promise<Quadra> {
     try {
-      await this.findByIdkey(idkey);
       return await this.quadraService.update(idkey, updateQuadraDto);
     } catch (error) {
-      if (error.status === HttpStatus.NOT_FOUND) {
+      if (error instanceof HttpException) {
         throw error;
       } else {
         throw new HttpException(
@@ -91,7 +94,7 @@ export class QuadraController {
       await this.findByIdkey(idkey);
       await this.quadraService.remove(idkey);
     } catch (error) {
-      if (error.status === HttpStatus.NOT_FOUND) {
+      if (error instanceof HttpException) {
         throw error;
       } else {
         throw new HttpException(

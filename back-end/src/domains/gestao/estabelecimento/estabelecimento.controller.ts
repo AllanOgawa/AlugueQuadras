@@ -26,8 +26,11 @@ export class EstabelecimentoController {
       const usuario = req.user;
       return this.estabelecimentoService.create(createEstabelecimentoDto, usuario);
     } catch (error) {
-      console.log(error);
-      throw new HttpException('Erro ao buscar estabelecimentos', HttpStatus.INTERNAL_SERVER_ERROR);
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        throw new HttpException('Erro ao buscar estabelecimentos', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
     }
   }
 
@@ -72,7 +75,11 @@ export class EstabelecimentoController {
       const usuario = req.user;
       return await this.estabelecimentoService.findAllByUser(usuario);
     } catch (error) {
-      throw new HttpException('Erro ao buscar todos estabelecimentos', HttpStatus.INTERNAL_SERVER_ERROR);
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        throw new HttpException('Erro ao buscar todos estabelecimentos', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
     }
   }
 
@@ -85,7 +92,7 @@ export class EstabelecimentoController {
     try {
       return await this.estabelecimentoService.findQuadrasByIdkeyEstabelecimento(idkey);
     } catch (error) {
-      if (error.status === HttpStatus.NOT_FOUND) {
+      if (error instanceof HttpException) {
         throw error;
       } else {
         console.error('Erro ao listar quadras:', error);
@@ -128,9 +135,7 @@ export class EstabelecimentoController {
       const usuario = req.user;
       await this.estabelecimentoService.remove(idkey, usuario);
     } catch (error) {
-      if (error.status === HttpStatus.NOT_FOUND) {
-        throw error;
-      } else if (error instanceof HttpException) {
+      if (error instanceof HttpException) {
         throw error;
       } else {
         throw new HttpException('Erro ao remover estabelecimento', HttpStatus.INTERNAL_SERVER_ERROR);

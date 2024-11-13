@@ -52,6 +52,7 @@ export class UpdateQuadraDto {
     example: true,
     type: Boolean,
   })
+  @IsOptional()
   @IsBoolean({ message: 'O campo coberta deve ser um booleano.' })
   coberta?: boolean;
 

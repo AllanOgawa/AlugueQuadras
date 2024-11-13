@@ -53,7 +53,7 @@ export class CreateQuadraDto {
     type: Boolean,
   })
   @IsBoolean({ message: 'O campo coberta deve ser um booleano.' })
-  coberta?: boolean;
+  coberta: boolean;
 
   @ApiProperty({
     description: 'ID do estabelecimento ao qual a quadra pertence',
