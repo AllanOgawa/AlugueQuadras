@@ -10,7 +10,7 @@ import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { UsuarioContext } from '@context/usuarioContext';
-import UploadImage from '@/src/components/uploadImagem';
+import UploadImage from '@/src/components/UploadImagem';
 import BotaoPressable from '@/src/components/botoes/botaoPressable';
 import HorizontalLine from '@/src/components/horizontalLine';
 

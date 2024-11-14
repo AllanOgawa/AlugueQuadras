@@ -3,7 +3,7 @@ import { View, Text, SafeAreaView, ScrollView, Alert, ActivityIndicator, Touchab
 import { useLocalSearchParams, router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { QuadraProps } from '@/src/interfaces/quadra';
-import UploadImage from '@/src/components/uploadImagem';
+import UploadImage from '@/src/components/UploadImagem';
 import SetaVoltar from '@/src/components/setaVoltar';
 import Toast from 'react-native-toast-message';
 import BotaoTouchableOpacity from '@components/botoes/botaoTouchableOpacity';
