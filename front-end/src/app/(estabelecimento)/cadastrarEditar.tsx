@@ -11,7 +11,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import MultiSelect from '@/src/components/multiSelect';
 import { AcomodacoesProps } from '@/src/interfaces/acomodacoes';
-import UploadImage from '@components/UploadImagem';
+import UploadImage from '@/src/components/uploadImagem';
 import axios from 'axios';
 import HorarioFuncionamento, { HorarioFuncionamentoRef } from '@/src/components/horarioFuncionamento';
 import { HorarioProps } from '@/src/interfaces/horario';
