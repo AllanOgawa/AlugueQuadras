@@ -1,82 +1,109 @@
-import ListaQuadrasEstabelecimento from '@/src/components/listaQuadrasEstabelecimento';
-import { EstabelecimentoProps } from '@/src/interfaces/estabelecimento';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, Text, SafeAreaView, ScrollView, ActivityIndicator, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useLocalSearchParams, router } from 'expo-router';
+import SetaVoltar from '@components/setaVoltar';
 import { CardConfig } from '@components/cardConfig';
-import CourtList, { CourtProps } from '@components/quadras';
-import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { View, Text, SafeAreaView, ScrollView, StatusBar } from 'react-native';
-import Toast from 'react-native-toast-message';
-
-import * as data from '@/db.json' // Importa o JSON com os dados
-import { QuadraProps } from '@/src/interfaces/quadra';
 import Constants from 'expo-constants';
-import SetaVoltar from '@/src/components/setaVoltar';
+import Toast from 'react-native-toast-message';
+import { QuadraProps } from '@/src/interfaces/quadra';
+import ListaQuadras from '@components/listaQuadras';
 
-const statusBarHeight = Constants.statusBarHeight;
+const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
 
-export default function HomeQuadra() {
-    const [estabelecimento, setEstabelecimento] = useState<EstabelecimentoProps | null>(null);
-    const { message } = useLocalSearchParams();
+export default function MenuQuadra() {
+    const { idEstabelecimento } = useLocalSearchParams();
+    const [quadras, setQuadras] = useState<QuadraProps[]>([]);
+    const [loadingQuadras, setLoadingQuadras] = useState(true);
 
-    // Função para lidar com o clique em uma quadra
-    function handleCourtPress(court: CourtProps): void {
-        console.log(`Você clicou na quadra ${court.local} localizada em ${court.endereco}`);
+    const fetchQuadras = async (id: number) => {
+        setLoadingQuadras(true); // Adicione isto para mostrar o indicador de carregamento
+        try {
+            const access_token = await AsyncStorage.getItem('access_token');
+            if (!access_token) {
+                throw new Error('Token de acesso não encontrado. Faça login novamente.');
+            }
+
+            const response = await fetch(`${apiUrl}/estabelecimento/${id}/quadras`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${access_token}`,
+                },
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || `Erro ao buscar as quadras: ${response.status}`);
+            }
+
+            const data = await response.json();
+            setQuadras(data);
+        } catch (error: any) {
+            // console.error('Erro detalhado:', error);
+            // Toast.show({
+            //     type: 'error',
+            //     text1: 'Erro ao carregar as quadras',
+            //     text2: error.message || 'Ocorreu um erro inesperado.',
+            // });
+        } finally {
+            setLoadingQuadras(false);
+        }
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+            if (idEstabelecimento) {
+                fetchQuadras(Number(idEstabelecimento));
+            }
+        }, [idEstabelecimento])
+    );
+
+    if (loadingQuadras) {
+        return (
+            <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color="#FF6600" />
+            </SafeAreaView>
+        );
     }
 
-    // Exibir toast com a mensagem, se disponível
-    useEffect(() => {
-        if (message) {
-            const toastMessage = Array.isArray(message) ? message.join(', ') : message;
-            Toast.show({
-                type: 'success',
-                text1: toastMessage,
-            });
-        }
-    }, [message]);
-
-    // Carrega os dados do JSON ao montar o componente
-    useEffect(() => {
-        if (data.estabelecimento && data.estabelecimento.length > 0) {
-            // Defina o primeiro estabelecimento (ou outro critério de escolha)
-            setEstabelecimento(data.estabelecimento[1]);
-        }
-    }, []);
-
     return (
-        <SafeAreaView className="flex-1 bg-white" style={{ marginTop: statusBarHeight }}>
+        <SafeAreaView className='flex-1 bg-white' style={{ marginTop: Constants.statusBarHeight }}>
             <SetaVoltar />
-            <StatusBar barStyle="dark-content" backgroundColor="white" />
-            <View className="bg-white w-full px-4 flex-1 mt-1">
-                {/* Cartões de Configuração */}
+            <View className='flex-1 px-4'>
+                <Text className='font-bold text-3xl mt-6 mb-5'>Quadras</Text>
                 <CardConfig
-                    icon={'add-circle-outline'}
-                    title={'Nova quadra'}
-                    subtitle={'Cadastrar uma nova quadra'}
-                    style='h-16 w-full rounded-2xl flex-row items-center justify-between'
-                    onPress={() => router.push('/cadastrar')}
+                    icon="add-circle-outline"
+                    title="Nova Quadra"
+                    subtitle="Cadastrar uma nova quadra"
+                    style="h-16 w-full rounded-2xl flex-row items-center justify-between"
+                    onPress={() => router.push({
+                        pathname: '/(quadra)/cadastrarEditar',
+                        params: {
+                            idEstabelecimento: Number(idEstabelecimento), // Passar o ID como número
+                        },
+                    })}
                 />
-                <CardConfig
-                    icon={'create'}
-                    title={'Editar quadra'}
-                    subtitle={'Editar uma quadra'}
-                    style='h-16 w-full rounded-2xl flex-row items-center justify-between'
-                    onPress={() => router.push('/editar')}
-                />
-                <CardConfig
-                    icon={'highlight-remove'}
-                    title={'Remover quadra'}
-                    subtitle={'Remover uma quadra'}
-                    style='h-16 w-full rounded-2xl flex-row items-center justify-between'
-                    onPress={() => router.push('/remover')}
-                />
+                <Text className='mt-5 mb-7 text-2xl'>Quadras Cadastradas ({quadras.length})</Text>
 
-                {/* Título para quadras ativas */}
-                <Text className='font-normal text-3xl py-5'>Ativas</Text>
-
-                <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-                    {/* Renderização condicional da lista de quadras */}
-                    {estabelecimento?.quadras && (
-                        <ListaQuadrasEstabelecimento quadras={estabelecimento.quadras} onClick={() => { }} />
+                <ScrollView showsVerticalScrollIndicator={false}>
+                    {quadras.length > 0 ? (
+                        <ListaQuadras
+                            quadras={quadras}
+                            showTitle={false}
+                            onClick={(quadra) =>
+                                router.push({
+                                    pathname: '/(quadra)/cadastrarEditar',
+                                    params: {
+                                        idEstabelecimento: Number(idEstabelecimento), // Passar o ID como número
+                                        quadra: JSON.stringify(quadra) // Passar a quadra como JSON
+                                    },
+                                })
+                            }
+                        />
+                    ) : (
+                        <Text style={{ textAlign: 'center', color: 'gray' }}>Nenhuma quadra cadastrada.</Text>
                     )}
                 </ScrollView>
             </View>

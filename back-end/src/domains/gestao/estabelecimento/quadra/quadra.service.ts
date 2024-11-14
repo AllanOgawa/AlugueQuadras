@@ -1,11 +1,10 @@
-import { In, Repository } from 'typeorm';
+import { DataSource, In, QueryRunner, Repository } from 'typeorm';
 import { BadRequestException, forwardRef, HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { EstabelecimentoService } from '../estabelecimento.service';
 
 import { Quadra } from './entities/quadra.entity';
-import { TipoEsporte } from './tipo-esporte/entities/tipo-esporte.entity';
 
 import { UpdateQuadraDto } from './dto/update-quadra.dto';
 import { CreateQuadraDto } from './dto/create-quadra.dto';
@@ -17,13 +16,11 @@ export class QuadraService {
   constructor(
     @InjectRepository(Quadra)
     private readonly quadraRepository: Repository<Quadra>,
-
-    private readonly tipoEsporteService: TipoEsporteService,
-
     @Inject(forwardRef(() => EstabelecimentoService))
     private readonly estabelecimentoService: EstabelecimentoService,
-
-    private readonly imagemService: ImagemService
+    private readonly tipoEsporteService: TipoEsporteService,
+    private readonly imagemService: ImagemService,
+    private readonly dataSource: DataSource,
   ) { }
 
   async create(createQuadraDto: CreateQuadraDto): Promise<Quadra> {
@@ -36,6 +33,9 @@ export class QuadraService {
     }
 
     const estabelecimento = await this.estabelecimentoService.findByIdkey(createQuadraDto.idkeyEstabelecimento);
+    if (!estabelecimento) {
+      throw new NotFoundException(`Estabelecimento com idkey ${createQuadraDto.idkeyEstabelecimento} não encontrado.`);
+    }
 
     try {
       quadra = this.quadraRepository.create({
@@ -45,7 +45,8 @@ export class QuadraService {
       });
       await this.quadraRepository.save(quadra);
     } catch (error) {
-      throw new HttpException('Erro ao criar Quadra', HttpStatus.INTERNAL_SERVER_ERROR);
+      console.log(error)
+      throw new HttpException('Erro ao criar Quadra {' + error + '}', HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     if (createQuadraDto.imagensToAdd && createQuadraDto.imagensToAdd.length > 0) {
@@ -162,6 +163,7 @@ export class QuadraService {
       valor,
       largura,
       comprimento,
+      coberta,
       ...otherFields } = updateQuadraDto;
 
     const updateData: Partial<Quadra> = {};
@@ -170,6 +172,7 @@ export class QuadraService {
     if (valor) updateData.valor = valor;
     if (largura) updateData.largura = largura;
     if (comprimento) updateData.comprimento = comprimento;
+    if (coberta !== undefined) updateData.coberta = coberta;
 
     try {
       await this.quadraRepository.update(idkey, updateData);
@@ -183,25 +186,71 @@ export class QuadraService {
   }
 
   async update(idkey: number, updateQuadraDto: UpdateQuadraDto): Promise<Quadra> {
-    // Buscar a quadra atual com as relações
     const quadra = await this.findByIdkey(idkey);
 
     // Gerenciar os tipos de esporte
     const { tipoEsporteToAdd, tipoEsporteToRemove } = updateQuadraDto;
-    await this.manageTipoEsporte(quadra, tipoEsporteToAdd, tipoEsporteToRemove);
+    if (tipoEsporteToAdd || tipoEsporteToRemove) {
+      await this.manageTipoEsporte(quadra, tipoEsporteToAdd, tipoEsporteToRemove);
+    }
 
     // Gerenciar as imagens
     const { imagensToAdd, imagensToRemove } = updateQuadraDto;
-    await this.manageImages(quadra, imagensToAdd, imagensToRemove);
+    if (imagensToAdd || imagensToRemove) {
+      await this.manageImages(quadra, imagensToAdd, imagensToRemove);
+    }
 
-    // Atualizar os campos da quadra
     await this.updateFields(idkey, updateQuadraDto);
 
     return this.findByIdkey(idkey);
   }
 
-  async remove(idkey: number): Promise<void> {
+  async remove(idkey: number, queryRunner?: QueryRunner): Promise<void> {
     const quadra = await this.findByIdkey(idkey);
-    await this.quadraRepository.remove(quadra);
+
+    if (quadra.imagens && quadra.imagens.length > 0) {
+      const caminhosImagens = quadra.imagens.map(imagem => imagem.path);
+      await this.imagemService.removeImagens(caminhosImagens);
+    }
+
+    try {
+      if (queryRunner) {
+        // Usa o queryRunner fornecido para remover
+        await queryRunner.manager.remove(Quadra, quadra);
+      } else {
+        // Usa o repositório diretamente se não houver queryRunner
+        await this.quadraRepository.remove(quadra);
+      }
+    } catch (error) {
+      console.error(`Erro ao remover quadra com idkey ${idkey}:`, error);
+      throw new HttpException(
+        'Erro ao remover quadra.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async removeBatch(idkeys: number[]): Promise<void> {
+    if (!Array.isArray(idkeys) || idkeys.length === 0) {
+      throw new BadRequestException('O array de idkeys não pode estar vazio.');
+    }
+
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      for (const idkey of idkeys) {
+        await this.remove(idkey, queryRunner);
+      }
+
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      console.error('Erro ao remover quadras em lote:', error);
+      throw new BadRequestException('Erro ao remover quadras em lote.');
+    } finally {
+      await queryRunner.release();
+    }
   }
 }

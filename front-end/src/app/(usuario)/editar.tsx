@@ -10,7 +10,7 @@ import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { UsuarioContext } from '@context/usuarioContext';
-import UploadImage from '@components/UploadImagem';
+import UploadImage from '@/src/components/uploadImagem';
 import BotaoPressable from '@/src/components/botoes/botaoPressable';
 import HorizontalLine from '@/src/components/horizontalLine';
 
@@ -20,6 +20,7 @@ export default function UsuarioEditar() {
     const [loading, setLoading] = useState(false);
     const [nome, setNome] = useState('');
     const [username, setUsername] = useState('');
+    const [usernameAnterior, setUsernameAnterior] = useState('');
     const [email, setEmail] = useState('');
     const [cpf, setCpf] = useState('');
     const [dtNascimento, setDtNascimento] = useState('');
@@ -28,8 +29,8 @@ export default function UsuarioEditar() {
     const [imagensExistentes, setImagensExistentes] = useState<string[]>([]);
     const [imagensToAdd, setImagensToAdd] = useState<string[]>([]);
     const [imagensToRemove, setImagensToRemove] = useState<string[]>([]);
-    const [accessToken, setAccessToken] = useState('');
     const [okHandleLinksImagens, setOkHandleLinksImagens] = useState(false);
+    const [accessToken, setAccessToken] = useState('');
 
     const context = useContext(UsuarioContext);
     if (!context) {
@@ -45,8 +46,10 @@ export default function UsuarioEditar() {
         if (usuario != null && usuario[0] !== null) {
             if (usuario[0].nome)
                 setNome(usuario[0].nome);
-            if (usuario[0].username)
+            if (usuario[0].username) {
                 setUsername(usuario[0].username);
+                setUsernameAnterior(usuario[0].username);
+            }
             if (usuario[0].email)
                 setEmail(usuario[0].email);
             if (usuario[0].cpf)
@@ -91,6 +94,7 @@ export default function UsuarioEditar() {
         }
 
         if (isValid) getAcessToken();
+        else setLoading(false);
     };
 
     async function getAcessToken() {
@@ -128,12 +132,21 @@ export default function UsuarioEditar() {
     }
 
     async function editarUsuario() {
-        console.log({
-            nome: nome,
-            username: username,
-            imagensToAdd: imagensToAdd,
-            imagensToRemove: imagensToRemove
-        })
+        let body;
+        if (username == usernameAnterior) {
+            body = {
+                nome: nome,
+                imagensToAdd: imagensToAdd,
+                imagensToRemove: imagensToRemove
+            }
+        } else {
+            body = {
+                nome: nome,
+                username: username,
+                imagensToAdd: imagensToAdd,
+                imagensToRemove: imagensToRemove
+            }
+        }
         try {
             const response = await fetch(`${apiUrl}/auth/profile/edit`, {
                 method: 'PATCH',
@@ -141,12 +154,7 @@ export default function UsuarioEditar() {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${accessToken}`,
                 },
-                body: JSON.stringify({
-                    nome: nome,
-                    username: username,
-                    imagensToAdd: imagensToAdd,
-                    imagensToRemove: imagensToRemove
-                }),
+                body: JSON.stringify(body),
             });
 
             const data = await response.json();

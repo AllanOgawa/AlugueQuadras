@@ -1,15 +1,17 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateAcomodacaoDto } from './dto/create-acomodacao.dto';
-import { In, Repository } from 'typeorm';
+import { DataSource, In, Repository } from 'typeorm';
 import { Acomodacao } from './entities/acomodacao.entity';
 import { UpdateAcomodacaoDto } from './dto/update-acomodacao.dto';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CreateAcomodacaoArrayDto } from './dto/create-array-acomodacao.dto';
 
 @Injectable()
 export class AcomodacaoService {
   constructor(
     @InjectRepository(Acomodacao)
     private readonly acomodacaoRepository: Repository<Acomodacao>,
+    private readonly dataSource: DataSource,
   ) { }
 
   async create(createAcomodacaoDto: CreateAcomodacaoDto): Promise<Acomodacao> {
@@ -19,6 +21,34 @@ export class AcomodacaoService {
       return createdAcomodacao;
     } catch (error) {
       throw new HttpException('Erro ao criar Acomodação', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async createMultiple(
+    createAcomodacaoArrayDto: CreateAcomodacaoArrayDto,
+  ): Promise<Acomodacao[]> {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const acomodacoes = this.acomodacaoRepository.create(
+        createAcomodacaoArrayDto.acomodacoes,
+      );
+
+      const createdAcomodacoes = await queryRunner.manager.save(acomodacoes);
+
+      await queryRunner.commitTransaction();
+      return createdAcomodacoes;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      if (error.code === '23505') { // Violação de chave única
+        throw new HttpException('Uma ou mais acomodações já existem', HttpStatus.CONFLICT);
+      }
+      throw new HttpException('Erro ao criar Acomodações', HttpStatus.INTERNAL_SERVER_ERROR);
+    } finally {
+      await queryRunner.release();
     }
   }
 
@@ -68,17 +98,13 @@ export class AcomodacaoService {
 
   async update(idkey: number, updateAcomodacaoDto: UpdateAcomodacaoDto): Promise<Acomodacao> {
     try {
-      const acomodacao = await this.acomodacaoRepository.preload({
-        idkey,
-        ...updateAcomodacaoDto,
-      });
+      const acomodacao = await this.findByIdkey(idkey);
+      Object.assign(acomodacao, updateAcomodacaoDto);
 
-      if (!acomodacao) {
-        throw new HttpException('Acomodação não encontrada', HttpStatus.NOT_FOUND);
-      }
-
-      return await this.acomodacaoRepository.save(acomodacao);
+      const updatedAcomodacao = await this.acomodacaoRepository.save(acomodacao);
+      return updatedAcomodacao;
     } catch (error) {
+      console.log(error)
       throw new HttpException('Erro ao atualizar Acomodação', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }

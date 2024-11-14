@@ -14,7 +14,10 @@ export default function LastCourt() {
 	const renderItem = ({ item }: { item: EstabelecimentoProps }) => (
 		<Pressable
 			className='flex flex-col items-center justify-center'
-			onPress={() => router.push(`../estabelecimento/${item.id}`)}
+			onPress={() => router.push({
+				pathname: '/(estabelecimento)/detalhes',
+				params: { estabelecimentoParam: JSON.stringify(item) },
+			})}
 		>
 			<Image
 				source={{ uri: item.image[0].image }}

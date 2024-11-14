@@ -24,8 +24,9 @@ import {
 import { JwtAuthGuard } from '@src/domains/auth/guard/jwt-auth.guard';
 import { Acomodacao } from './entities/acomodacao.entity';
 import { Quadra } from '../quadra/entities/quadra.entity';
+import { CreateAcomodacaoArrayDto } from './dto/create-array-acomodacao.dto';
 
-@ApiTags('Acomodacao')
+@ApiTags('Acomodação')
 @Controller('estabelecimento/acomodacao')
 @UseGuards(JwtAuthGuard)
 export class AcomodacaoController {
@@ -44,10 +45,40 @@ export class AcomodacaoController {
     try {
       return this.acomodacaoService.create(createAcomodacaoDto);
     } catch (error) {
-      throw new HttpException(
-        'Error ao criar acomodacao',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        throw new HttpException(
+          'Error ao criar acomodacao',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
+  }
+
+  @Post('new/array')
+  @ApiOperation({ summary: 'Criar novas Acomodações em lote' })
+  @ApiResponse({
+    status: 201,
+    description: 'Acomodações criadas com sucesso',
+    type: Acomodacao,
+    isArray: true,
+  })
+  @ApiResponse({ status: 400, description: 'Dados inválidos' })
+  @ApiResponse({ status: 409, description: 'Uma ou mais acomodações já existem' })
+  @ApiResponse({ status: 500, description: 'Erro ao criar Acomodações' })
+  async createArray(@Body(ValidationPipe) createAcomodacaoArrayDto: CreateAcomodacaoArrayDto) {
+    try {
+      return this.acomodacaoService.createMultiple(createAcomodacaoArrayDto);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        throw new HttpException(
+          'Error ao criar acomodacao',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     }
   }
 
@@ -67,10 +98,14 @@ export class AcomodacaoController {
     try {
       return this.acomodacaoService.findAll();
     } catch (error) {
-      throw new HttpException(
-        'Erro ao buscar acomodacoes',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        throw new HttpException(
+          'Erro ao buscar acomodacoes',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     }
   }
 
@@ -92,10 +127,14 @@ export class AcomodacaoController {
     try {
       return await this.acomodacaoService.findByIdkey(idkey);
     } catch (error) {
-      throw new HttpException(
-        'Erro ao buscar acomodacao',
-        HttpStatus.NOT_FOUND,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        throw new HttpException(
+          'Erro ao buscar acomodacao',
+          HttpStatus.NOT_FOUND,
+        );
+      }
     }
   }
 
@@ -104,7 +143,7 @@ export class AcomodacaoController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
   @ApiParam({
-    name: 'idKey',
+    name: 'idkey',
     description: 'ID da quadra a ser atualizada',
     example: 22,
   })
@@ -122,10 +161,14 @@ export class AcomodacaoController {
     try {
       return this.acomodacaoService.update(idkey, updateAcomodacaoDto);
     } catch (error) {
-      throw new HttpException(
-        'Erro ao atualizar acomodacao',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        throw new HttpException(
+          'Erro ao atualizar acomodacao',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     }
   }
 
@@ -147,10 +190,14 @@ export class AcomodacaoController {
     try {
       return this.acomodacaoService.remove(idkey);
     } catch (error) {
-      throw new HttpException(
-        'Erro ao remover acomodacao',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        throw new HttpException(
+          'Erro ao remover acomodacao',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     }
   }
 }
