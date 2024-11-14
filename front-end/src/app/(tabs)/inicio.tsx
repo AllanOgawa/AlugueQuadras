@@ -12,7 +12,11 @@ import { useContext, useEffect, useState } from "react";
 import { UsuarioContext } from '@context/usuarioContext';
 
 const statusBarHeight = Constants.statusBarHeight;
-const { bucketUrl, userDefaultImage } = Constants.expoConfig.extra;
+const extraConfig = Constants.expoConfig?.extra as { bucketUrl: string; userDefaultImage: string } | undefined;
+if (!extraConfig) {
+	throw new Error("Missing configuration");
+}
+const { bucketUrl, userDefaultImage } = extraConfig;
 
 export default function Inicio() {
 	const [loading, setLoading] = useState(false);
