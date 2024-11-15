@@ -1,5 +1,5 @@
 import globalStyles from '@/src/styles/globalStyles';
-import { Text, View, StyleSheet, Animated } from 'react-native';
+import { Text, View, StyleSheet, Animated, ScrollView } from 'react-native';
 import { useNavigation, useLocalSearchParams, router } from 'expo-router';
 import { useState, useEffect } from 'react';
 import CarouselQuadra from '@components/carouselQuadra';
@@ -11,16 +11,22 @@ import HorarioEstabelecimento from '@components/horarioEstabelecimento';
 import BotaoPressable from '@components/botoes/botaoPressable';
 import AvaliacoesEstabelecimento from '@components/avaliacoesEstabelecimento';
 import { EstabelecimentoProps } from '@src/interfaces/estabelecimento';
+import Constants from 'expo-constants';
+import Loading from '@/src/components/loading';
+import ListaQuadras from '@/src/components/listaQuadras';
+
+const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
 
 export default function Estabelecimento() {
-    const { estabelecimentoParam } = useLocalSearchParams(); // Obtém o parâmetro 'id' da URL
+    const { idEstabelecimento } = useLocalSearchParams(); // Obtém o parâmetro 'id' da URL
     const navigation = useNavigation();
     const [scrollY] = useState(new Animated.Value(0));
     const [fadeAnim] = useState(new Animated.Value(0)); // Novo valor animado para a opacidade
     const [estabelecimento, setEstabelecimento] = useState<EstabelecimentoProps>();
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        setEstabelecimento(JSON.parse(estabelecimentoParam))
+        getEstabelecimento();
     }, [])
 
     useEffect(() => {
@@ -30,7 +36,7 @@ export default function Estabelecimento() {
                 navigation.setOptions({
                     headerTitle: () => (
                         <Animated.Text numberOfLines={1} style={[styles.headerText, { opacity: fadeAnim }]}>
-                            { }
+                            {estabelecimento?.nome || ""}
                         </Animated.Text>
                     ),
                 });
@@ -52,9 +58,41 @@ export default function Estabelecimento() {
         return () => {
             scrollY.removeListener(listener);
         };
-    }, [scrollY, fadeAnim, navigation]);
+    }, [scrollY, fadeAnim, navigation, estabelecimento]);
 
-    if (estabelecimento == undefined || null) return (<Text>Erro TESTTT</Text>);
+    async function getEstabelecimento() {
+        setLoading(true);
+        try {
+            const response = await fetch(`${apiUrl}/estabelecimento/search?idkey=${idEstabelecimento}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+            });
+            const responseJson = await response.json();
+            const data = responseJson.data && responseJson.data.length > 0 ? responseJson.data[0] : null;
+
+            if (!response.ok) throw new Error('Erro ao buscar estabelecimento');
+
+            console.log("data", data);
+            setEstabelecimento(data);
+        } catch (error) {
+            console.error('Erro ao buscar estabelecimentos:', error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    if (loading) {
+        return <Loading />; // Mostra o componente de carregamento enquanto busca os dados
+    }
+
+    if (!estabelecimento) {
+        return (
+            <View className='flex-1 justify-center items-center'>
+                <Text>Nenhum dado disponível</Text>
+            </View>
+        );
+    } else console.log(estabelecimento.horariosFuncionamento)
+
     return (
         <View className='flex-1'>
             <Animated.ScrollView
@@ -67,53 +105,78 @@ export default function Estabelecimento() {
                     { useNativeDriver: false }
                 )}
             >
-                <CarouselQuadra imagemQuadra={estabelecimento.image} />
+                <CarouselQuadra imagemQuadra={estabelecimento.imagens} />
 
                 <View className='px-4 mb-5'>
                     <View className="flex-row py-4">
                         <View className="flex-1 justify-center">
                             <Text numberOfLines={3} className='font-semibold text-2xl color-black'>
-                                {estabelecimento.name}
+                                {estabelecimento.nome}
                             </Text>
                         </View>
 
                         <View className='flex justify-center'>
                             <View className="ml-4 flex justify-center items-center rounded-2xl  bg-secondary h-14 w-14">
                                 <Text className='font-semibold text-2xl color-white'>
-                                    {estabelecimento.avaliacao}</Text>
+                                    {/* {estabelecimento.avaliacao} */}
+                                    {4.5}
+                                </Text>
                             </View>
                         </View>
                     </View>
 
-                    <Acomodacoes acomodacoes={estabelecimento.acomodacoes} />
+                    {estabelecimento.acomodacoes &&
+                        <Acomodacoes acomodacoes={estabelecimento.acomodacoes} />}
+
 
                     <HorizontalLine margin={28} />
-                    {/* <ListaQuadrasEstabelecimento quadras={estabelecimento.quadras} onClick={() => { }} /> */}
-
-                    <Text className='font-bold text-xl mb-7 mt-2'>Localização do Estabelecimento</Text>
-                    <LocationEstabelecimento
-                        latitude={estabelecimento.latitude}
-                        longitude={estabelecimento.longitude}
-                        markerTitle={estabelecimento.name}
-                        endereco={estabelecimento.endereco}
-                    />
+                    <ScrollView showsVerticalScrollIndicator={false}>
+                        {estabelecimento.quadras && estabelecimento.quadras.length > 0 ? (
+                            <ListaQuadras
+                                quadras={estabelecimento.quadras}
+                                showTitle={true}
+                                onClick={(quadra) => { }}
+                            />
+                        ) : (
+                            <Text className="text-center color-gray-600">Nenhuma quadra cadastrada.</Text>
+                        )}
+                    </ScrollView>
+                    <View className='mt-4' />
+                    {estabelecimento.endereco &&
+                        <View>
+                            <Text className='font-bold text-xl mb-5 mt-2'>Localização do Estabelecimento</Text>
+                            <LocationEstabelecimento
+                                markerTitle={estabelecimento.nome}
+                                endereco={estabelecimento.endereco}
+                            />
+                        </View>
+                    }
 
                     <HorizontalLine margin={28} />
-                    <Text className='font-bold text-xl mb-7'>Avaliações</Text>
-                    <AvaliacoesEstabelecimento
+                    {/* <Text className='font-bold text-xl mb-7'>Avaliações</Text> */}
+                    {/* <AvaliacoesEstabelecimento
                         idEstabelecimento={estabelecimento.id}
                         avaliacoes={estabelecimento.avaliacoes}
                         avaliacaoMedia={estabelecimento.avaliacao}
                         telaCheia={false}
-                    />
+                    /> */}
 
-                    <Text className='font-bold text-xl mb-7'>Horário de Funcionamento</Text>
-                    <HorarioEstabelecimento horarios={estabelecimento.horario} />
+                    <Text className='font-bold text-xl mb-5'>Horário de Funcionamento</Text>
+                    <HorarioEstabelecimento horarios={estabelecimento.horariosFuncionamento} />
 
-                    <HorizontalLine margin={28} />
-                    <Text className='font-bold text-xl mb-7'>Sobre nós</Text>
-                    <TextoExpandivel className='text-lg' text={estabelecimento.sobre} numberOfLines={5} numberOfChar={200} />
+                    {estabelecimento.sobre &&
+                        <View>
+                            <HorizontalLine margin={28} />
+                            <Text className='font-bold text-xl mb-5'>Sobre nós</Text>
+                            <TextoExpandivel className='text-lg' text={estabelecimento.sobre} numberOfLines={5} numberOfChar={200} />
+                        </View>
+                    }
 
+                    <View>
+                        <HorizontalLine margin={28} />
+                        <Text className='font-bold text-xl mb-5'>Nosso Contato</Text>
+
+                    </View>
                 </View>
             </Animated.ScrollView>
 
@@ -125,150 +188,14 @@ export default function Estabelecimento() {
                     onPress={() => {
                         router.push({
                             pathname: '/(reserva)/selecaoQuadra',
-                            params: {
-                                estabelecimento: JSON.stringify(
-                                    {
-                                        idKey: 1,
-                                        nome: "Beach Park Maringá",
-                                        quadras: [
-                                            {
-                                                idkey: 1,
-                                                nome: "Quadra 1",
-                                                informacoesAdicionais: "Quadra coberta com iluminação",
-                                                valor: "80.50",
-                                                largura: "8",
-                                                comprimento: "3.90",
-                                                tiposEsporte: [
-                                                    { idkey: 1, descricao: "tennis" },
-                                                    { idkey: 4, descricao: "beach tennis" }
-                                                ],
-                                                imagens: [{ path: "public-storage/quadra/5ceee16e6e73f59f3876f51c14cd82f6823350b4cd8c85af15d00133e0f546b0.jpeg" }],
-                                            },
-                                            {
-                                                idkey: 2,
-                                                nome: "Quadra 2",
-                                                informacoesAdicionais: "Quadra de areia para beach volley",
-                                                valor: "70.00",
-                                                largura: "10",
-                                                comprimento: "5.0",
-                                                tiposEsporte: [
-                                                    { idkey: 2, descricao: "volleyball" },
-                                                    { idkey: 4, descricao: "beach tennis" }
-                                                ],
-                                                imagens: [{ path: "public-storage/quadra/5ceee16e6e73f59f3876f51c14cd82f6823350b4cd8c85af15d00133e0f546b0.jpeg" }],
-                                            },
-                                            {
-                                                idkey: 3,
-                                                nome: "Quadra 3",
-                                                informacoesAdicionais: "Quadra ao ar livre com vista para o parque",
-                                                valor: "90.00",
-                                                largura: "9",
-                                                comprimento: "4.5",
-                                                tiposEsporte: [
-                                                    { idkey: 1, descricao: "tennis" }
-                                                ],
-                                                imagens: [{ path: "public-storage/quadra/5ceee16e6e73f59f3876f51c14cd82f6823350b4cd8c85af15d00133e0f546b0.jpeg" }],
-                                            },
-                                            {
-                                                idkey: 4,
-                                                nome: "Quadra 4",
-                                                informacoesAdicionais: "Quadra de grama sintética para futebol",
-                                                valor: "100.00",
-                                                largura: "12",
-                                                comprimento: "6.0",
-                                                tiposEsporte: [
-                                                    { idkey: 3, descricao: "soccer" }
-                                                ],
-                                                imagens: [{ path: "public-storage/quadra/5ceee16e6e73f59f3876f51c14cd82f6823350b4cd8c85af15d00133e0f546b0.jpeg" }],
-                                            },
-                                            {
-                                                idkey: 5,
-                                                nome: "Quadra 5",
-                                                informacoesAdicionais: "Quadra com arquibancada",
-                                                valor: "120.00",
-                                                largura: "10",
-                                                comprimento: "5.0",
-                                                tiposEsporte: [
-                                                    { idkey: 2, descricao: "volleyball" },
-                                                    { idkey: 4, descricao: "beach tennis" }
-                                                ],
-                                                imagens: [{ path: "public-storage/quadra/5ceee16e6e73f59f3876f51c14cd82f6823350b4cd8c85af15d00133e0f546b0.jpeg" }],
-                                            },
-                                            {
-                                                idkey: 6,
-                                                nome: "Quadra 6",
-                                                informacoesAdicionais: "Quadra com sistema de som",
-                                                valor: "85.00",
-                                                largura: "8.5",
-                                                comprimento: "4.0",
-                                                tiposEsporte: [
-                                                    { idkey: 1, descricao: "tennis" },
-                                                    { idkey: 4, descricao: "beach tennis" }
-                                                ],
-                                                imagens: [{ path: "public-storage/quadra/5ceee16e6e73f59f3876f51c14cd82f6823350b4cd8c85af15d00133e0f546b0.jpeg" }],
-                                            },
-                                            {
-                                                idkey: 7,
-                                                nome: "Quadra 7",
-                                                informacoesAdicionais: "Quadra de areia com redes",
-                                                valor: "75.00",
-                                                largura: "9",
-                                                comprimento: "5.0",
-                                                tiposEsporte: [
-                                                    { idkey: 2, descricao: "volleyball" }
-                                                ],
-                                                imagens: [{ path: "public-storage/quadra/5ceee16e6e73f59f3876f51c14cd82f6823350b4cd8c85af15d00133e0f546b0.jpeg" }],
-                                            },
-                                            {
-                                                idkey: 8,
-                                                nome: "Quadra 8",
-                                                informacoesAdicionais: "Quadra de basquete com cestas de regulagem",
-                                                valor: "110.00",
-                                                largura: "11",
-                                                comprimento: "6.0",
-                                                tiposEsporte: [
-                                                    { idkey: 5, descricao: "basketball" }
-                                                ],
-                                                imagens: [{ path: "public-storage/quadra/5ceee16e6e73f59f3876f51c14cd82f6823350b4cd8c85af15d00133e0f546b0.jpeg" }],
-                                            },
-                                            {
-                                                idkey: 9,
-                                                nome: "Quadra 9",
-                                                informacoesAdicionais: "Quadra poliesportiva com grades de proteção",
-                                                valor: "95.00",
-                                                largura: "10",
-                                                comprimento: "6.5",
-                                                tiposEsporte: [
-                                                    { idkey: 1, descricao: "tennis" },
-                                                    { idkey: 2, descricao: "volleyball" },
-                                                    { idkey: 4, descricao: "beach tennis" }
-                                                ],
-                                                imagens: [{ path: "public-storage/quadra/5ceee16e6e73f59f3876f51c14cd82f6823350b4cd8c85af15d00133e0f546b0.jpeg" }],
-                                            },
-                                            {
-                                                idkey: 10,
-                                                nome: "Quadra 10",
-                                                informacoesAdicionais: "Quadra com iluminação noturna e cobertura",
-                                                valor: "130.00",
-                                                largura: "10",
-                                                comprimento: "5.5",
-                                                tiposEsporte: [
-                                                    { idkey: 3, descricao: "soccer" },
-                                                    { idkey: 2, descricao: "volleyball" }
-                                                ],
-                                                imagens: [{ path: "public-storage/quadra/5ceee16e6e73f59f3876f51c14cd82f6823350b4cd8c85af15d00133e0f546b0.jpeg" }],
-                                            }
-                                        ]
-                                    }
-                                )
-                            },
+                            params: { estabelecimento: JSON.stringify({}) },
                         })
                     }}
                 />
             </View>
-
         </View>
     );
+
 }
 const styles = StyleSheet.create({
     headerText: {

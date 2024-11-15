@@ -33,11 +33,16 @@ const ListaEstabelecimento: React.FC<Props> = ({ estabelecimentos, onPress, load
     const renderEstabelecimento = (estabelecimento: EstabelecimentoProps) => (
         <View key={estabelecimento.idkey}>
             <Pressable onPress={() => onPress(estabelecimento)} className='flex flex-row w-full'>
-                <TouchableOpacity className='w-32 h-[120] rounded-2xl justify-self-center' onPress={() => openModal(`${bucketUrl}/${estabelecimento.imagens[0].path}`)}>
-                    <Image
+                <TouchableOpacity className='w-32 h-[120] rounded-2xl justify-self-center' onPress={() => openModal(estabelecimento.imagens.length > 0 ? `${bucketUrl}/${estabelecimento.imagens[0].path}` : `${bucketUrl}/public-storage/outros/semImagem.jpg`)}>
+                    {estabelecimento.imagens.length > 0 ? <Image
                         source={{ uri: `${bucketUrl}/${estabelecimento.imagens[0].path}` }}
                         className='w-[7.6rem] h-[7.6rem] rounded-2xl'
-                    />
+                    /> :
+                        <Image
+                            source={{ uri: `${bucketUrl}/public-storage/outros/semImagem.jpg` }}
+                            className='w-[7.6rem] h-[7.6rem] rounded-2xl'
+                        />
+                    }
                 </TouchableOpacity>
                 <View className='ml-3 flex-1'>
                     <View className="flex-1">

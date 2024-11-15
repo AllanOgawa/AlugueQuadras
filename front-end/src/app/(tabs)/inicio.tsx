@@ -1,6 +1,6 @@
 import { Text, View, ScrollView, SafeAreaView, Pressable, StatusBar } from "react-native";
 import Banner from "@components/banner";
-import LastCourt from "@components/lastCourt";
+import MaisVisitados from "@/src/components/estabelecimentosMaisVisitados";
 import { Feather } from '@expo/vector-icons';
 
 import Constants from 'expo-constants'
@@ -12,7 +12,11 @@ import { useContext, useEffect, useState } from "react";
 import { UsuarioContext } from '@context/usuarioContext';
 
 const statusBarHeight = Constants.statusBarHeight;
-const { bucketUrl, userDefaultImage } = Constants.expoConfig.extra;
+const extraConfig = Constants.expoConfig?.extra as { bucketUrl: string; userDefaultImage: string } | undefined;
+if (!extraConfig) {
+	throw new Error("Missing configuration");
+}
+const { bucketUrl, userDefaultImage } = extraConfig;
 
 export default function Inicio() {
 	const [loading, setLoading] = useState(false);
@@ -71,7 +75,7 @@ export default function Inicio() {
 					</View>
 					<FilterSport />
 					<Banner />
-					<LastCourt />
+					<MaisVisitados />
 				</View>
 			</ScrollView>
 			{loading && <Loading />}

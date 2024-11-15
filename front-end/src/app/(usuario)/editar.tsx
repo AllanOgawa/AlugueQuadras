@@ -14,7 +14,11 @@ import UploadImage from '@/src/components/uploadImagem';
 import BotaoPressable from '@/src/components/botoes/botaoPressable';
 import HorizontalLine from '@/src/components/horizontalLine';
 
-const { apiUrl, bucketUrl } = Constants.expoConfig.extra;
+const extraConfig = Constants.expoConfig?.extra as { apiUrl: string; bucketUrl: string } | undefined;
+if (!extraConfig) {
+    throw new Error("Missing configuration");
+}
+const { apiUrl, bucketUrl } = extraConfig;
 
 export default function UsuarioEditar() {
     const [loading, setLoading] = useState(false);
