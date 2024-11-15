@@ -29,7 +29,7 @@ import { UpdateQuadraDto } from './dto/update-quadra.dto';
 @ApiTags('Quadra')
 @Controller('estabelecimento/quadra')
 export class QuadraController {
-  constructor(private readonly quadraService: QuadraService) {}
+  constructor(private readonly quadraService: QuadraService) { }
 
   @Post('new')
   @UseGuards(JwtAuthGuard)
@@ -149,7 +149,7 @@ export class QuadraController {
     }
   }
 
-  @Get('tipo-esporte/:tipoEsporteId')
+  @Get('search/tipo-esporte/:tipoEsporteId')
   @ApiOperation({ summary: 'Buscar quadras por tipo de esporte' })
   @ApiParam({
     name: 'tipoEsporteId',

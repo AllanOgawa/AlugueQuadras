@@ -27,7 +27,11 @@ export class TipoEsporteController {
     try {
       return await this.tipoEsporteService.create(createTipoEsporteDto);
     } catch (error) {
-      throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
+      }
     }
   }
 
@@ -43,7 +47,11 @@ export class TipoEsporteController {
     try {
       return await this.tipoEsporteService.createMultiple(createTipoEsporteArrayDto);
     } catch (error) {
-      throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
+      }
     }
   }
 
@@ -56,7 +64,11 @@ export class TipoEsporteController {
     try {
       return await this.tipoEsporteService.findAll();
     } catch (error) {
-      throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
+      }
     }
   }
 
@@ -75,7 +87,11 @@ export class TipoEsporteController {
     try {
       return await this.tipoEsporteService.update(idkey, updateTipoEsporteDto);
     } catch (error) {
-      throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
+      }
     }
   }
 
@@ -92,7 +108,11 @@ export class TipoEsporteController {
       await this.tipoEsporteService.remove(idkey);
       return { message: 'Tipo de Esporte deletado com sucesso' };
     } catch (error) {
-      throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
+      }
     }
   }
 }
