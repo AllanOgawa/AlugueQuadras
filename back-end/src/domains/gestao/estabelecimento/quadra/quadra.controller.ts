@@ -148,4 +148,48 @@ export class QuadraController {
       }
     }
   }
+
+  @Get('tipo-esporte/:tipoEsporteId')
+  @ApiOperation({ summary: 'Buscar quadras por tipo de esporte' })
+  @ApiParam({
+    name: 'tipoEsporteId',
+    description: 'ID do tipo de esporte para buscar quadras associadas',
+    example: 1,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de quadras filtradas pelo tipo de esporte',
+    type: [Quadra],
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Nenhuma quadra encontrada para o tipo de esporte',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Erro ao buscar quadras por tipo de esporte',
+  })
+  async findByTipoEsporte(
+    @Param('tipoEsporteId', ParseIntPipe) tipoEsporteId: number,
+  ): Promise<Quadra[]> {
+    try {
+      const quadras = await this.quadraService.findByTipoEsporte(tipoEsporteId);
+      if (!quadras.length) {
+        throw new HttpException(
+          'Nenhuma quadra encontrada para o tipo de esporte',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      return quadras;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        throw new HttpException(
+          'Erro ao buscar quadras por tipo de esporte',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
+  }
 }

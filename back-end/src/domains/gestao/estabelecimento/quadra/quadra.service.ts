@@ -315,4 +315,11 @@ export class QuadraService {
       await queryRunner.release();
     }
   }
+  async findByTipoEsporte(tipoEsporteId: number): Promise<Quadra[]> {
+    return this.quadraRepository
+      .createQueryBuilder('quadra')
+      .leftJoinAndSelect('quadra.tiposEsporte', 'tipoEsporte')
+      .where('tipoEsporte.idkey = :tipoEsporteId', { tipoEsporteId })
+      .getMany();
+  }
 }
