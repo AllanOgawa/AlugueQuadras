@@ -14,7 +14,7 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test-auto": "NODE_ENV=test ts-node ./test/runSQLScripts.ts && jest --config ./test/jest-e2e.json",
+    "test-e2e-auto": "NODE_ENV=e2e ts-node ./test/runSQLScripts.ts && NODE_ENV=e2e jest --config ./test/jest-e2e.json",
     "create-schema:development": "NODE_ENV=development ts-node ./scripts/ts/runSQLScripts.ts"
   },
   "dependencies": {
