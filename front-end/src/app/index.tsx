@@ -8,7 +8,8 @@ import Toast from 'react-native-toast-message';
 import Constants from 'expo-constants';
 import { UsuarioContext } from '@context/usuarioContext';
 
-const { apiUrl } = Constants.expoConfig.extra;
+const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
+const bucketUrl = Constants.expoConfig?.extra?.bucketUrl || '';
 
 export default function TelaLogin() {
     const [login, setLogin] = useState(false);
@@ -110,14 +111,14 @@ export default function TelaLogin() {
             <StatusBar backgroundColor="black" barStyle="light-content" />
             {!login && (
                 <ImageBackground
-                    source={{ uri: 'https://winnertennis.com.br/wp-content/uploads/2019/11/foto.jpg' }}
+                    source={{ uri: `${bucketUrl}/public-storage/outros/backgroundImage.jpg` }}
                     className='h-full'
                     resizeMode="cover"
                 >
                     <View style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]} />
                     <View className='mt-[50%] items-center'>
                         <Animated.Image
-                            source={{ uri: "https://i.postimg.cc/L847BZnX/Picsart-24-10-13-17-20-30-759.png" }}
+                            source={{ uri: `${bucketUrl}/public-storage/outros/logo.png` }}
                             className='w-[60%] h-48'
                             resizeMode="contain"
                             style={animatedStyle}

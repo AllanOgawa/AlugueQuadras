@@ -9,62 +9,36 @@ import SetaVoltar from '@/src/components/setaVoltar';
 
 const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
 
-// Função para carregar o ID do estabelecimento do AsyncStorage
-const loadEstabelecimentoFromStorage = async (setSelectedEstabelecimento: React.Dispatch<React.SetStateAction<string | null>>) => {
-    try {
-        const idEstabelecimento = await AsyncStorage.getItem('idEstabelecimento');
-        if (idEstabelecimento) setSelectedEstabelecimento(idEstabelecimento);
-    } catch (error) {
-        console.error('Erro ao carregar o ID do estabelecimento:', error);
-    }
-};
-
-// Função para buscar a lista de estabelecimentos da API
-const fetchEstabelecimentos = async (setEstabelecimentos: React.Dispatch<React.SetStateAction<any[]>>, setLoading: React.Dispatch<React.SetStateAction<boolean>>, setError: React.Dispatch<React.SetStateAction<string | null>>) => {
-    try {
-        const accessToken = await AsyncStorage.getItem('access_token');
-        const response = await fetch(`${apiUrl}/estabelecimento/usuario`, {
-            method: 'GET',
-            headers: { 'Authorization': `Bearer ${accessToken}` },
-        });
-
-        if (!response.ok) throw new Error('Erro ao buscar estabelecimentos');
-
-        const data = await response.json();
-        setEstabelecimentos(data);
-        setError(null);
-    } catch (error) {
-        console.error('Erro ao buscar estabelecimentos:', error);
-        setError('Erro ao buscar estabelecimentos.');
-    } finally {
-        setLoading(false);
-    }
-};
-
-// Função para salvar o ID do estabelecimento selecionado e navegar para a página do estabelecimento
-const handlePress = async (estabelecimento: any, setSelectedEstabelecimento: React.Dispatch<React.SetStateAction<string | null>>) => {
-    try {
-        await AsyncStorage.setItem('idEstabelecimento', estabelecimento.idkey.toString());
-        setSelectedEstabelecimento(estabelecimento.idkey);
-        router.push({
-            pathname: '/(estabelecimento)/menu/[id]',
-            params: { estabelecimento: JSON.stringify(estabelecimento) },
-        });
-    } catch (error) {
-        console.error('Erro ao salvar o ID do estabelecimento:', error);
-    }
-};
-
 const MenuGeralEstabelecimento = () => {
-    const [selectedEstabelecimento, setSelectedEstabelecimento] = useState<string | null>(null);
-    const [estabelecimentos, setEstabelecimentos] = useState([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
+    const [estabelecimentos, setEstabelecimentos] = useState<[]>([]);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        loadEstabelecimentoFromStorage(setSelectedEstabelecimento);
-        fetchEstabelecimentos(setEstabelecimentos, setLoading, setError);
+        getEstabelecimentos();
     }, []);
+
+    async function getEstabelecimentos() {
+        setLoading(true);
+        const accessToken = await AsyncStorage.getItem('access_token');
+        try {
+            const response = await fetch(`${apiUrl}/estabelecimento/usuario`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+            });
+            const data = await response.json();
+
+            if (!response.ok) throw new Error('Erro ao buscar estabelecimentos');
+
+            setEstabelecimentos(data);
+        } catch (error) {
+            console.error('Erro ao buscar estabelecimentos:', error);
+        } finally {
+            setLoading(false);
+        }
+    }
 
     return (
         <SafeAreaView className='flex-1 bg-white' style={{ marginTop: Constants.statusBarHeight }}>
@@ -82,15 +56,16 @@ const MenuGeralEstabelecimento = () => {
                 <Text className='mt-5 mb-2 text-2xl'>Estabelecimentos Ativos</Text>
 
                 <ScrollView showsVerticalScrollIndicator={false}>
-                    {loading ? (
-                        <ActivityIndicator size="large" color="#FF6600" />
-                    ) : error ? (
-                        <Text>{error}</Text>
-                    ) : (
+                    {estabelecimentos.length > 0 ? (
                         <ListaEstabelecimento
                             estabelecimentos={estabelecimentos}
-                            onPress={(estabelecimento) => handlePress(estabelecimento, setSelectedEstabelecimento)}
+                            onPress={(estabelecimento) => router.push({
+                                pathname: '/(estabelecimento)/menu/[id]',
+                                params: { estabelecimento: JSON.stringify(estabelecimento) }
+                            })}
                             loading={loading} />
+                    ) : (
+                        <Text style={{ textAlign: 'center', color: 'gray' }}>Nenhum Estabelecimento cadastrada.</Text>
                     )}
                 </ScrollView>
             </View>

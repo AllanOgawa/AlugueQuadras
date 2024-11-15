@@ -14,7 +14,7 @@ export function FilterSport() {
           key="1"
           onPress={() => console.log("Clicou filtro Beach Tennis")}
         >
-          <Text className='text-white text-xl ml-1'>Beach Tennis</Text>
+          <Text className='text-white text-xl ml-1 font-bold'>Beach Tennis</Text>
           <MaterialIcons name="sports-tennis" size={40} color="white" />
         </Pressable>
 
@@ -25,7 +25,7 @@ export function FilterSport() {
           key="2"
           onPress={() => console.log("Clicou filtro Voleibol")}
         >
-          <Text className='text-white text-xl ml-1'>Voleibol</Text>
+          <Text className='text-white text-xl ml-1 font-bold'>Voleibol</Text>
           <MaterialIcons name="sports-volleyball" size={40} color="white" />
         </Pressable>
 
@@ -40,7 +40,7 @@ export function FilterSport() {
           key="3"
           onPress={() => console.log("Clicou filtro Futsal")}
         >
-          <Text className='text-white text-xl ml-1'>Futsal</Text>
+          <Text className='text-white text-xl ml-1 font-bold'>Futsal</Text>
           <MaterialIcons name="sports-soccer" size={40} color="white" />
         </Pressable>
 
@@ -51,7 +51,7 @@ export function FilterSport() {
           key="4"
           onPress={() => console.log("Clicou filtro Basquete")}
         >
-          <Text className='text-white text-xl ml-1'>Basquete</Text>
+          <Text className='text-white text-xl ml-1 font-bold'>Basquete</Text>
           <MaterialIcons name="sports-basketball" size={40} color="white" />
         </Pressable>
 
@@ -59,14 +59,16 @@ export function FilterSport() {
 
       <View className='mt-3'>
         <Pressable
-          style={globalStyles.box2}
-          className='w-full h-12 rounded-2xl bg-gray-300
-          flex-row items-center justify-center px-1'
+          style={[
+            globalStyles.box2,
+            { backgroundColor: '#22002d' }
+          ]}
+          className="w-full h-12 rounded-2xl flex-row items-center justify-center px-1"
           key="5"
           onPress={() => console.log("Clicou Mais Quadras")}
         >
-          <Text className='text-gray-800 text-xl'>Mais Quadras</Text>
-          <MaterialIcons name="sports-handball" size={23} color='#1f2937' />
+          <Text className="text-white text-xl font-bold">Mais Quadras</Text>
+          <MaterialIcons name="sports-handball" size={23} color="white" />
         </Pressable>
       </View>
 
