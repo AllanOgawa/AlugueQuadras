@@ -5,9 +5,11 @@ import {
 } from 'react-native';
 import { ImagemProps } from '@src/interfaces/image';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import Constants from 'expo-constants';
 
 const { width, height } = Dimensions.get('window');
 
+const bucketUrl = Constants.expoConfig?.extra?.bucketUrl || '';
 
 export default function CarouselQuadra({ imagemQuadra }: { imagemQuadra: ImagemProps[] }) {
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -40,7 +42,7 @@ export default function CarouselQuadra({ imagemQuadra }: { imagemQuadra: ImagemP
                 {imagemQuadra.map((item, index) => (
                     <Pressable key={index} onPress={() => openModal(index)}>
                         <View className='justify-center items-center' style={{ width: width }}>
-                            <Image source={{ uri: item.image }} resizeMode="cover" className='w-full h-64' />
+                            <Image source={{ uri: `${bucketUrl}/${item.path}` }} resizeMode="cover" className='w-full h-64' />
                             <View className="flex-row absolute bottom-0 self-center">
                                 {imagemQuadra.map((_, i) => {
                                     const opacity = scrollX.interpolate({
@@ -85,7 +87,7 @@ export default function CarouselQuadra({ imagemQuadra }: { imagemQuadra: ImagemP
                     >
                         {imagemQuadra.map((item, index) => (
                             <View key={index} style={{ width: width }} className='justify-center items-center'>
-                                <Image source={{ uri: item.image }} style={styles.fullscreenImage} />
+                                <Image source={{ uri: `${bucketUrl}/${item.path}` }} style={styles.fullscreenImage} />
                             </View>
                         ))}
                     </ScrollView>

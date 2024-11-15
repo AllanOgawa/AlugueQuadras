@@ -95,6 +95,7 @@ export class QuadraService {
   async findByIdkey(idkey: number): Promise<Quadra> {
     const quadra = await this.quadraRepository.findOne({
       where: { idkey },
+      relations: ['estabelecimento', 'estabelecimento.horariosFuncionamento'],
     });
     if (!quadra) {
       throw new NotFoundException(`Quadra com idkey ${idkey} não encontrada`);
@@ -314,7 +315,6 @@ export class QuadraService {
       await queryRunner.release();
     }
   }
-
   async findByTipoEsporte(tipoEsporteId: number): Promise<Quadra[]> {
     return this.quadraRepository
       .createQueryBuilder('quadra')
