@@ -1,12 +1,9 @@
+import { QuadraProps } from "./quadra";
+
 export interface ReservasProps {
-    id: string;
-    ativa: boolean;
-    local: string;
-    endereco: string;
-    quadra: string;
-    data: string;
-    hora: string;
-    valor: string;
-    avaliacao: number;
-    image: string;
+    idkey: number;
+    dataInicio: string;
+    dataFim: string;
+    cancelada: boolean;
+    quadra: QuadraProps;
 }

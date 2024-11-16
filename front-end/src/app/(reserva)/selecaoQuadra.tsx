@@ -4,9 +4,8 @@ import Constants from 'expo-constants'
 import Loading from '@components/loading';
 import SetaVoltar from '@components/setaVoltar';
 
-import HorizontalLine from '@/src/components/horizontalLine';
 import { router, useLocalSearchParams } from 'expo-router';
-import ListaQuadras from '@/src/components/listaQuadras';
+import ListaQuadras from '@components/listaQuadras';
 
 export default function SelecaoDataHora() {
     const { estabelecimento } = useLocalSearchParams();
@@ -34,7 +33,7 @@ export default function SelecaoDataHora() {
                     <Text className="text-2xl text-center font-semibold mt-4"> {parsedEstabelecimento.nome} </Text>
 
                     <ScrollView
-                        className='flex-1'
+                        className='flex-1 mt-3'
                         contentContainerStyle={{
                             paddingHorizontal: 16,
                             paddingTop: 16,
@@ -45,7 +44,16 @@ export default function SelecaoDataHora() {
                             <ListaQuadras
                                 showTitle={true}
                                 quadras={parsedEstabelecimento.quadras}
-                                onClick={(quadra) => console.log(quadra)} />
+                                onClick={(quadra) => {
+                                    router.push({
+                                        pathname: '/(reserva)/selecaoDataHora',
+                                        params: {
+                                            estabelecimento: estabelecimento,
+                                            quadra: JSON.stringify(quadra)
+                                        },
+                                    })
+                                }}
+                            />
                         ) : (
                             <Text className='text-4xl text-black'>Nenhuma quadra encontrada.</Text>
                         )}

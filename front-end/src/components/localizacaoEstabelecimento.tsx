@@ -58,8 +58,11 @@ export default function LocationEstabelecimento({ markerTitle, endereco }: Locat
                 </MapView>
             </View>
 
-            <Text className='mt-3 color-gray-600'>
-                {endereco.logradouro}, {endereco.numero} - {endereco.bairro}, {endereco.cidade} - {endereco.estado.toUpperCase()}
+            <Text className='mt-3 color-gray-600' selectable>
+                {endereco.logradouro}, {endereco.numero} - {endereco.bairro}, {endereco.cidade} - {endereco.estado.toUpperCase()}.
+            </Text>
+            <Text className='color-gray-600' selectable>
+                {endereco.complemento}
             </Text>
         </View>
     );

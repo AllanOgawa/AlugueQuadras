@@ -403,7 +403,7 @@ export default function EstabelecimentoCadastro() {
                     Toast.show({ type: 'success', text1: 'Estabelecimento Alterado com Sucesso' });
                 else
                     Toast.show({ type: 'success', text1: 'Cadastrado de Estabelecimento Realizado com Sucesso' });
-                router.replace('/menu');
+                router.navigate('/menu');
             } else {
                 if (isEditing)
                     Toast.show({ type: 'error', text1: 'Falha na Alteração', text2: data.message });

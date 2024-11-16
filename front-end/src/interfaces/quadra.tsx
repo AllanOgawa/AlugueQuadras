@@ -1,5 +1,6 @@
 import { EsporteProps } from "./esportes";
-import { ImagemProps } from "./estabelecimento";
+import { EstabelecimentoProps } from "./estabelecimento";
+import { ImagemProps } from "./image";
 
 export interface QuadraProps {
     idkey: number; // Identificador da quadra
@@ -8,8 +9,9 @@ export interface QuadraProps {
     valor: number; // Valor da quadra
     largura: number; // Largura da quadra (string para manter a formatação original)
     comprimento: number; // Comprimento da quadra (string para manter a formatação original)
+    coberta: boolean; // Indica se a quadra é coberta
+    idkeyEstabelecimento?: number; // Identificador do estabelecimento
     tiposEsporte: EsporteProps[]; // Lista de tipos de esporte
     imagens: ImagemProps[]; // Lista de imagens da quadra
-    coberta: boolean; // Indica se a quadra é coberta
-    idkeyEstabelecimento: number; // Identificador do estabelecimento
+    estabelecimento?: EstabelecimentoProps;
 }

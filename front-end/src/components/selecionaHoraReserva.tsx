@@ -3,8 +3,8 @@ import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 interface TimeSlot {
-    start: string;
-    end: string;
+    horaInicio: string;
+    horaFim: string;
 }
 
 interface SelecionaHoraProps {
@@ -13,8 +13,13 @@ interface SelecionaHoraProps {
 }
 
 const SelecionaHora: React.FC<SelecionaHoraProps> = ({ horariosDisponiveis, onTimeSelect }) => {
-    const renderTimeItem = ({ item }: { item: TimeSlot }) => (
 
+    const horariosFormatados = horariosDisponiveis.map(horario => ({
+        horaInicio: horario.horaInicio.slice(0, 5), // "HH:MM"
+        horaFim: horario.horaFim.slice(0, 5),       // "HH:MM"
+    }));
+
+    const renderTimeItem = ({ item }: { item: TimeSlot }) => (
         <View
             className="mb-2 py-2 bg-roxo active:bg-primary rounded-2xl">
             <TouchableOpacity
@@ -24,7 +29,7 @@ const SelecionaHora: React.FC<SelecionaHoraProps> = ({ horariosDisponiveis, onTi
                 <View className='items-center justify-between'>
                     <MaterialIcons name="access-time" size={20} color="white" />
                     <Text className="text-white text-lg font-bold">
-                        {item.start}h - {item.end}h
+                        {item.horaInicio}h - {item.horaFim}h
                     </Text>
                 </View>
             </TouchableOpacity>
@@ -37,8 +42,8 @@ const SelecionaHora: React.FC<SelecionaHoraProps> = ({ horariosDisponiveis, onTi
                 Horários disponíveis
             </Text>
             <FlatList
-                data={horariosDisponiveis}
-                keyExtractor={(item) => `${item.start}-${item.end}`}
+                data={horariosFormatados}
+                keyExtractor={(item) => `${item.horaInicio}-${item.horaFim}`}
                 showsVerticalScrollIndicator={false}
                 renderItem={renderTimeItem}
                 className='mb-1'

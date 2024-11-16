@@ -6,7 +6,8 @@ import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loading from './loading';
 
-const { apiUrl, bucketUrl } = Constants.expoConfig.extra;
+const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
+const bucketUrl = Constants.expoConfig?.extra?.bucketUrl || '';
 
 interface UploadImageProps {
     linksImagens: (imagensToAdd: string[], imagensToRemove: string[]) => void;

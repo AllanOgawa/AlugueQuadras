@@ -55,16 +55,16 @@ export default function HorarioEstabelecimento({ horarios }: { horarios: Horario
         <View>
             {horariosFormat.map((horario) => (
                 <View key={horario.diaSemana} className='flex-1 flex-row w-full'>
-                    <Text className='text-base w-[40%] ' numberOfLines={1} >
+                    <Text className='text-lg w-[40%] ' numberOfLines={1} >
                         {horario.dia}
                     </Text>
                     <View>
                         {horario.fechado ?
-                            <Text className='text-base font-semibold' numberOfLines={1} >
+                            <Text className='text-lg font-semibold' numberOfLines={1} >
                                 {horario.horario}
                             </Text>
                             :
-                            <Text className='text-base' numberOfLines={1} >
+                            <Text className='text-lg' numberOfLines={1} >
                                 {horario.horario}
                             </Text>
                         }

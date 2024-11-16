@@ -58,9 +58,8 @@ export default function Inicio() {
 						<View className="relative mb-2">
 							<Pressable
 								onPress={() => {
-									if (logado) router.push('/(reserva)/selecaoQuadra');
-									// if (logado) router.push('/(tabs)/perfil');
-									else router.push('/(usuario)/login');
+									if (logado) router.navigate('/(tabs)/perfil');
+									else router.navigate('/(usuario)/login');
 								}}
 							>
 								<IconUsuario image={`${bucketUrl}/${imagem}`} style="w-16 h-16 rounded-full border-2 border-black" />
