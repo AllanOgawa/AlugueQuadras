@@ -196,6 +196,11 @@ export default function EstabelecimentoCadastro() {
         return `${horas}:${minutos}`;
     };
 
+    function handleAcomodacoesChange(toAdd: number[], toRemove: number[]) {
+        setAcomodacoesToAdd(toAdd);
+        setAcomodacoesToRemove(toRemove);
+    };
+
     function handleTelefoneChange(value: string) {
         setTelefone(value
             .replace(/\D/g, '')
@@ -203,13 +208,6 @@ export default function EstabelecimentoCadastro() {
             .replace(/(\d{5})(\d)/, '$1-$2')
             .replace(/(-\d{4})\d+?$/, '$1'));
     }
-
-    function handleCEPChange(value: string) {
-        setCep(value
-            .replace(/\D/g, '')
-            .replace(/(\d{5})(\d)/, '$1-$2')
-            .replace(/(-\d{3})\d+?$/, '$1'));
-    };
 
     function handleCNPJChange(value: string) {
         setCnpj(value
@@ -221,10 +219,30 @@ export default function EstabelecimentoCadastro() {
             .replace(/(-\d{2})\d+?$/, '$1'));
     };
 
-    function handleAcomodacoesChange(toAdd: number[], toRemove: number[]) {
-        setAcomodacoesToAdd(toAdd);
-        setAcomodacoesToRemove(toRemove);
+    function handleCEPChange(value: string) {
+        setCep(value
+            .replace(/\D/g, '')
+            .replace(/(\d{5})(\d)/, '$1-$2')
+            .replace(/(-\d{3})\d+?$/, '$1'));
+        if (removePontuacao(value).length == 8) {
+            buscaCep(removePontuacao(value));
+        }
     };
+
+    async function buscaCep(cep: string) {
+        try {
+            const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`).then()
+            const data = await response.json();
+            if (response.ok) {
+                setEstado(data.uf);
+                setCidade(data.localidade);
+                setBairro(data.bairro);
+                setLogradouro(data.logradouro);
+            }
+        } catch (error) {
+            console.log('Erro ao buscar coordenadas:', error);
+        }
+    }
 
     function handleSubmit() {
         let hasError = false;
@@ -358,7 +376,7 @@ export default function EstabelecimentoCadastro() {
                     bairro: bairro,
                     cidade: cidade,
                     estado: estado,
-                    cep: cep,
+                    cep: removePontuacao(cep),
                     complemento: complemento,
                     latitude: latitude,
                     longitude: longitude
@@ -441,6 +459,7 @@ export default function EstabelecimentoCadastro() {
                     label="CNPJ"
                     ref={cnpjInputRef}
                     obrigatorio
+                    editable={!isEditing}
                     value={cnpj}
                     onChangeText={handleCNPJChange}
                     errorMessage={errorCnpj}
@@ -466,6 +485,7 @@ export default function EstabelecimentoCadastro() {
                     label="Razão Social"
                     ref={razaoSocialInputRef}
                     obrigatorio
+                    editable={!isEditing}
                     value={razaoSocial}
                     onChangeText={setRazaoSocial}
                     errorMessage={errorRazaoSocial}
