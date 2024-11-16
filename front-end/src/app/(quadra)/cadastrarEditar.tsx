@@ -1,17 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, SafeAreaView, ScrollView, Alert, ActivityIndicator, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+import { View, Text, SafeAreaView, ScrollView, Alert, TextInput } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { QuadraProps } from '@/src/interfaces/quadra';
-import UploadImage from '@/src/components/uploadImagem';
-import SetaVoltar from '@/src/components/setaVoltar';
+import UploadImage from '@components/uploadImagem';
+import SetaVoltar from '@components/setaVoltar';
 import Toast from 'react-native-toast-message';
 import BotaoTouchableOpacity from '@components/botoes/botaoTouchableOpacity';
 import Constants from 'expo-constants';
-import Input from '@/src/components/inputs/input';
-import Checkbox from '@/src/components/checkbox';
-import Loading from '@/src/components/loading';
-import MultiSelect from '@/src/components/multiSelect';
+import Input from '@components/inputs/input';
+import Checkbox from '@components/checkbox';
+import Loading from '@components/loading';
+import MultiSelect from '@components/multiSelect';
 import globalStyles from '@/src/styles/globalStyles';
 
 const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
@@ -19,7 +18,7 @@ const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
 export default function CadastroQuadra() {
     const { idEstabelecimento, quadra } = useLocalSearchParams();
     const [isEditing, setIsEditing] = useState(false); // Verifica se é edição ou cadastro
-    const [idkey, setIdkey] = useState(null);
+    const [idkeyQuadra, setIdkeyQuadra] = useState(null);
     const [loading, setLoading] = useState(false);
 
     // quadra
@@ -63,7 +62,8 @@ export default function CadastroQuadra() {
                 const parsedQuadra = (JSON.parse(quadra));
 
                 if (quadra) {
-                    setIdkey(parsedQuadra.idkey || null);
+                    console.log(parsedQuadra.idkey)
+                    setIdkeyQuadra(parsedQuadra.idkey || null);
                     setNome(parsedQuadra.nome || '');
                     setValor(parsedQuadra.valor || '');
                     setLargura(parsedQuadra.largura || '');
@@ -184,7 +184,7 @@ export default function CadastroQuadra() {
                 coberta: coberta,
                 idkeyEstabelecimento: Number(idEstabelecimento),
                 imagensToAdd: imagensToAdd,
-                tiposEsporteToAdd: esportesToAdd
+                tipoEsporteToAdd: esportesToAdd
             };
         else {
             body = {
@@ -196,10 +196,9 @@ export default function CadastroQuadra() {
                 coberta: coberta,
                 imagensToAdd: imagensToAdd,
                 imagensToRemove: imagensToRemove,
-                tiposEsporteToAdd: esportesToAdd,
+                tipoEsporteToAdd: esportesToAdd,
                 tipoEsporteToRemove: esportesToRemove
             };
-            console.log("body", body);
         }
 
         gravarQuadra(body);
@@ -211,7 +210,7 @@ export default function CadastroQuadra() {
         let route;
 
         if (isEditing) {
-            route = `${apiUrl}/estabelecimento/quadra/edit/${idkey}`;
+            route = `${apiUrl}/estabelecimento/quadra/edit/${idkeyQuadra}`;
             method = 'PATCH';
         } else {
             route = `${apiUrl}/estabelecimento/quadra/new`
@@ -234,7 +233,7 @@ export default function CadastroQuadra() {
                     Toast.show({ type: 'success', text1: 'Quadra Alterada com Sucesso' });
                 else
                     Toast.show({ type: 'success', text1: 'Cadastrado de Quadra Realizado com Sucesso' });
-                router.replace({
+                router.navigate({
                     pathname: '/(quadra)/menu',
                     params: { idEstabelecimento }
                 });
@@ -272,7 +271,7 @@ export default function CadastroQuadra() {
         let sucesso = false;
         try {
             const access_token = await AsyncStorage.getItem('access_token');
-            const response = await fetch(`${apiUrl}/estabelecimento/quadra/remove/${idkey}`, {
+            const response = await fetch(`${apiUrl}/estabelecimento/quadra/remove/${idkeyQuadra}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${access_token}`,

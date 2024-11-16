@@ -3,12 +3,7 @@ import { AvaliacaoProps } from "./avaliacao";
 import { HorarioProps } from "./horario";
 import { QuadraProps } from "./quadra";
 import { EnderecoProps } from "./endereco";
-
-export interface ImagemProps {
-    idkey: number;
-    path: string;
-    dataCadastro: string;
-}
+import { ImagemProps } from "./image";
 
 export interface EstabelecimentoProps {
     idkey: number;               // Usando o campo "idkey" diretamente
@@ -23,7 +18,7 @@ export interface EstabelecimentoProps {
     sobre: string;
     endereco: EnderecoProps;     // Objeto de endereço, conforme detalhado
     imagens: ImagemProps[];      // Lista de imagens
-    quadras: QuadraProps[];
+    quadras?: QuadraProps[];
     acomodacoes: AcomodacoesProps[];
     horariosFuncionamento: HorarioProps[];
 }

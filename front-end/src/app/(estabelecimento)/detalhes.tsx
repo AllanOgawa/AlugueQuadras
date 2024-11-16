@@ -12,8 +12,9 @@ import BotaoPressable from '@components/botoes/botaoPressable';
 import AvaliacoesEstabelecimento from '@components/avaliacoesEstabelecimento';
 import { EstabelecimentoProps } from '@src/interfaces/estabelecimento';
 import Constants from 'expo-constants';
-import Loading from '@/src/components/loading';
-import ListaQuadras from '@/src/components/listaQuadras';
+import Loading from '@components/loading';
+import ListaQuadras from '@components/listaQuadras';
+import Icone from '@components/icone';
 
 const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
 
@@ -72,7 +73,6 @@ export default function Estabelecimento() {
 
             if (!response.ok) throw new Error('Erro ao buscar estabelecimento');
 
-            console.log("data", data);
             setEstabelecimento(data);
         } catch (error) {
             console.error('Erro ao buscar estabelecimentos:', error);
@@ -82,7 +82,7 @@ export default function Estabelecimento() {
     }
 
     if (loading) {
-        return <Loading />; // Mostra o componente de carregamento enquanto busca os dados
+        return <Loading />;
     }
 
     if (!estabelecimento) {
@@ -91,7 +91,7 @@ export default function Estabelecimento() {
                 <Text>Nenhum dado disponível</Text>
             </View>
         );
-    } else console.log(estabelecimento.horariosFuncionamento)
+    }
 
     return (
         <View className='flex-1'>
@@ -115,14 +115,13 @@ export default function Estabelecimento() {
                             </Text>
                         </View>
 
-                        <View className='flex justify-center'>
+                        {/* <View className='flex justify-center'>
                             <View className="ml-4 flex justify-center items-center rounded-2xl  bg-secondary h-14 w-14">
                                 <Text className='font-semibold text-2xl color-white'>
-                                    {/* {estabelecimento.avaliacao} */}
-                                    {4.5}
+                                    {estabelecimento.avaliacao} 
                                 </Text>
                             </View>
-                        </View>
+                        </View> */}
                     </View>
 
                     {estabelecimento.acomodacoes &&
@@ -168,14 +167,25 @@ export default function Estabelecimento() {
                         <View>
                             <HorizontalLine margin={28} />
                             <Text className='font-bold text-xl mb-5'>Sobre nós</Text>
-                            <TextoExpandivel className='text-lg' text={estabelecimento.sobre} numberOfLines={5} numberOfChar={200} />
+                            <TextoExpandivel className='text-lg leading-6' text={estabelecimento.sobre} numberOfLines={5} numberOfChar={200} />
                         </View>
                     }
 
                     <View>
                         <HorizontalLine margin={28} />
                         <Text className='font-bold text-xl mb-5'>Nosso Contato</Text>
-
+                        <View className='flex-row items-center'>
+                            <View className="w-12 h-12 rounded-full bg-roxo items-center justify-center">
+                                <Icone icone={"whatsapp"} biblioteca='FontAwesome5' size={24} color="white" />
+                            </View>
+                            <Text selectable className='ml-2 text-lg'>{estabelecimento.telefone}</Text>
+                        </View>
+                        <View className='flex-row mt-1 items-center'>
+                            <View className="w-12 h-12 rounded-full bg-roxo items-center justify-center">
+                                <Icone icone={"email-outline"} biblioteca='MaterialCommunityIcons' size={24} color="white" />
+                            </View>
+                            <Text selectable className=' ml-2 text-lg'>{estabelecimento.email}</Text>
+                        </View>
                     </View>
                 </View>
             </Animated.ScrollView>
@@ -188,7 +198,7 @@ export default function Estabelecimento() {
                     onPress={() => {
                         router.push({
                             pathname: '/(reserva)/selecaoQuadra',
-                            params: { estabelecimento: JSON.stringify({}) },
+                            params: { estabelecimento: JSON.stringify(estabelecimento) },
                         })
                     }}
                 />

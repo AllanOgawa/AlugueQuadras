@@ -47,7 +47,7 @@ export default function ListaQuadras({ quadras, onClick, showTitle = false }: { 
                             </View>
                             <View>
                                 <Text className='text-lg leading-5' numberOfLines={1}>
-                                    {quadra.valor ? `R$ ${quadra.valor}` : 'Valor não disponível'}
+                                    {quadra.valor ? `R$ ${Number(quadra.valor).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'Valor não disponível'}
                                 </Text>
                                 <Text className='text-sm leading-4 color-gray-600' numberOfLines={1}>
                                     Dimensões: {quadra.comprimento}m x {quadra.largura}m

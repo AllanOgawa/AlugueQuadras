@@ -1,31 +1,65 @@
-import { SafeAreaView, StatusBar, Text, View, Image, Modal, Pressable } from 'react-native';
+import { SafeAreaView, StatusBar, Text, View, Image, Modal, Pressable, Alert } from 'react-native';
 import { useEffect, useState } from 'react';
 import Constants from 'expo-constants'
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import SetaVoltar from '@components/setaVoltar';
 import Loading from '@components/loading';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const { bucketUrl } = Constants.expoConfig.extra;
+const bucketUrl = Constants.expoConfig?.extra?.bucketUrl || '';
+const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
 
 export default function PagamentoPix() {
+    const {
+        idkeyQuadra,
+        dataInicio,
+        dataFim,
+    } = useLocalSearchParams();
     const [loading, setLoading] = useState(false);
     const [aprovado, setAprovado] = useState(false);
 
     useEffect(() => {
         setTimeout(() => {
-            setLoading(true);
-        }, 1500);
+            reservarQuadra();
+        }, 2000);
+    }, []);
 
+    async function reservarQuadra() {
+        setLoading(true);
+        try {
+            const access_token = await AsyncStorage.getItem('access_token');
+            const response = await fetch(`${apiUrl}/estabelecimento/quadra/reserva/new`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${access_token}`,
+                },
+                body: JSON.stringify({
+                    idkeyQuadra: Number(idkeyQuadra),
+                    dataInicio: dataInicio,
+                    dataFim: dataFim
+                }),
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                Alert.alert(
+                    "Falha ao realizar Reserva",
+                    data.message
+                );
+            }
+        } catch (error) {
+            Alert.alert(
+                "Erro de Rede",
+                String(error)
+            );
+        } finally {
+            setTimeout(() => {
+                setLoading(false);
+                setAprovado(true);
+            }, 2000);
+        }
+    };
 
-        setTimeout(() => {
-            setLoading(false);
-            setAprovado(true);
-        }, 4500);
-
-
-        setTimeout(() => {
-        }, 4500);
-    }, [])
     return (
         <SafeAreaView className='flex-1 bg-white' style={{ marginTop: Constants.statusBarHeight }}>
             <StatusBar barStyle="dark-content" backgroundColor="white" />
@@ -56,10 +90,10 @@ export default function PagamentoPix() {
                             Sua reserva foi realizada com sucesso!
                         </Text>
                         <Pressable
-                            onPress={() => { setAprovado(false) }}
+                            onPress={() => { router.replace("/(tabs)/inicio") }}
                             className='bg-green-500 rounded-md py-2'
                         >
-                            <Text className='text-white text-center text-lg'>Ok</Text>
+                            <Text className='text-white text-center text-lg'>Voltar a Tela Inicial</Text>
                         </Pressable>
                     </View>
                 </View>

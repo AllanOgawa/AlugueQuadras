@@ -4,9 +4,6 @@ import { ReservasProps } from '@src/interfaces/reservas';
 import { router } from 'expo-router';
 
 export function CardReservaAtivo({ reserva }: { reserva: ReservasProps }) {
-    const navigateToEstabelecimento = (id: String) => {
-        router.push(`../estabelecimento/${id}`); // Navega para a tela de detalhes com um ID na URL
-    };
     return (
         <Pressable
             style={globalStyles.box}
@@ -14,7 +11,7 @@ export function CardReservaAtivo({ reserva }: { reserva: ReservasProps }) {
                 flex flex-row-reverse items-center 
                 justify-between px-2 rounded-2xl w-[99%] h-auto bg-white p-3'
             key={reserva.id}
-            onPress={() => navigateToEstabelecimento(reserva.id)}
+            onPress={() => { router.push(`../estabelecimento/}`) }}
         >
             <Image
                 source={{ uri: reserva.image }}

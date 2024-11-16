@@ -1,71 +1,109 @@
 import { SafeAreaView, StatusBar, Text, View } from 'react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Constants from 'expo-constants'
 import Loading from '@components/loading';
-import SelecionaData from '@components/selecionaData';
-import SelecionaHora from '@components/selecionaHora';
+import SelecionaData from '@/src/components/selecionaDataReserva';
+import SelecionaHora from '@/src/components/selecionaHoraReserva';
 import SetaVoltar from '@components/setaVoltar';
 import dayjs from 'dayjs';
 import HorizontalLine from '@/src/components/horizontalLine';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-toast-message';
 
-const availableTimesFromBackend = [
-    {
-        date: "2024-11-05",
-        times: [
-            { start: "09:00", end: "10:00" },
-            { start: "10:00", end: "11:00" },
-            { start: "11:00", end: "12:00" },
-            { start: "13:00", end: "14:00" },
-            { start: "14:00", end: "15:00" },
-            { start: "15:00", end: "16:00" },
-            { start: "16:00", end: "17:00" },
-            { start: "17:00", end: "18:00" },
-        ]
-    },
-    {
-        date: "2024-11-06",
-        times: [
-            { start: "16:00", end: "17:00" },
-            { start: "17:00", end: "18:00" }
-        ]
-    },
-    { date: "2024-11-07", times: [{ start: "16:00", end: "17:00" }, { start: "17:00", end: "18:00" }, { start: "18:00", end: "19:00" }] },
-];
+const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
 
-const reserva = { valor: 200.00, estabelecimento: "Beach Park Maringá", quadra: "Quadra 4", idkeyQuadra: 2 }
+export interface HoraProps {
+    horaInicio: string;
+    horaFim: string;
+}
+
+export interface DataHoraReservaProps {
+    data: string;
+    horas: HoraProps[];
+}
 
 export default function SelecaoDataHora() {
+    const { estabelecimento, quadra } = useLocalSearchParams();
+    const [parsedEstabelecimento, setParsedEstabelecimento] = useState<any>(null);
+    const [parsedQuadra, setParsedQuadra] = useState<any>(null);
     const [loading, setLoading] = useState(false);
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-    const [availableTimes, setAvailableTimes] = useState([]);
+    const [horaDataDisponiveis, setHoraDataDisponiveis] = useState<DataHoraReservaProps[]>([]);
+    const [horariosDisponiveis, setHorariosDisponiveis] = useState<HoraProps[]>([]);
+
+    useEffect(() => {
+        setLoading(true);
+        try {
+            if (typeof estabelecimento === 'string') {
+                setParsedEstabelecimento(JSON.parse(estabelecimento));
+            }
+            if (typeof quadra === 'string') {
+                setParsedQuadra(JSON.parse(quadra));
+            }
+        } catch (error) {
+            console.error("Erro ao parsear dados:", error);
+        }
+        setLoading(false);
+    }, [estabelecimento]);
+
+    useEffect(() => {
+        if (parsedQuadra)
+            buscaDataHoras();
+    }, [parsedQuadra]);
+
+    async function buscaDataHoras() {
+        setLoading(true);
+        try {
+            const access_token = await AsyncStorage.getItem('access_token');
+            const response = await fetch(`${apiUrl}/estabelecimento/quadra/reserva/quadra/${parsedQuadra.idkey}/available-slots`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${access_token}`,
+                },
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                setHoraDataDisponiveis(data);
+            }
+        } catch (error) {
+            console.error('Erro de rede', error);
+            Toast.show({
+                type: 'error',
+                text1: "Erro de Rede",
+                text2: String(error),
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (horaDataDisponiveis.length > 0) {
+            handleDateSelect(new Date());
+        }
+    }, [horaDataDisponiveis])
+
 
     const handleDateSelect = (date: Date) => {
         setSelectedDate(date);
 
         const formattedDate = dayjs(date).format('YYYY-MM-DD');
-        const timesForSelectedDate = availableTimesFromBackend.find(entry => entry.date === formattedDate);
-
-        setAvailableTimes(timesForSelectedDate ? timesForSelectedDate.times : []);
+        const horariosDaDataSelecionada = horaDataDisponiveis.find((entry: { data: string; }) => entry.data === formattedDate);
+        setHorariosDisponiveis(horariosDaDataSelecionada ? horariosDaDataSelecionada.horas : []);
     };
 
-    const handleTimeSelect = (timeSlot: any) => {
-        console.log("Horário selecionado:", {
-            date: selectedDate,
-            startTime: timeSlot.start,
-            endTime: timeSlot.end
-        });
-
+    const handleTimeSelect = (horario: any) => {
         router.push({
             pathname: '/(reserva)/selecaoPagamento',
             params: {
-                date: String(selectedDate),
-                startTime: timeSlot.start,
-                endTime: timeSlot.end,
-                valor: reserva.valor,
-                quadra: reserva.quadra,
-                idkeyQuadra: reserva.idkeyQuadra,
-                estabelecimento: reserva.estabelecimento,
+                data: String(selectedDate),
+                horaInicio: horario.horaInicio,
+                horaFim: horario.horaFim,
+                estabelecimento: estabelecimento,
+                quadra: quadra
             },
         })
     };
@@ -78,18 +116,28 @@ export default function SelecaoDataHora() {
                 <View className='pt-4'></View>
                 <SelecionaData
                     minDate={dayjs()}
-                    maxDate={dayjs().add(20, 'day')}
+                    maxDate={dayjs().add(19, 'day')}
                     onDateSelect={handleDateSelect}
                 />
-                <Text className="text-2xl text-center font-semibold mt-4">
-                    {`R$${reserva.valor.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
-                </Text>
-                <Text className="text-xl text-center  mb-4">
-                    {`${reserva.estabelecimento} - ${reserva.quadra}`}
-                </Text>
+                {parsedQuadra && parsedQuadra.valor ? (
+                    <Text className="text-2xl text-center font-semibold mt-4">
+                        R$ {Number(parsedQuadra.valor).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </Text>
+                ) : (
+                    <Text className='text-4xl text-black'>Nenhuma quadra encontrada.</Text>
+                )}
+
+                {parsedEstabelecimento && parsedQuadra ? (
+                    <Text className="text-xl text-center  mb-4">
+                        {`${parsedEstabelecimento.nome} - ${parsedQuadra.nome}`}
+                    </Text>
+                ) : (
+                    <Text className='text-4xl text-black'>Nenhum Estabelecimento encontrado.</Text>
+                )}
+
                 <HorizontalLine margin={4} />
                 {selectedDate && (
-                    <SelecionaHora horariosDisponiveis={availableTimes} onTimeSelect={handleTimeSelect} />
+                    <SelecionaHora horariosDisponiveis={horariosDisponiveis} onTimeSelect={handleTimeSelect} />
                 )}
             </View>
             {loading && <Loading />}
