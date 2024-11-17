@@ -53,6 +53,14 @@ export default function (getApp: () => INestApplication) {
             descricao: 'BAR',
             icone: 'icone_bar',
           },
+          {
+            descricao: 'BANHEIRO',
+            icone: 'icone_banheiro',
+          },
+          {
+            descricao: 'PET',
+            icone: 'icone_pet',
+          },
         ],
       };
 
@@ -63,7 +71,7 @@ export default function (getApp: () => INestApplication) {
         .expect(201);
 
       expect(Array.isArray(response.body)).toBe(true);
-      expect(response.body.length).toBe(2);
+      expect(response.body.length).toBe(4);
       response.body.forEach((acomodacao: any, index: number) => {
         expect(acomodacao).toHaveProperty('idkey');
         expect(acomodacao.descricao).toBe(acomodacoesArray.acomodacoes[index].descricao);
