@@ -139,7 +139,6 @@ export class ReservaService {
             );
         }
     }
-
     async findAllByEstabelecimento(
         estabelecimentoId: number,
     ): Promise<Reserva[]> {
@@ -162,114 +161,128 @@ export class ReservaService {
             );
         }
     }
-   
-  async findAvailableSlots(quadraIdkey: number): Promise<any> {
-    try {
-      console.log(`Buscando quadra com idkey: ${quadraIdkey}`);
-      const quadra = await this.quadraService.findByIdkey(quadraIdkey);
 
-      if (!quadra) {
-        console.error('Quadra não encontrada');
-        throw new NotFoundException('Quadra não encontrada');
-      }
+    async findAvailableSlots(quadraIdkey: number): Promise<any> {
+        try {
+            console.log(`Buscando quadra com idkey: ${quadraIdkey}`);
+            const quadra = await this.quadraService.findByIdkey(quadraIdkey);
 
-      const estabelecimento = quadra.estabelecimento;
-      console.log(`Estabelecimento encontrado: ${estabelecimento.idkey}`);
+            if (!quadra) {
+                console.error('Quadra não encontrada');
+                throw new NotFoundException('Quadra não encontrada');
+            }
 
-      const dataAtual = new Date();
-      const horariosDisponiveis = [];
+            const estabelecimento = quadra.estabelecimento;
+            const dataAtual = new Date();
+            const dataAnterior = new Date(dataAtual);
+            const horariosDisponiveisMap = new Map();
 
-      for (let dia = 0; dia < 20; dia++) {
-        const data = new Date(dataAtual);
-        data.setDate(dataAtual.getDate() + dia);
+            for (let dia = 0; dia < 20; dia++) {
+                const data = new Date(dataAnterior);
+                data.setDate(dataAnterior.getDate() + dia);
 
-        const diaSemana = data.getDay();
-        console.log(`Verificando horários para o dia da semana: ${diaSemana}`);
+                const diaSemana = data.getDay();
+                const horarioFuncionamento =
+                    estabelecimento.horariosFuncionamento.find(
+                        (horario) => horario.diaSemana === diaSemana,
+                    );
 
-        const horarioFuncionamento = estabelecimento.horariosFuncionamento.find(
-          (horario) => horario.diaSemana === diaSemana,
-        );
+                if (!horarioFuncionamento) continue;
 
-        if (!horarioFuncionamento) {
-          console.log(
-            `Nenhum horário de funcionamento encontrado para o dia ${diaSemana}`,
-          );
-          continue;
+                const [horaAbertura, minutoAbertura] =
+                    horarioFuncionamento.horaAbertura.split(':').map(Number);
+                const horarioInicio = new Date(data);
+                horarioInicio.setHours(horaAbertura, minutoAbertura, 0, 0);
+
+                const [horaFechamento, minutoFechamento] =
+                    horarioFuncionamento.horaFechamento.split(':').map(Number);
+                const horarioFim = new Date(data);
+                horarioFim.setHours(horaFechamento, minutoFechamento, 0, 0);
+
+                let horaInicial = horarioInicio;
+                const agora = new Date();
+
+                if (data.toDateString() === dataAnterior.toDateString()) {
+                    horaInicial = new Date(data);
+                    horaInicial.setHours(agora.getHours() + 1, 0, 0, 0);
+
+                    if (horaInicial > horarioFim) continue;
+                }
+
+                const reservasDia = await this.reservaRepository.find({
+                    where: {
+                        quadra: { idkey: quadraIdkey },
+                        dataInicio: Between(
+                            new Date(horarioInicio),
+                            new Date(horarioFim),
+                        ),
+                    },
+                });
+
+                const horasDisponiveis = [];
+
+                for (
+                    let hora = new Date(horaInicial);
+                    hora < horarioFim;
+                    hora.setHours(hora.getHours() + 1)
+                ) {
+                    const horaInicioStr = hora.toTimeString().slice(0, 8);
+                    const horaFim = new Date(hora);
+                    horaFim.setHours(hora.getHours() + 1);
+                    const horaFimStr = horaFim.toTimeString().slice(0, 8);
+
+                    const isDisponivel = !reservasDia.some((reserva) => {
+                        const conflitoInicio =
+                            reserva.dataInicio <= hora &&
+                            reserva.dataFim > hora;
+                        const conflitoFim =
+                            reserva.dataInicio < horaFim &&
+                            reserva.dataFim >= horaFim;
+
+                        if (conflitoInicio || conflitoFim) {
+                            console.log('Conflito encontrado para horário:', {
+                                horaInicio: horaInicioStr,
+                                horaFim: horaFimStr,
+                                reservaInicio: reserva.dataInicio,
+                                reservaFim: reserva.dataFim,
+                            });
+                        }
+
+                        return conflitoInicio || conflitoFim;
+                    });
+
+                    console.log('Horário verificado:', {
+                        horaInicio: horaInicioStr,
+                        horaFim: horaFimStr,
+                        isDisponivel: isDisponivel,
+                    });
+
+                    if (isDisponivel) {
+                        horasDisponiveis.push({
+                            horaInicio: horaInicioStr,
+                            horaFim: horaFimStr,
+                        });
+                    }
+                }
+
+                if (horasDisponiveis.length > 0) {
+                    const dataFormatada = data.toISOString().split('T')[0];
+                    horariosDisponiveisMap.set(dataFormatada, horasDisponiveis);
+                }
+            }
+
+            const horariosDisponiveis = Array.from(
+                horariosDisponiveisMap,
+                ([data, horas]) => ({ data, horas }),
+            );
+
+            return horariosDisponiveis;
+        } catch (error) {
+            console.error('Erro ao buscar horários disponíveis:', error);
+            throw new HttpException(
+                'Erro ao buscar horários disponíveis',
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
         }
-
-        console.log(
-          `Horário de funcionamento encontrado: Abertura - ${horarioFuncionamento.horaAbertura}, Fechamento - ${horarioFuncionamento.horaFechamento}`,
-        );
-
-        const [horaA, minutoA] = horarioFuncionamento.horaAbertura
-          .split(':')
-          .map(Number);
-        const horarioInicio = new Date(data);
-        horarioInicio.setHours(horaA, minutoA, 0, 0);
-
-        const [horaF, minutoF] = horarioFuncionamento.horaFechamento
-          .split(':')
-          .map(Number);
-        const horarioFim = new Date(data);
-        horarioFim.setHours(horaF, minutoF, 0, 0);
-
-        console.log(
-          `Horário de início: ${horarioInicio.toISOString()}, Horário de fim: ${horarioFim.toISOString()}`,
-        );
-
-        const reservasDia = await this.reservaRepository.find({
-          where: {
-            quadra: quadra,
-            dataInicio: Between(
-              new Date(data.setHours(horaA, 0, 0, 0)),
-              new Date(data.setHours(horaF, 59, 59, 999)),
-            ),
-          },
-        });
-
-        console.log(
-          `Reservas para o dia ${data.toISOString().split('T')[0]}:`,
-          reservasDia,
-        );
-
-        const horasDisponiveis = [];
-
-        for (
-          let hora = new Date(horarioInicio);
-          hora < horarioFim;
-          hora.setHours(hora.getHours() + 1)
-        ) {
-          const horaInicioStr = hora.toTimeString().slice(0, 8);
-          const horaFimStr = new Date(hora);
-          horaFimStr.setHours(hora.getHours() + 1);
-
-          if (
-            !reservasDia.some(
-              (reserva) => reserva.dataInicio <= hora && reserva.dataFim > hora,
-            )
-          ) {
-            horasDisponiveis.push({
-              horaInicio: horaInicioStr,
-              horaFim: horaFimStr.toTimeString().slice(0, 8),
-            });
-          }
-        }
-
-        if (horasDisponiveis.length > 0) {
-          horariosDisponiveis.push({
-            data: data.toISOString().split('T')[0],
-            horas: horasDisponiveis,
-          });
-        }
-      }
-
-      return horariosDisponiveis;
-    } catch (error) {
-      console.error('Erro ao buscar horários disponíveis:', error);
-      throw new HttpException(
-        'Erro ao buscar horários disponíveis',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
     }
-  }
 }
