@@ -30,7 +30,7 @@ export class EstabelecimentoService {
         private acomodacaoService: AcomodacaoService,
         private horarioFuncionamentoService: HorarioFuncionamentoService,
         private quadraService: QuadraService,
-    ) {}
+    ) { }
 
     async create(
         createEstabelecimentoDto: CreateEstabelecimentoDto,
