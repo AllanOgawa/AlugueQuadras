@@ -155,7 +155,9 @@ export class EstabelecimentoService {
 
     async findAll(): Promise<Estabelecimento[]> {
         try {
-            return await this.estabelecimentoRepository.find();
+            return await this.estabelecimentoRepository.find({
+                relations: ['quadras'],
+            });
         } catch (error) {
             throw new HttpException(
                 'Erro ao buscar estabelecimentos',

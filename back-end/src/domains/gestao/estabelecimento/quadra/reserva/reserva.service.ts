@@ -22,7 +22,7 @@ export class ReservaService {
 
         @Inject(forwardRef(() => QuadraService))
         private readonly quadraService: QuadraService,
-    ) {}
+    ) { }
 
     async create(
         usuario: any,
@@ -164,7 +164,6 @@ export class ReservaService {
 
     async findAvailableSlots(quadraIdkey: number): Promise<any> {
         try {
-            console.log(`Buscando quadra com idkey: ${quadraIdkey}`);
             const quadra = await this.quadraService.findByIdkey(quadraIdkey);
 
             if (!quadra) {
@@ -249,12 +248,6 @@ export class ReservaService {
                         }
 
                         return conflitoInicio || conflitoFim;
-                    });
-
-                    console.log('Horário verificado:', {
-                        horaInicio: horaInicioStr,
-                        horaFim: horaFimStr,
-                        isDisponivel: isDisponivel,
                     });
 
                     if (isDisponivel) {

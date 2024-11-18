@@ -28,11 +28,11 @@ import { CreateAcomodacaoArrayDto } from './dto/create-array-acomodacao.dto';
 
 @ApiTags('Acomodação')
 @Controller('estabelecimento/acomodacao')
-@UseGuards(JwtAuthGuard)
 export class AcomodacaoController {
   constructor(private readonly acomodacaoService: AcomodacaoService) { }
 
   @Post('new')
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Criar uma nova acomodacao' })
   @ApiResponse({
@@ -57,6 +57,8 @@ export class AcomodacaoController {
   }
 
   @Post('new/array')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Criar novas Acomodações em lote' })
   @ApiResponse({
     status: 201,
@@ -141,7 +143,7 @@ export class AcomodacaoController {
   @Patch('edit/:idkey')
   @ApiOperation({ summary: 'Atualizar uma acomodacao por ID' })
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('acess-token')
+  @ApiBearerAuth('access-token')
   @ApiParam({
     name: 'idkey',
     description: 'ID da quadra a ser atualizada',
@@ -173,6 +175,7 @@ export class AcomodacaoController {
   }
 
   @Delete('remove/:idkey')
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Remover uma acomodacao por ID' })
   @ApiParam({
