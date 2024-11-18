@@ -46,7 +46,7 @@ const MenuGeralEstabelecimento = () => {
             <View className='flex-1 px-4'>
                 <Text className='font-bold text-3xl mt-6 mb-5'>Estabelecimentos</Text>
                 <CardConfig
-                    icon="add-circle-outline"
+                    icon="MaterialIcons;add-circle-outline"
                     title="Novo Estabelecimento"
                     subtitle="Cadastrar um novo estabelecimento"
                     style="h-16 w-full rounded-2xl flex-row items-center justify-between"
@@ -60,7 +60,7 @@ const MenuGeralEstabelecimento = () => {
                         <ListaEstabelecimento
                             estabelecimentos={estabelecimentos}
                             onPress={(estabelecimento) => router.push({
-                                pathname: '/(estabelecimento)/menu/[id]',
+                                pathname: '/(estabelecimento)/menuDetalhado',
                                 params: { estabelecimento: JSON.stringify(estabelecimento) }
                             })}
                             loading={loading} />

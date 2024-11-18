@@ -2,15 +2,16 @@ import IconUsuario from '@components/iconUsuario';
 import Constants from 'expo-constants';
 import { SafeAreaView, ScrollView, StatusBar, Text, View } from 'react-native';
 import { CardConfig } from '@components/cardConfig';
-import NotificationCard from '@components/cardNotification';
 import { router } from 'expo-router';
 import { useContext, useEffect, useState } from 'react';
 import { UsuarioContext } from '@context/usuarioContext';
 import Loading from '@/src/components/loading';
 import BotaoPressable from '@/src/components/botoes/botaoPressable';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const statusBarHeight = Constants.statusBarHeight;
-const { bucketUrl, userDefaultImage } = Constants.expoConfig.extra;
+const bucketUrl = Constants.expoConfig?.extra?.bucketUrl || '';
+const userDefaultImage = Constants.expoConfig?.extra?.userDefaultImage || '';
 
 export default function Perfil() {
 	const [loading, setLoading] = useState(false);
@@ -25,7 +26,7 @@ export default function Perfil() {
 	const { usuario, setUsuario } = context;
 
 	useEffect(() => {
-		if (usuario != null && usuario[0] !== null) {
+		if (usuario != null && usuario.length > 0 && usuario[0] !== null) {
 			setLogado(true);
 			if (usuario[0].nome)
 				setNome(usuario[0].nome);
@@ -54,40 +55,43 @@ export default function Perfil() {
 				{logado ? (
 					<View>
 						<CardConfig
-							icon="person"
+							icon="MaterialIcons;person"
 							title="Minha conta"
 							subtitle="Meus dados"
 							style='h-16 w-full rounded-2xl flex-row items-center justify-between px-4'
 							onPress={() => router.push('/(usuario)/editar')}
 						/>
 						<CardConfig
-							icon="wallet"
+							icon="MaterialIcons;wallet"
 							title="Pagamentos"
 							subtitle="Informações de pagamento"
 							style='h-16 w-full rounded-2xl flex-row items-center justify-between px-4'
-							onPress={() => console.log("Clicou em Pagamentos")}
+							onPress={() => { /*console.log("Clicou em Pagamentos")*/ }}
 						/>
 						<CardConfig
-							icon="notifications"
+							icon="MaterialIcons;notifications"
 							title="Notificações"
 							subtitle="Minha central de notificações"
 							style='h-16 w-full rounded-2xl flex-row items-center justify-between px-4'
-							onPress={() => router.navigate('/notification')}
+							onPress={() => { /*router.navigate('/notification')*/ }}
 						/>
 						<CardConfig
-							icon="history"
-							title="Histórico"
-							subtitle="Meu histórico de alocações"
-							style='h-16 w-full rounded-2xl flex-row items-center justify-between px-4'
-							onPress={() => console.log("Clicou em Histórico")}
-						/>
-						<CardConfig
-							icon="sports-tennis"
+							icon="MaterialIcons;sports-tennis"
 							title="Estabelecimento"
 							subtitle="Meu estabelecimento"
 							style="h-16 w-full rounded-2xl flex-row items-center justify-between px-4"
-							onPress={() => {
-								router.push('/(estabelecimento)/menu')
+							onPress={() => { router.push('/(estabelecimento)/menu') }}
+						/>
+						<CardConfig
+							icon="MaterialIcons;logout"
+							title="Logout"
+							subtitle="Sair da minha Conta"
+							style='h-16 w-full rounded-2xl flex-row items-center justify-between px-4'
+							onPress={async () => {
+								await AsyncStorage.setItem("access_token", "");
+								setUsuario(null);
+								router.replace("/");
+
 							}}
 						/>
 					</View>

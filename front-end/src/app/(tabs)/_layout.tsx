@@ -1,34 +1,31 @@
 import { Tabs } from 'expo-router'
-import { Ionicons } from '@expo/vector-icons'
+import Icone from '@/src/components/icone';
 
-type TabName = "Inicio" | "Buscar" | "Mapa" | "Reservas" | "Perfil";
-type IconName = "home" | "home-outline" | "search" | "search-outline" | "map" | "map-outline" | "calendar" | "calendar-outline" | "person" | "person-outline";
-
-const tabData: { route: string, name: TabName, iconFocused: IconName, iconUnfocused: IconName }[] = [{
+const tabData: { route: string, name: string, iconFocused: string, iconUnfocused: string }[] = [{
 	route: "inicio",
 	name: "Inicio",
-	iconFocused: "home",
-	iconUnfocused: "home-outline"
+	iconFocused: "MaterialCommunityIcons;home",
+	iconUnfocused: "MaterialCommunityIcons;home-outline"
 }, {
 	route: "busca",
 	name: "Buscar",
-	iconFocused: "search",
-	iconUnfocused: "search-outline"
+	iconFocused: "Ionicons;search",
+	iconUnfocused: "Ionicons;search-outline"
 }, {
 	route: "mapa",
 	name: "Mapa",
-	iconFocused: "map",
-	iconUnfocused: "map-outline"
+	iconFocused: "MaterialCommunityIcons;map-marker",
+	iconUnfocused: "MaterialCommunityIcons;map-marker-outline"
 }, {
 	route: "reserva",
 	name: "Reservas",
-	iconFocused: "calendar",
-	iconUnfocused: "calendar-outline"
+	iconFocused: "Ionicons;calendar-clear",
+	iconUnfocused: "Ionicons;calendar-clear-outline"
 }, {
 	route: "perfil",
 	name: "Perfil",
-	iconFocused: "person",
-	iconUnfocused: "person-outline"
+	iconFocused: "Ionicons;person",
+	iconUnfocused: "Ionicons;person-outline"
 }];
 
 export default function TabLayout() {
@@ -47,11 +44,10 @@ export default function TabLayout() {
 							tabBarActiveTintColor: "#f97316",
 							tabBarInactiveTintColor: "#000000",
 							tabBarIcon: ({ color, focused }) => (
-								<Ionicons
-									name={focused ? tab.iconFocused : tab.iconUnfocused}
+								<Icone
+									icone={focused ? tab.iconFocused : tab.iconUnfocused}
 									color={color}
 									size={28}
-									style={{ marginBottom: -3 }}
 								/>
 							)
 						}}

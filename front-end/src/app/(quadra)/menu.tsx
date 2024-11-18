@@ -74,7 +74,7 @@ export default function MenuQuadra() {
             <View className='flex-1 px-4'>
                 <Text className='font-bold text-3xl mt-6 mb-5'>Quadras</Text>
                 <CardConfig
-                    icon="add-circle-outline"
+                    icon="MaterialIcons;add-circle-outline"
                     title="Nova Quadra"
                     subtitle="Cadastrar uma nova quadra"
                     style="h-16 w-full rounded-2xl flex-row items-center justify-between"

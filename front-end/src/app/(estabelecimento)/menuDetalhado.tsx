@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, SafeAreaView, ScrollView, ActivityIndicator, StatusBar, Modal, TouchableOpacity, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, useLocalSearchParams } from 'expo-router';
-import ListaQuadrasEstabelecimento from '@/src/components/listaQuadrasEstabelecimento';
 import SetaVoltar from '@/src/components/setaVoltar';
 import { CardConfig } from '@components/cardConfig';
 import Constants from 'expo-constants';
@@ -74,18 +73,6 @@ export default function MenuEstabelecimento() {
         }
     };
 
-    const handleReservas = () => {
-        if (estabelecimento?.idkey) {
-            router.push({ pathname: '/reserva', params: { id: estabelecimento.idkey } });
-        } else {
-            Toast.show({
-                type: 'error',
-                text1: 'Erro ao buscar as reservas',
-                text2: 'Estabelecimento não encontrado.',
-            })
-        }
-    };
-
     if (loadingQuadras) {
         return (
             <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -103,14 +90,14 @@ export default function MenuEstabelecimento() {
                     <>
                         <Text style={{ fontSize: 24, fontWeight: 'bold', marginVertical: 16 }}>{estabelecimento.nome}</Text>
                         <CardConfig
-                            icon={'history'}
+                            icon={'MaterialIcons;history'}
                             title={'Reservas'}
                             subtitle={'Ver reservas ativas e histórico'}
                             style="h-16 w-full rounded-2xl flex-row items-center justify-between"
-                            onPress={handleReservas}
+                            onPress={() => router.push({ pathname: '/(estabelecimento)/reserva', params: { idkeyEstabelecimento: estabelecimento.idkey } })}
                         />
                         <CardConfig
-                            icon={'sports-tennis'}
+                            icon={'MaterialIcons;sports-tennis'}
                             title={'Quadras'}
                             subtitle={'Ver Quadras cadastradas'}
                             style="h-16 w-full rounded-2xl flex-row items-center justify-between"
@@ -123,7 +110,7 @@ export default function MenuEstabelecimento() {
                             }}
                         />
                         <CardConfig
-                            icon={'create'}
+                            icon={'MaterialIcons;create'}
                             title={'Editar Estabelecimento'}
                             subtitle={'Editar o Estabelecimento Atual'}
                             style='h-16 w-full rounded-2xl flex-row items-center justify-between'
@@ -133,7 +120,7 @@ export default function MenuEstabelecimento() {
                             })}
                         />
                         <CardConfig
-                            icon={'highlight-remove'}
+                            icon={'MaterialIcons;highlight-remove'}
                             title={'Deletar Estabelecimento'}
                             subtitle={'Deletar o Estabelecimento Atual'}
                             style='h-16 w-full rounded-2xl flex-row items-center justify-between'

@@ -8,7 +8,7 @@ export interface LocationCourtProps {
     endereco: EnderecoProps;
 }
 
-export default function LocationEstabelecimento({ markerTitle, endereco }: LocationCourtProps) {
+export default function LocalizacaoEstabelecimento({ markerTitle, endereco }: LocationCourtProps) {
     const [location, setLocation] = useState({
         latitude: 0,
         longitude: 0,

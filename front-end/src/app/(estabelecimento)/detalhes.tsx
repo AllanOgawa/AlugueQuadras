@@ -2,11 +2,11 @@ import globalStyles from '@/src/styles/globalStyles';
 import { Text, View, StyleSheet, Animated, ScrollView } from 'react-native';
 import { useNavigation, useLocalSearchParams, router } from 'expo-router';
 import { useState, useEffect } from 'react';
-import CarouselQuadra from '@components/carouselQuadra';
+import Carousel from '@/src/components/carousel';
 import HorizontalLine from '@components/horizontalLine';
 import TextoExpandivel from '@components/textoExpandivel';
 import Acomodacoes from '@components/acomodacoes';
-import LocationEstabelecimento from '@components/localizacaoEstabelecimento';
+import LocalizacaoEstabelecimento from '@components/localizacaoEstabelecimento';
 import HorarioEstabelecimento from '@components/horarioEstabelecimento';
 import BotaoPressable from '@components/botoes/botaoPressable';
 import AvaliacoesEstabelecimento from '@components/avaliacoesEstabelecimento';
@@ -105,12 +105,12 @@ export default function Estabelecimento() {
                     { useNativeDriver: false }
                 )}
             >
-                <CarouselQuadra imagemQuadra={estabelecimento.imagens} />
+                <Carousel imagens={estabelecimento.imagens} />
 
                 <View className='px-4 mb-5'>
                     <View className="flex-row py-4">
                         <View className="flex-1 justify-center">
-                            <Text numberOfLines={3} className='font-semibold text-2xl color-black'>
+                            <Text numberOfLines={3} className='font-semibold text-3xl color-black'>
                                 {estabelecimento.nome}
                             </Text>
                         </View>
@@ -118,7 +118,7 @@ export default function Estabelecimento() {
                         {/* <View className='flex justify-center'>
                             <View className="ml-4 flex justify-center items-center rounded-2xl  bg-secondary h-14 w-14">
                                 <Text className='font-semibold text-2xl color-white'>
-                                    {estabelecimento.avaliacao} 
+                                    4.5
                                 </Text>
                             </View>
                         </View> */}
@@ -126,7 +126,6 @@ export default function Estabelecimento() {
 
                     {estabelecimento.acomodacoes &&
                         <Acomodacoes acomodacoes={estabelecimento.acomodacoes} />}
-
 
                     <HorizontalLine margin={28} />
                     <ScrollView showsVerticalScrollIndicator={false}>
@@ -144,7 +143,7 @@ export default function Estabelecimento() {
                     {estabelecimento.endereco &&
                         <View>
                             <Text className='font-bold text-xl mb-5 mt-2'>Localização do Estabelecimento</Text>
-                            <LocationEstabelecimento
+                            <LocalizacaoEstabelecimento
                                 markerTitle={estabelecimento.nome}
                                 endereco={estabelecimento.endereco}
                             />

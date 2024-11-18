@@ -35,7 +35,6 @@ export default function TelaLogin() {
             duration: 3000,
             easing: Easing.out(Easing.exp),
         });
-
         translateY.value = withTiming(0, {
             duration: 3000,
             easing: Easing.out(Easing.exp),
@@ -49,6 +48,7 @@ export default function TelaLogin() {
             if (value !== null && value !== "") {
                 handleLogin(value);
             } else {
+                setUsuario([]);
                 setLoading(false);
             }
         } catch (e) {

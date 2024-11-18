@@ -4,7 +4,7 @@ import MaisVisitados from "@/src/components/estabelecimentosMaisVisitados";
 import { Feather } from '@expo/vector-icons';
 
 import Constants from 'expo-constants'
-import { FilterSport } from "@components/filterSport";
+import FiltroEsportes from "@/src/components/filtroEsportes";
 import IconUsuario from "@components/iconUsuario";
 import Loading from '@components/loading';
 import { useLocalSearchParams, router } from "expo-router";
@@ -28,10 +28,10 @@ export default function Inicio() {
 	if (!context) {
 		throw new Error("YourComponent must be used within an ArrayProvider");
 	}
-	const { usuario, setUsuario } = context;
+	const { usuario } = context;
 
 	useEffect(() => {
-		if (usuario != null && usuario[0] !== null) {
+		if (usuario != null && usuario.length > 0 && usuario[0] !== null) {
 			setLogado(true);
 			if (usuario[0].nome)
 				setNome("Olá! " + usuario[0].nome);
@@ -63,16 +63,10 @@ export default function Inicio() {
 								}}
 							>
 								<IconUsuario image={`${bucketUrl}/${imagem}`} style="w-16 h-16 rounded-full border-2 border-black" />
-								{/* <Feather
-									name="bell"
-									size={16}
-									color="#FF7300"
-									className="absolute top-0 right-0 p-1" // Posiciona o sino sobre a imagem
-								/> */}
 							</Pressable>
 						</View>
 					</View>
-					<FilterSport />
+					<FiltroEsportes />
 					<Banner />
 					<MaisVisitados />
 				</View>
