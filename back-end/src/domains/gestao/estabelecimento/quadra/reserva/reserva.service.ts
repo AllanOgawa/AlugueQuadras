@@ -93,7 +93,7 @@ export class ReservaService {
     async findAllByUser(userId: number): Promise<Reserva[]> {
         try {
             const reservas = await this.reservaRepository.find({
-                where: { usuario: { idkey: userId }, cancelada: false },
+                where: { usuario: { idkey: userId } },
                 relations: ['quadra', 'quadra.estabelecimento'],
             });
 
