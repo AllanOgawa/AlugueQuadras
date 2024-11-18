@@ -439,6 +439,8 @@ export class EstabelecimentoService {
                 .createQueryBuilder('estabelecimento')
                 .leftJoinAndSelect('estabelecimento.quadras', 'quadra')
                 .leftJoinAndSelect('quadra.tiposEsporte', 'tipoEsporte')
+                .leftJoinAndSelect('estabelecimento.endereco', 'endereco')
+                .leftJoinAndSelect('estabelecimento.imagens', 'imagem')
                 .where('tipoEsporte.idkey = :tipoEsporteId', { tipoEsporteId })
                 .getMany();
 
