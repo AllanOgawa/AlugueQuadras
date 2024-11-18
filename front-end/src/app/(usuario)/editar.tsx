@@ -1,5 +1,5 @@
 import globalStyles from '@/src/styles/globalStyles';
-import { SafeAreaView, ScrollView, StatusBar, Text, TextInput, View } from 'react-native';
+import { Alert, SafeAreaView, ScrollView, StatusBar, Text, TextInput, View } from 'react-native';
 import { useContext, useEffect, useRef, useState } from 'react';
 import Constants from 'expo-constants'
 import SetaVoltar from '@components/setaVoltar';
@@ -10,14 +10,21 @@ import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { UsuarioContext } from '@context/usuarioContext';
-import UploadImage from '@components/UploadImagem';
+import UploadImage from '@/src/components/uploadImagem';
+import BotaoPressable from '@/src/components/botoes/botaoPressable';
+import HorizontalLine from '@/src/components/horizontalLine';
 
-const { apiUrl, bucketUrl } = Constants.expoConfig.extra;
+const extraConfig = Constants.expoConfig?.extra as { apiUrl: string; bucketUrl: string } | undefined;
+if (!extraConfig) {
+    throw new Error("Missing configuration");
+}
+const { apiUrl, bucketUrl } = extraConfig;
 
 export default function UsuarioEditar() {
     const [loading, setLoading] = useState(false);
     const [nome, setNome] = useState('');
     const [username, setUsername] = useState('');
+    const [usernameAnterior, setUsernameAnterior] = useState('');
     const [email, setEmail] = useState('');
     const [cpf, setCpf] = useState('');
     const [dtNascimento, setDtNascimento] = useState('');
@@ -26,8 +33,8 @@ export default function UsuarioEditar() {
     const [imagensExistentes, setImagensExistentes] = useState<string[]>([]);
     const [imagensToAdd, setImagensToAdd] = useState<string[]>([]);
     const [imagensToRemove, setImagensToRemove] = useState<string[]>([]);
-    const [accessToken, setAccessToken] = useState('');
     const [okHandleLinksImagens, setOkHandleLinksImagens] = useState(false);
+    const [accessToken, setAccessToken] = useState('');
 
     const context = useContext(UsuarioContext);
     if (!context) {
@@ -43,8 +50,10 @@ export default function UsuarioEditar() {
         if (usuario != null && usuario[0] !== null) {
             if (usuario[0].nome)
                 setNome(usuario[0].nome);
-            if (usuario[0].username)
+            if (usuario[0].username) {
                 setUsername(usuario[0].username);
+                setUsernameAnterior(usuario[0].username);
+            }
             if (usuario[0].email)
                 setEmail(usuario[0].email);
             if (usuario[0].cpf)
@@ -89,6 +98,7 @@ export default function UsuarioEditar() {
         }
 
         if (isValid) getAcessToken();
+        else setLoading(false);
     };
 
     async function getAcessToken() {
@@ -126,7 +136,21 @@ export default function UsuarioEditar() {
     }
 
     async function editarUsuario() {
-
+        let body;
+        if (username == usernameAnterior) {
+            body = {
+                nome: nome,
+                imagensToAdd: imagensToAdd,
+                imagensToRemove: imagensToRemove
+            }
+        } else {
+            body = {
+                nome: nome,
+                username: username,
+                imagensToAdd: imagensToAdd,
+                imagensToRemove: imagensToRemove
+            }
+        }
         try {
             const response = await fetch(`${apiUrl}/auth/profile/edit`, {
                 method: 'PATCH',
@@ -134,12 +158,7 @@ export default function UsuarioEditar() {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${accessToken}`,
                 },
-                body: JSON.stringify({
-                    // nome: nome,
-                    // username: username,
-                    imagensToAdd: imagensToAdd,
-                    imagensToRemove: imagensToRemove
-                }),
+                body: JSON.stringify(body),
             });
 
             const data = await response.json();
@@ -152,20 +171,16 @@ export default function UsuarioEditar() {
                 router.replace('/(tabs)/perfil');
                 setUsuario([data]);
             } else {
-                console.error('Erro no edit da conta', data);
-                Toast.show({
-                    type: 'error',
-                    text1: "Alteração de Conta Falhou",
-                    text2: data.message,
-                });
+                Alert.alert(
+                    "Alteração de Conta Falhou",
+                    data.message
+                );
             }
         } catch (error) {
-            console.error('Erro de rede', error);
-            Toast.show({
-                type: 'error',
-                text1: "Erro de Rede",
-                text2: String(error),
-            });
+            Alert.alert(
+                "Erro de Rede",
+                String(error)
+            );
         } finally {
             setLoading(false);
         }
@@ -222,16 +237,47 @@ export default function UsuarioEditar() {
                         value={dtNascimento}
                         editable={false}
                     />
+                    <Input
+                        className='mb-1'
+                        label="Senha:"
+                        value={"********"}
+                        editable={false}
+                    />
+                    <BotaoPressable
+                        title={'Alterar Senha'}
+                        className='mb-5 bg-secondary p-2 rounded-2xl active:bg-secondary/50 w-[100%]'
+                        classNameTitle="text-white text-center text-lg"
+                        onPress={() => router.push({
+                            pathname: '/(usuario)/editarSenha',
+                            params: { email: email },
+                        })} />
+
+                    <HorizontalLine margin={14} />
+
+                    <Text className='text-lg'>
+                        Imagem:
+                    </Text>
+
                     <UploadImage
                         ref={uploadImageRef}
                         pastaBucket="usuario"
                         multipasImagens={false}
                         imagensExistentes={imagensExistentes}
                         linksImagens={handleLinksImagens}
-                        btClassName='mt-4 bg-roxo p-2 rounded-2xl active:bg-roxo/80 mx-4 w-[100%]'
+                        btClassName='mt-1 bg-roxo p-2 rounded-2xl active:bg-roxo/80 mx-4 w-[100%]'
                         btClassNameTitle="text-white text-center text-lg"
                     />
                 </View>
+
+                <View className='px-4'>
+                    <HorizontalLine margin={28} />
+                </View>
+
+                <BotaoPressable
+                    title={'Deletar Conta'}
+                    className='mt-10 bg-red-600 p-4 rounded-2xl active:bg-red-700 mx-4'
+                    classNameTitle="text-white text-center text-xl"
+                    onPress={() => { console.log("Deletar Usuario") }} />
             </ScrollView>
 
             <View style={globalStyles.buttonContainer}>

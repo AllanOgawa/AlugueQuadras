@@ -1,16 +1,22 @@
-import { Dimensions, Pressable, Image, SafeAreaView } from 'react-native';
+import { Dimensions, View, Image, SafeAreaView } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import { useEffect, useState } from 'react';
-import * as data from '@/db.json';
 import { ImagemProps } from '@src/interfaces/image';
+import Constants from 'expo-constants';
 
+const bucketUrl = Constants.expoConfig?.extra?.bucketUrl || '';
 
 export default function Banner() {
     const width = Dimensions.get('window').width;
-    const [banners, setBanner] = useState<ImagemProps[]>([])
+    const [banners, setBanner] = useState<string[]>([])
 
     useEffect(() => {
-        setBanner(data.banner)
+        setBanner([
+            `${bucketUrl}/public-storage/outros/banner2.png`,
+            `${bucketUrl}/public-storage/outros/banner5.png`,
+            `${bucketUrl}/public-storage/outros/banner3.png`,
+            `${bucketUrl}/public-storage/outros/banner4.png`,
+        ])
     }, [])
 
     return (
@@ -23,18 +29,17 @@ export default function Banner() {
                 autoPlayInterval={8000}
                 data={banners}
                 scrollAnimationDuration={1000}
-                renderItem={({ item }: { item: ImagemProps }) => (
-                    <Pressable
+                renderItem={({ item, index }: { item: string, index: number }) => (
+                    <View
                         className='w-full h-48 rounded-2xl'
-                        key={item.id}
-                        onPress={() => console.log("Clicou banner " + item.id)}
+                        key={index}
                     >
                         <Image
-                            source={{ uri: item.image }}
+                            source={{ uri: item }}
                             className='w-[92.5%] h-48 rounded-2xl'
                         >
                         </Image>
-                    </Pressable>
+                    </View>
                 )
                 }
             />

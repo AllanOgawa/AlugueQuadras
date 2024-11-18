@@ -2,26 +2,8 @@ import { AcomodacoesProps } from "./acomodacoes";
 import { AvaliacaoProps } from "./avaliacao";
 import { HorarioProps } from "./horario";
 import { QuadraProps } from "./quadra";
-
-export interface EnderecoProps {
-    idkey: number;
-    logradouro: string;
-    numero: string;
-    complemento: string;
-    bairro: string;
-    cidade: string;
-    estado: string;
-    cep: string;
-    dataCadastro: string;
-    dataAtualizacao: string;
-}
-
-
-export interface ImagemProps {
-    idkey: number;
-    path: string;
-    dataCadastro: string;
-}
+import { EnderecoProps } from "./endereco";
+import { ImagemProps } from "./image";
 
 export interface EstabelecimentoProps {
     idkey: number;               // Usando o campo "idkey" diretamente
@@ -33,8 +15,11 @@ export interface EstabelecimentoProps {
     alvara: string;              // "alvara"
     dataCadastro: string;        // "dataCadastro" (ISO string format)
     dataAtualizacao: string;     // "dataAtualizacao" (ISO string format)
+    sobre: string;
     endereco: EnderecoProps;     // Objeto de endereço, conforme detalhado
     imagens: ImagemProps[];      // Lista de imagens
-    quadras: QuadraProps[];
+    quadras?: QuadraProps[];
+    acomodacoes: AcomodacoesProps[];
+    horariosFuncionamento: HorarioProps[];
 }
 

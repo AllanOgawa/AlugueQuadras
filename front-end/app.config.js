@@ -6,16 +6,15 @@ export default {
     slug: "AlugueQuadras",
     version: "1.0.0",
     orientation: "portrait",
-    icon: "./assets/images/icon.png",
     scheme: "myapp",
     userInterfaceStyle: "automatic",
     extra: {
       apiUrl: process.env.API_URL_BACKEND,
       bucketUrl: process.env.API_URL_BUCKET,
       userDefaultImage: process.env.USER_DEFAULT_IMAGE,
+      googleMapsApiKey: process.env.API_GOOGLE_MAPS
     },
     splash: {
-      image: "./assets/images/splash.png",
       resizeMode: "contain",
       backgroundColor: "#ffffff"
     },
@@ -24,7 +23,6 @@ export default {
     },
     android: {
       adaptiveIcon: {
-        foregroundImage: "./assets/images/adaptive-icon.png",
         backgroundColor: "#ffffff"
       },
       config: {
@@ -35,8 +33,7 @@ export default {
     },
     web: {
       bundler: "metro",
-      output: "static",
-      favicon: "./assets/images/favicon.png"
+      output: "static"
     },
     plugins: [
       "expo-router"

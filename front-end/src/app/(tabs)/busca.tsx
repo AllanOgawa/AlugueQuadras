@@ -1,74 +1,180 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, RefreshControl } from 'react-native';
 import Constants from 'expo-constants';
-import ListaEstabelecimento from '@/src/components/listaEstabelecimento';
 import { MaterialIcons } from '@expo/vector-icons';
+import Toast from 'react-native-toast-message';
+import ListaEstabelecimentoBusca from '@/src/components/listaEstabelecimentoBusca';
+import { EstabelecimentoProps } from '@/src/interfaces/estabelecimento';
+import { router, useLocalSearchParams } from 'expo-router';
 
+const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
 const statusBarHeight = Constants.statusBarHeight;
 
-interface SearchBarProps {
-    search: string;
-    setSearch: (text: string) => void;
-}
-interface FilterButtonProps {
-    title: string;
-}
-
 export default function Busca() {
+    const { tipoEsporteSelecionado } = useLocalSearchParams();
     const [search, setSearch] = useState('');
+    const [estabelecimentos, setEstabelecimentos] = useState<EstabelecimentoProps[]>([]);
+    const [filteredEstabelecimentos, setFilteredEstabelecimentos] = useState<EstabelecimentoProps[]>([]);
+    const [tipoEsportes, setTipoEsportes] = useState<any[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
+    const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
 
-    function handleEstablishmentPress(estabelecimento: any) {
-        console.log('clicado', estabelecimento);
-    }
+    async function fetchEstabelecimentos() {
+        setLoading(true);
+        try {
+            const response = await fetch(`${apiUrl}/estabelecimento/list`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            const data = await response.json();
+            setEstabelecimentos(data);
+            setFilteredEstabelecimentos(data);
+        } catch (error) {
+            Toast.show({
+                type: 'error',
+                text1: 'Erro',
+                text2: 'Não foi possível carregar os estabelecimentos.',
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchFilteredEstabelecimentos = async (filterId: number) => {
+        setLoading(true);
+        try {
+            const response = await fetch(`${apiUrl}/estabelecimento/tipo-esporte/${filterId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            });
+            const data = await response.json();
+
+            if (response.status !== 200 || !Array.isArray(data)) {
+                setFilteredEstabelecimentos([]);
+            } else {
+                setFilteredEstabelecimentos(data);
+            }
+        } catch (error) {
+            Toast.show({
+                type: 'error',
+                text1: 'Erro',
+                text2: 'Ocorreu um erro inesperado.',
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    async function fetchTipoEsportes() {
+        setLoading(true);
+        try {
+            const response = await fetch(`${apiUrl}/estabelecimento/quadra/tipo-esporte/list`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            });
+            const data = await response.json();
+            setTipoEsportes(data);
+        } catch (error) {
+            Toast.show({
+                type: 'error',
+                text1: 'Erro',
+                text2: 'Não foi possível carregar os estabelecimentos.',
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        const results = estabelecimentos.filter((estabelecimento) =>
+            estabelecimento.nome.toLowerCase().includes(search.toLowerCase())
+        );
+        setFilteredEstabelecimentos(results);
+    }, [search, estabelecimentos]);
+
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        fetchEstabelecimentos().then(() => setRefreshing(false));
+    }, []);
+
+    useEffect(() => {
+        if (typeof tipoEsporteSelecionado == "string") {
+            fetchFilteredEstabelecimentos(JSON.parse(tipoEsporteSelecionado).idkey);
+            setSelectedFilter(JSON.parse(tipoEsporteSelecionado).descricao);
+        } else {
+            setSelectedFilter(null);
+            setFilteredEstabelecimentos(estabelecimentos);
+        }
+    }, [tipoEsporteSelecionado]);
+
+    useEffect(() => {
+        fetchEstabelecimentos();
+        fetchTipoEsportes();
+    }, []);
 
     return (
         <View style={styles.container}>
-            <Header />
-            <SearchBar search={search} setSearch={setSearch} />
-            <ScrollView>
-                <ListaEstabelecimento
-                    onPress={handleEstablishmentPress}
-                    options={{
-                        showImage: true,
-                        showAvaliacao: true,
-                        showPreco: true,
-                        showAcomodacoes: true,
-                    }} />
+            <View style={styles.header}>
+                <MaterialIcons name="location-pin" size={20} color="#FF6600" />
+                <Text style={styles.locationText}>Localização atual</Text>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterContainer}>
+                    {tipoEsportes.map((filter) => {
+                        const isActive = selectedFilter === filter.descricao;
+                        const backgroundColor = isActive ? '#FF6600' : '#B0B0B0';
+                        return (
+                            <TouchableOpacity
+                                key={filter.idkey}
+                                style={[styles.filterButton, { backgroundColor }]}
+                                onPress={() => {
+                                    const newFilter = selectedFilter === filter.descricao ? null : filter.descricao;
+                                    setSelectedFilter(newFilter);
+                                    if (newFilter) {
+                                        fetchFilteredEstabelecimentos(filter.idkey);
+                                    }
+                                    if (newFilter == null) {
+                                        setFilteredEstabelecimentos(estabelecimentos);
+                                    }
+                                }}
+                            >
+                                <Text style={styles.filterText}>{filter.descricao}</Text>
+                            </TouchableOpacity>
+                        );
+                    })}
+                </ScrollView>
+            </View>
+            <View style={styles.searchContainer}>
+                <MaterialIcons name="search" size={20} color="#666" style={styles.icon} />
+                <TextInput
+                    style={styles.searchBar}
+                    placeholder="Buscar"
+                    value={search}
+                    onChangeText={setSearch}
+                />
+            </View>
+            <ScrollView
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+            >
+                <ListaEstabelecimentoBusca
+                    estabelecimentos={filteredEstabelecimentos}
+                    loading={loading}
+                    onPress={(estabelecimento) => router.navigate({
+                        pathname: '/(estabelecimento)/detalhes',
+                        params: { idEstabelecimento: estabelecimento.idkey }
+                    })}
+                />
             </ScrollView>
         </View>
     );
-}
+};
 
-const Header = () => (
-    <View style={styles.header}>
-        <MaterialIcons name='location-pin' size={20} color={"#FF6600"} />
-        <Text style={styles.locationText}> Localização atual</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterContainer}>
-            {['Beach Tennis', 'Voleibol', 'Tênis', 'Coberto'].map((filter, index) => (
-                <FilterButton key={index} title={filter} />
-            ))}
-        </ScrollView>
-    </View>
-);
-
-const FilterButton: React.FC<FilterButtonProps> = ({ title }) => (
-    <TouchableOpacity style={styles.filterButton}>
-        <Text style={styles.filterText}>{title}</Text>
-    </TouchableOpacity>
-);
-
-const SearchBar: React.FC<SearchBarProps> = ({ search, setSearch }) => (
-    <View style={styles.searchContainer}>
-        <MaterialIcons name="search" size={20} color="#666" style={styles.icon} />
-        <TextInput
-            style={styles.searchBar}
-            placeholder="Buscar"
-            value={search}
-            onChangeText={setSearch}
-        />
-    </View>
-);
-
+// Estilos
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -89,7 +195,6 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     filterButton: {
-        backgroundColor: '#FF6600',
         paddingHorizontal: 15,
         paddingVertical: 8,
         borderRadius: 20,

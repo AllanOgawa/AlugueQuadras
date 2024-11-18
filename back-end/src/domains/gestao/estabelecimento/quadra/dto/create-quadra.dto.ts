@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsOptional, IsNumber, IsArray } from 'class-validator';
+import { IsNotEmpty, IsString, IsOptional, IsNumber, IsArray, IsBoolean } from 'class-validator';
 
 export class CreateQuadraDto {
   @ApiProperty({
@@ -48,6 +48,14 @@ export class CreateQuadraDto {
   comprimento: number;
 
   @ApiProperty({
+    description: 'Indica se a quadra é coberta',
+    example: true,
+    type: Boolean,
+  })
+  @IsBoolean({ message: 'O campo coberta deve ser um booleano.' })
+  coberta: boolean;
+
+  @ApiProperty({
     description: 'ID do estabelecimento ao qual a quadra pertence',
     example: 5,
     type: Number,
@@ -55,11 +63,11 @@ export class CreateQuadraDto {
   @IsNumber({}, { message: 'O campo idkeyEstabelecimento deve ser um número.' })
   @IsNotEmpty({ message: 'O campo idkeyEstabelecimento não pode estar vazio.' })
   idkeyEstabelecimento: number; // ID do estabelecimento ao qual a quadra pertence
-  
-  @ApiProperty({ 
-    description: 'Lista de imagens para adicionar.', 
-    example: ['estabelecimento/imagem1.jpg', 'estabelecimento/imagem2.png'], 
-    required: false 
+
+  @ApiProperty({
+    description: 'Lista de imagens para adicionar.',
+    example: ['estabelecimento/imagem1.jpg', 'estabelecimento/imagem2.png'],
+    required: false
   })
   @IsArray()
   @IsString({ each: true })

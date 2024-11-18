@@ -14,6 +14,7 @@ export default function RootLayout() {
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="(usuario)" options={{ headerShown: false }} />
+        <Stack.Screen name="(reserva)" options={{ headerShown: false }} />
         {/* <Stack.Screen name="(screens)" options={{ headerShown: false }} /> */}
         <Stack.Screen name="(quadra)" options={{ headerShown: false }} />
         <Stack.Screen name="(estabelecimento)" options={{ headerShown: false }} />

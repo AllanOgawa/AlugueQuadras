@@ -1,5 +1,5 @@
 import globalStyles from '@/src/styles/globalStyles';
-import { SafeAreaView, ScrollView, StatusBar, Text, TextInput, View } from 'react-native';
+import { Alert, SafeAreaView, ScrollView, StatusBar, Text, TextInput, View } from 'react-native';
 import { useContext, useRef, useState } from 'react';
 import Constants from 'expo-constants'
 import SetaVoltar from '@components/setaVoltar';
@@ -14,6 +14,7 @@ import { router } from 'expo-router';
 import { UsuarioContext } from '@context/usuarioContext';
 
 const apiUrl = Constants.expoConfig?.extra?.apiUrl || '';
+const userDefaultImage = Constants.expoConfig?.extra?.userDefaultImage || '';
 
 export default function UsuarioCadastro() {
     const [loading, setLoading] = useState(false);
@@ -190,20 +191,16 @@ export default function UsuarioCadastro() {
                 });
                 success = true;
             } else {
-                console.error('Erro no cadastro', data);
-                Toast.show({
-                    type: 'error',
-                    text1: "Cadastro Falhou",
-                    text2: data.message,
-                });
+                Alert.alert(
+                    "Cadastro Falhou",
+                    data.message
+                );
             }
         } catch (error) {
-            console.error('Erro de rede', error);
-            Toast.show({
-                type: 'error',
-                text1: "Erro de Rede",
-                text2: String(error),
-            });
+            Alert.alert(
+                "Erro de Rede",
+                String(error)
+            );
         } finally {
             setLoading(false);
             if (success) {
@@ -233,20 +230,16 @@ export default function UsuarioCadastro() {
                 accessToken = data.access_token;
                 setAccessToken(data.access_token);
             } else {
-                console.error('Erro no login', data);
-                Toast.show({
-                    type: 'error',
-                    text1: "Login Falhou",
-                    text2: data.message,
-                });
+                Alert.alert(
+                    "Login Falhou",
+                    data.message
+                );
             }
         } catch (error) {
-            console.error('Erro de rede', error);
-            Toast.show({
-                type: 'error',
-                text1: "Erro de Rede",
-                text2: String(error),
-            });
+            Alert.alert(
+                "Erro de Rede",
+                String(error)
+            );
         } finally {
             setLoading(false);
             if (accessToken != "") {
@@ -269,20 +262,14 @@ export default function UsuarioCadastro() {
             const data = await response.json();
 
             if (response.ok) {
-                Toast.show({
-                    type: 'success',
-                    text1: "Login Bem-Sucedido",
-                });
                 setUsuario([data]);
                 router.replace('/(tabs)/inicio');
             }
         } catch (error) {
-            console.error('Erro de rede', error);
-            Toast.show({
-                type: 'error',
-                text1: "Erro de Rede",
-                text2: String(error),
-            });
+            Alert.alert(
+                "Erro de Rede",
+                String(error)
+            );
         } finally {
             setLoading(false);
         }

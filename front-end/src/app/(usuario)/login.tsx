@@ -1,4 +1,4 @@
-import { SafeAreaView, ScrollView, StatusBar, Text, TextInput, View } from 'react-native';
+import { Alert, SafeAreaView, ScrollView, StatusBar, Text, TextInput, View } from 'react-native';
 import { useContext, useRef, useState } from 'react';
 import Constants from 'expo-constants'
 import { router } from 'expo-router';
@@ -54,7 +54,10 @@ export default function UsuarioLogin() {
             isValid = false;
         }
 
-        if (!isValid) return;
+        if (!isValid) {
+            setLoading(false);
+            return;
+        }
 
         try {
             const response = await fetch(`${apiUrl}/auth/login`, {
@@ -74,25 +77,21 @@ export default function UsuarioLogin() {
                 setAccessToken(data.access_token);
                 accessToken = data.access_token;
             } else {
-                console.error('Erro no login', data);
-                Toast.show({
-                    type: 'error',
-                    text1: "Login Falhou",
-                    text2: data.message,
-                });
+                Alert.alert(
+                    "Login Falhou",
+                    data.message
+                );
             }
         } catch (error) {
-            console.error('Erro de rede', error);
-            Toast.show({
-                type: 'error',
-                text1: "Erro de Rede",
-                text2: String(error),
-            });
+            Alert.alert(
+                "Erro de Rede",
+                String(error)
+            );
         } finally {
+            setLoading(false);
             if (accessToken != "") {
                 getProfile(accessToken)
             }
-            setLoading(false);
         }
     };
 
@@ -118,12 +117,10 @@ export default function UsuarioLogin() {
                 router.replace('/(tabs)/inicio');
             }
         } catch (error) {
-            console.error('Erro de rede', error);
-            Toast.show({
-                type: 'error',
-                text1: "Erro de Rede",
-                text2: String(error),
-            });
+            Alert.alert(
+                "Erro de Rede",
+                String(error)
+            );
         } finally {
             setLoading(false);
         }
@@ -145,6 +142,7 @@ export default function UsuarioLogin() {
                         ref={usernameInputRef}
                         label="Username/Email:"
                         obrigatorio
+                        autoCapitalize='none'
                         keyboardType="email-address"
                         errorMessage={errorUsername}
                         value={username}
@@ -157,6 +155,7 @@ export default function UsuarioLogin() {
                         ref={senhaInputRef}
                         label="Senha:"
                         obrigatorio
+                        autoCapitalize='none'
                         errorMessage={errorSenha}
                         value={senha}
                         onChangeText={setSenha}
@@ -170,7 +169,6 @@ export default function UsuarioLogin() {
                     title={'Login'}
                     className='bg-primary p-4 rounded-2xl active:bg-secondary mx-4 mt-20'
                     classNameTitle='text-white text-center text-xl'
-                    // onPress={handleSubmit}
                     onPress={handleSubmit}
                 />
                 <BotaoPressable
