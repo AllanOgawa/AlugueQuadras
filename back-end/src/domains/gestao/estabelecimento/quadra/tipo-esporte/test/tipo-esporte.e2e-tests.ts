@@ -66,7 +66,6 @@ export default function (getApp: () => INestApplication) {
     it('/estabelecimento/quadra/tipo-esporte/list (GET) - deve listar todos os Tipos de Esporte', async () => {
       const response = await request(app.getHttpServer())
         .get('/estabelecimento/quadra/tipo-esporte/list')
-        .set('Authorization', `Bearer ${jwtToken}`)
         .expect(200);
 
       expect(Array.isArray(response.body)).toBe(true);

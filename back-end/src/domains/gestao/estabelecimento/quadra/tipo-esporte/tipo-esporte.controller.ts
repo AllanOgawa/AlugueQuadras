@@ -9,12 +9,12 @@ import { UpdateTipoEsporteDto } from './dto/update-tipo-esporte.dto';
 import { CreateTipoEsporteArrayDto } from './dto/create-array-tipo-esporte.dto';
 
 @ApiTags('Tipo Esporte')
-@UseGuards(JwtAuthGuard)
 @Controller('estabelecimento/quadra/tipo-esporte')
 export class TipoEsporteController {
   constructor(private readonly tipoEsporteService: TipoEsporteService) { }
 
   @Post('new')
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Criar um novo Tipo de Esporte' })
   @ApiResponse({ status: 201, description: 'Tipo de Esporte criado com sucesso', type: TipoEsporte })
@@ -36,6 +36,8 @@ export class TipoEsporteController {
   }
 
   @Post('new/array')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Criar novos Tipos de Esporte em lote' })
   @ApiResponse({ status: 201, description: 'Tipos de Esporte criados com sucesso', type: TipoEsporte, isArray: true })
   @ApiResponse({ status: 400, description: 'Dados inválidos' })
@@ -56,7 +58,6 @@ export class TipoEsporteController {
   }
 
   @Get('list')
-  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Buscar todos Tipos Esportes' })
   @ApiResponse({ status: 200, description: 'Tipos Esportes encontrado', type: TipoEsporte, isArray: true })
   @ApiResponse({ status: 500, description: 'Erro ao buscar Tipo Esporte' })
@@ -73,6 +74,7 @@ export class TipoEsporteController {
   }
 
   @Put('edit/:idkey')
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Atualizar um Tipo de Esporte existente' })
   @ApiResponse({ status: 200, description: 'Tipo de Esporte atualizado com sucesso', type: TipoEsporte })
@@ -96,6 +98,7 @@ export class TipoEsporteController {
   }
 
   @Delete('remove/:idkey')
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Deletar um Tipo de Esporte existente' })
   @ApiResponse({ status: 200, description: 'Tipo de Esporte deletado com sucesso' })

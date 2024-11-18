@@ -27,7 +27,7 @@ import { Reserva } from './entities/reserva.entity';
 @ApiTags('Reserva')
 @Controller('estabelecimento/quadra/reserva')
 export class ReservaController {
-    constructor(private readonly reservaService: ReservaService) {}
+    constructor(private readonly reservaService: ReservaService) { }
 
     @Post('new')
     @UseGuards(JwtAuthGuard)
@@ -152,37 +152,35 @@ export class ReservaController {
             );
         }
     }
- 
 
-  @Get('quadra/:quadraIdkey/available-slots')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access-token')
-  @ApiOperation({
-    summary: 'Listar horários disponíveis para uma quadra específica',
-  })
-  @ApiParam({
-    name: 'quadraIdkey',
-    description: 'ID da quadra para a qual listar os horários disponíveis',
-    example: 1,
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Horários disponíveis retornados com sucesso',
-  })
-  @ApiResponse({ status: 404, description: 'Quadra não encontrada' })
-  @ApiResponse({
-    status: 500,
-    description: 'Erro ao buscar horários disponíveis',
-  })
-  async findAvailableSlots(@Param('quadraIdkey') quadraIdkey: number) {
-    try {
-      return await this.reservaService.findAvailableSlots(quadraIdkey);
-    } catch (error) {
-      console.error('Erro ao buscar horários disponíveis:', error.message);
-      throw new HttpException(
-        'Erro ao buscar horários disponíveis',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+
+    @Get('quadra/:quadraIdkey/available-slots')
+    @ApiOperation({
+        summary: 'Listar horários disponíveis para uma quadra específica',
+    })
+    @ApiParam({
+        name: 'quadraIdkey',
+        description: 'ID da quadra para a qual listar os horários disponíveis',
+        example: 1,
+    })
+    @ApiResponse({
+        status: 200,
+        description: 'Horários disponíveis retornados com sucesso',
+    })
+    @ApiResponse({ status: 404, description: 'Quadra não encontrada' })
+    @ApiResponse({
+        status: 500,
+        description: 'Erro ao buscar horários disponíveis',
+    })
+    async findAvailableSlots(@Param('quadraIdkey') quadraIdkey: number) {
+        try {
+            return await this.reservaService.findAvailableSlots(quadraIdkey);
+        } catch (error) {
+            console.error('Erro ao buscar horários disponíveis:', error.message);
+            throw new HttpException(
+                'Erro ao buscar horários disponíveis',
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
     }
-  }
 }
