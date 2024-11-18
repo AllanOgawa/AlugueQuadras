@@ -16,7 +16,10 @@ export default function EstabelecimentoLayout() {
 			<Stack.Screen name="cadastrarEditar" options={{
 				headerShown: false, headerTitle: "Cadastro", animation: "ios"
 			}} />
-			<Stack.Screen name="menu/[id]" options={{
+			<Stack.Screen name="menuDetalhado" options={{
+				headerShown: false, animation: "ios"
+			}} />
+			<Stack.Screen name="reserva" options={{
 				headerShown: false, animation: "ios"
 			}} />
 		</Stack>

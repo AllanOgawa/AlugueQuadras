@@ -5,6 +5,8 @@ import Constants from 'expo-constants';
 import HorizontalLine from './horizontalLine';
 import { Ionicons } from '@expo/vector-icons';
 import Loading from './loading';
+import { QuadraProps } from '../interfaces/quadra';
+import Estabelecimento from '../app/(estabelecimento)/detalhes';
 
 const { width, height } = Dimensions.get('window');
 const bucketUrl = Constants.expoConfig?.extra?.bucketUrl || '';
@@ -30,6 +32,34 @@ const ListaEstabelecimentoBusca: React.FC<Props> = ({ estabelecimentos, onPress,
         setSelectedImage(null);
     };
 
+
+
+    function formatarValorQuadras(quadras: QuadraProps[]): string {
+        const valores = quadras.map(quadra => Number(quadra.valor));
+        const menorValor = Math.min(...valores);
+        const maiorValor = Math.max(...valores);
+
+        if (menorValor === maiorValor) {
+            return `R$ ${menorValor.toLocaleString("pt-BR", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            })}`;
+        }
+        return `R$ ${menorValor.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        })} - R$ ${maiorValor.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        })}`;
+    }
+
+    function getTipoEsportes(quadras: QuadraProps[]): string {
+        const allDescriptions = quadras.flatMap(quadra => quadra.tiposEsporte.map(esporte => esporte.descricao));
+        const uniqueDescriptions = Array.from(new Set(allDescriptions)); // Remove repetições
+        return uniqueDescriptions.join(', '); // Junta as descrições com vírgula e espaço
+    }
+
     const renderEstabelecimento = (estabelecimento: EstabelecimentoProps) => (
         <View key={estabelecimento.idkey}>
             <Pressable onPress={() => onPress(estabelecimento)} className='flex flex-row w-full'>
@@ -53,12 +83,12 @@ const ListaEstabelecimentoBusca: React.FC<Props> = ({ estabelecimentos, onPress,
                             {estabelecimento.endereco.logradouro}, {estabelecimento.endereco.numero} - {estabelecimento.endereco.bairro}, {estabelecimento.endereco.cidade} - {(estabelecimento.endereco.estado).toLocaleUpperCase()}
                         </Text>
                     </View>
-                    <View>
-                        <Text className='text-base leading-4 color-gray-600' numberOfLines={2}>
-                            {estabelecimento.email}
+                    <View >
+                        <Text className='text-lg font-bold' numberOfLines={2}>
+                            {estabelecimento.quadras ? formatarValorQuadras(estabelecimento.quadras) : ""}
                         </Text>
                         <Text className='text-base leading-4 color-gray-600' numberOfLines={2}>
-                            {estabelecimento.telefone}
+                            {estabelecimento.quadras ? getTipoEsportes(estabelecimento.quadras) : ""}
                         </Text>
                     </View>
                 </View>

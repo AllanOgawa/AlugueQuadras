@@ -56,7 +56,7 @@ export default function SelecaoPagamento() {
     }, [estabelecimento]);
 
     useEffect(() => {
-        if (usuario != null && usuario[0] !== null) {
+        if (usuario != null && usuario.length > 0 && usuario[0] !== null) {
             setLogado(true);
         }
         setLoading(false);
@@ -64,8 +64,8 @@ export default function SelecaoPagamento() {
 
     if (!logado) {
         return (
-            <View>
-                <Text className='text-xl text-center p-4 mt-[130px]'>Parece que você ainda não está logado em uma conta, deseja logar?</Text>
+            <View className='bg-white flex-1 justify-center'>
+                <Text className='text-xl text-center p-4'>Parece que você ainda não está logado em uma conta, deseja logar?</Text>
                 <BotaoPressable
                     title={'Logar'}
                     className='mt-3 bg-primary p-4 rounded-2xl active:bg-secondary mx-4'

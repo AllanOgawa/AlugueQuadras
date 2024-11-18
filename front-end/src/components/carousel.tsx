@@ -11,7 +11,7 @@ const { width, height } = Dimensions.get('window');
 
 const bucketUrl = Constants.expoConfig?.extra?.bucketUrl || '';
 
-export default function CarouselQuadra({ imagemQuadra }: { imagemQuadra: ImagemProps[] }) {
+export default function Carousel({ imagens }: { imagens: ImagemProps[] }) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const scrollX = useRef(new Animated.Value(0)).current;
@@ -39,12 +39,12 @@ export default function CarouselQuadra({ imagemQuadra }: { imagemQuadra: ImagemP
                 )}
                 scrollEventThrottle={16}
             >
-                {imagemQuadra.map((item, index) => (
+                {imagens.map((item, index) => (
                     <Pressable key={index} onPress={() => openModal(index)}>
                         <View className='justify-center items-center' style={{ width: width }}>
                             <Image source={{ uri: `${bucketUrl}/${item.path}` }} resizeMode="cover" className='w-full h-64' />
                             <View className="flex-row absolute bottom-0 self-center">
-                                {imagemQuadra.map((_, i) => {
+                                {imagens.map((_, i) => {
                                     const opacity = scrollX.interpolate({
                                         inputRange: [
                                             (i - 1) * width,
@@ -85,7 +85,7 @@ export default function CarouselQuadra({ imagemQuadra }: { imagemQuadra: ImagemP
                         )}
                         scrollEventThrottle={16}
                     >
-                        {imagemQuadra.map((item, index) => (
+                        {imagens.map((item, index) => (
                             <View key={index} style={{ width: width }} className='justify-center items-center'>
                                 <Image source={{ uri: `${bucketUrl}/${item.path}` }} style={styles.fullscreenImage} />
                             </View>

@@ -4,8 +4,6 @@ import { useLocalSearchParams } from 'expo-router';
 import { EstabelecimentoProps } from '@/src/interfaces/estabelecimento';
 import { useEffect, useState } from 'react';
 
-import * as data from '@/db.json';
-
 export default function Avaliacoes() {
     const { idEstabelecimento } = useLocalSearchParams();
     const [isLoading, setLoading] = useState(true);
@@ -13,7 +11,7 @@ export default function Avaliacoes() {
 
     useEffect(() => {
         try {
-            setEstabelecimento(data.estabelecimento.find(item => item.id == idEstabelecimento))
+            // setEstabelecimento(data.estabelecimento.find(item => item.id == idEstabelecimento))
         } catch (error) {
             console.error(error);
         } finally {
@@ -24,7 +22,7 @@ export default function Avaliacoes() {
     return (
         <ScrollView className='px-4 py-4 bg-white'>
             <StatusBar barStyle="dark-content" backgroundColor="white" />
-            {isLoading ? (
+            {/* {isLoading ? (
                 <ActivityIndicator />
             ) : (
                 <AvaliacoesEstabelecimento
@@ -33,7 +31,7 @@ export default function Avaliacoes() {
                     avaliacaoMedia={estabelecimento?.avaliacao}
                     telaCheia={true}
                 />
-            )}
+            )} */}
         </ScrollView>
     );
 }

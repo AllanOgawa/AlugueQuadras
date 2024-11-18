@@ -6,4 +6,7 @@ export interface ReservasProps {
     dataFim: string;
     cancelada: boolean;
     quadra: QuadraProps;
+    usuario?: {
+        username: string;
+    }
 }
