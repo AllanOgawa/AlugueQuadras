@@ -46,6 +46,7 @@ export default function (getApp: () => INestApplication) {
           { descricao: 'Futebol' },
           { descricao: 'Basquete' },
           { descricao: 'Vôlei' },
+          { descricao: 'Beach Tennis' },
         ],
       };
 
@@ -56,7 +57,7 @@ export default function (getApp: () => INestApplication) {
         .expect(201);
 
       expect(Array.isArray(response.body)).toBe(true);
-      expect(response.body.length).toBe(3);
+      expect(response.body.length).toBe(4);
       response.body.forEach((tipo: any, index: number) => {
         expect(tipo).toHaveProperty('idkey');
         expect(tipo.descricao).toBe(tiposEsporteArray.tiposEsporte[index].descricao);

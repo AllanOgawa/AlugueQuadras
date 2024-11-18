@@ -12,6 +12,7 @@ import auth from '@src/domains/auth/test/auth.e2e-tests';
 import tipoEsporte from '@src/domains/gestao/estabelecimento/quadra/tipo-esporte/test/tipo-esporte.e2e-tests';
 import acomodacao from '@src/domains/gestao/estabelecimento/acomodacao/test/acomodacao.e2e-tests';
 import estabelecimento from '@src/domains/gestao/estabelecimento/test/estabelecimento.e2e-tests';
+import quadra from '@src/domains/gestao/estabelecimento/quadra/test/quadra.e2e-test';
 
 const env = process.env.NODE_ENV;
 const envFilePath = path.resolve(process.cwd(), `env/${env}.env`);
@@ -53,6 +54,6 @@ describe('App E2E Tests (Ordered by Dependency)', () => {
     tipoEsporte(() => app);
     acomodacao(() => app);
     estabelecimento(() => app);
+    quadra(() => app);
   });
-
 });
