@@ -44,10 +44,11 @@ export default function PagamentoPix() {
             if (!response.ok) {
                 Alert.alert(
                     "Falha ao realizar Reserva",
-                    data.message
+                    String(data.message)
                 );
             }
         } catch (error) {
+            console.log(error)
             Alert.alert(
                 "Erro de Rede",
                 String(error)

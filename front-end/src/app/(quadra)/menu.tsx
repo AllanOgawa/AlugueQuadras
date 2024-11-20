@@ -1,12 +1,11 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, SafeAreaView, ScrollView, ActivityIndicator, StyleSheet } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { View, Text, SafeAreaView, ScrollView, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import { useLocalSearchParams, router } from 'expo-router';
 import SetaVoltar from '@components/setaVoltar';
 import { CardConfig } from '@components/cardConfig';
 import Constants from 'expo-constants';
-import Toast from 'react-native-toast-message';
 import { QuadraProps } from '@/src/interfaces/quadra';
 import ListaQuadras from '@components/listaQuadras';
 

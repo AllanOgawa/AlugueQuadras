@@ -50,7 +50,7 @@ export default function SelecaoPagamento() {
                 setDataFim(`${dayjs(data).format('YYYY-MM-DD')}T${horaFim}:00.000Z`);
             }
         } catch (error) {
-            console.error("Erro ao parsear dados:", error);
+            console.log("Erro ao parsear dados:", error);
         }
         setLoading(false);
     }, [estabelecimento]);

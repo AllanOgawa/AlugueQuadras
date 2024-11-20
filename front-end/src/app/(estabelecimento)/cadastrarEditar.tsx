@@ -144,7 +144,7 @@ export default function EstabelecimentoCadastro() {
                 }
             }
         } catch (error) {
-            console.error("Erro ao parsear estabelecimento:", error);
+            console.log("Erro ao parsear estabelecimento:", error);
         } finally {
             setLoading(false);
             fetchAcomodacoes();
@@ -309,7 +309,7 @@ export default function EstabelecimentoCadastro() {
                 Alert.alert(`Erro ao encontrar endereço: ${response.data.status}`);
             }
         } catch (error) {
-            console.error('Erro ao buscar coordenadas:', error);
+            console.log('Erro ao buscar coordenadas:', error);
         } finally {
             setLoading(false);
             if (sucesso)
@@ -323,10 +323,10 @@ export default function EstabelecimentoCadastro() {
                 await uploadImageRef.current.uploadAllImages();
 
             } catch (error) {
-                console.error('Erro ao carregar imagens', error);
+                console.log('Erro ao carregar imagens', error);
             }
         } else {
-            console.error('UploadImage ref não está definida.');
+            console.log('UploadImage ref não está definida.');
         }
         setLoading(false);
     }
@@ -429,7 +429,7 @@ export default function EstabelecimentoCadastro() {
                     Toast.show({ type: 'error', text1: 'Falha no Cadastro', text2: data.message });
             }
         } catch (error) {
-            console.error('Erro ao gravar Estabelecimento', error);
+            console.log('Erro ao gravar Estabelecimento', error);
         } finally {
             setLoading(false);
         }

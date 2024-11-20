@@ -20,7 +20,7 @@ export default function Icone({ icone, color, size, biblioteca = "" }: IconeProp
     const IconComponent = vectorIcons[library as keyof typeof vectorIcons];
 
     if (!IconComponent || typeof IconComponent !== 'function') {
-        console.warn(`Biblioteca ou ícone inválido: ${library}, ${iconName}`);
+        console.log(`Biblioteca ou ícone inválido: ${library}, ${iconName}`);
         return null;
     }
 

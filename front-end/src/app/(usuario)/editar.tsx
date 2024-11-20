@@ -111,7 +111,7 @@ export default function UsuarioEditar() {
                 setLoading(false);
             }
         } catch (e) {
-            console.error('Erro ao obter dados', e);
+            console.log('Erro ao obter dados', e);
         }
     };
 
@@ -121,10 +121,10 @@ export default function UsuarioEditar() {
                 await uploadImageRef.current.uploadAllImages();
 
             } catch (error) {
-                console.error('Erro ao carregar imagens', error);
+                console.log('Erro ao carregar imagens', error);
             }
         } else {
-            console.error('UploadImage ref não está definida.');
+            console.log('UploadImage ref não está definida.');
         }
         setLoading(false);
     }
@@ -269,7 +269,7 @@ export default function UsuarioEditar() {
                     />
                 </View>
 
-                <View className='px-4'>
+                {/* <View className='px-4'>
                     <HorizontalLine margin={28} />
                 </View>
 
@@ -277,7 +277,7 @@ export default function UsuarioEditar() {
                     title={'Deletar Conta'}
                     className='mt-10 bg-red-600 p-4 rounded-2xl active:bg-red-700 mx-4'
                     classNameTitle="text-white text-center text-xl"
-                    onPress={() => { console.log("Deletar Usuario") }} />
+                    onPress={() => { console.log("Deletar Usuario") }} /> */}
             </ScrollView>
 
             <View style={globalStyles.buttonContainer}>
