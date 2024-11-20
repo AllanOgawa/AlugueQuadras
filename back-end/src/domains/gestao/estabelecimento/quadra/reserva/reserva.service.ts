@@ -22,7 +22,7 @@ export class ReservaService {
 
         @Inject(forwardRef(() => QuadraService))
         private readonly quadraService: QuadraService,
-    ) { }
+    ) {}
 
     async create(
         usuario: any,
@@ -225,35 +225,32 @@ export class ReservaService {
                     hora < horarioFim;
                     hora.setHours(hora.getHours() + 1)
                 ) {
-                    const horaInicioStr = hora.toTimeString().slice(0, 8);
+                    const horaInicioStr = hora.toISOString();
                     const horaFim = new Date(hora);
                     horaFim.setHours(hora.getHours() + 1);
-                    const horaFimStr = horaFim.toTimeString().slice(0, 8);
+                    const horaFimStr = horaFim.toISOString();
 
                     const isDisponivel = !reservasDia.some((reserva) => {
+                        const reservaInicio = new Date(
+                            reserva.dataInicio,
+                        ).toISOString();
+                        const reservaFim = new Date(
+                            reserva.dataFim,
+                        ).toISOString();
                         const conflitoInicio =
-                            reserva.dataInicio <= hora &&
-                            reserva.dataFim > hora;
+                            reservaInicio <= horaInicioStr &&
+                            reservaFim > horaInicioStr;
                         const conflitoFim =
-                            reserva.dataInicio < horaFim &&
-                            reserva.dataFim >= horaFim;
-
-                        if (conflitoInicio || conflitoFim) {
-                            console.log('Conflito encontrado para horário:', {
-                                horaInicio: horaInicioStr,
-                                horaFim: horaFimStr,
-                                reservaInicio: reserva.dataInicio,
-                                reservaFim: reserva.dataFim,
-                            });
-                        }
+                            reservaInicio < horaFimStr &&
+                            reservaFim >= horaFimStr;
 
                         return conflitoInicio || conflitoFim;
                     });
 
                     if (isDisponivel) {
                         horasDisponiveis.push({
-                            horaInicio: horaInicioStr,
-                            horaFim: horaFimStr,
+                            horaInicio: horaInicioStr.slice(11, 19), // Convertendo de volta para formato de hora
+                            horaFim: horaFimStr.slice(11, 19),
                         });
                     }
                 }
