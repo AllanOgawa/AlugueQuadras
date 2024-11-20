@@ -152,9 +152,8 @@ export default function UsuarioCadastro() {
     async function setAccessToken(access_token: string) {
         try {
             await AsyncStorage.setItem("access_token", access_token);
-            console.log('Dados armazenados no localStorage com sucesso');
         } catch (e) {
-            console.error('Erro ao salvar dados', e);
+            console.log('Erro ao salvar dados', e);
         }
     };
 
@@ -183,7 +182,6 @@ export default function UsuarioCadastro() {
             const data = await response.json();
 
             if (response.ok) {
-                console.log(data)
                 Toast.show({
                     type: 'success',
                     text1: "Cadastro Realizado com Sucesso",

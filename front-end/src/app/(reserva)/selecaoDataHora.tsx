@@ -42,7 +42,7 @@ export default function SelecaoDataHora() {
                 setParsedQuadra(JSON.parse(quadra));
             }
         } catch (error) {
-            console.error("Erro ao parsear dados:", error);
+            console.log("Erro ao parsear dados:", error);
         }
         setLoading(false);
     }, [estabelecimento]);
@@ -69,7 +69,7 @@ export default function SelecaoDataHora() {
                 setHoraDataDisponiveis(data);
             }
         } catch (error) {
-            console.error('Erro de rede', error);
+            console.log('Erro de rede', error);
             Toast.show({
                 type: 'error',
                 text1: "Erro de Rede",

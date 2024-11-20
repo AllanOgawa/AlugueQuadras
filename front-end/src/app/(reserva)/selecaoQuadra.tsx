@@ -19,7 +19,7 @@ export default function SelecaoDataHora() {
                 setParsedEstabelecimento(JSON.parse(estabelecimento));
             }
         } catch (error) {
-            console.error("Erro ao parsear estabelecimento:", error);
+            console.log("Erro ao parsear estabelecimento:", error);
         }
         setLoading(false);
     }, [estabelecimento]);

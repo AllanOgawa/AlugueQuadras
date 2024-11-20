@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, SafeAreaView, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, SafeAreaView, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ListaEstabelecimento from '@/src/components/listaEstabelecimento';
 import { router } from 'expo-router';
@@ -34,7 +34,7 @@ const MenuGeralEstabelecimento = () => {
 
             setEstabelecimentos(data);
         } catch (error) {
-            console.error('Erro ao buscar estabelecimentos:', error);
+            console.log('Erro ao buscar estabelecimentos:', error);
         } finally {
             setLoading(false);
         }

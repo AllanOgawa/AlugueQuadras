@@ -1,12 +1,10 @@
-import { Text, View, StyleSheet, ActivityIndicator, TouchableOpacity, Button, Pressable, Image } from 'react-native';
+import { Text, View, StyleSheet, ActivityIndicator } from 'react-native';
 import MapView, { Marker, Callout } from 'react-native-maps';
 import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import { ObterLocalizacao } from '@components/obterLocalizacao';
 import Constants from 'expo-constants';
 import { EstabelecimentoProps } from '@/src/interfaces/estabelecimento';
-import BotaoTouchableOpacity from '@/src/components/botoes/botaoTouchableOpacity';
-import BotaoPressable from '@/src/components/botoes/botaoPressable';
 import { Colors } from '@/src/constants/Colors';
 
 const statusBarHeight = Constants.statusBarHeight;
@@ -56,7 +54,7 @@ export default function Mapa() {
       if (!response.ok) throw new Error('Erro ao buscar estabelecimentos');
       setEstabelecimentos(data);
     } catch (error) {
-      console.error('Erro ao buscar estabelecimentos:', error);
+      console.log('Erro ao buscar estabelecimentos:', error);
     } finally {
       setLoading(false);
     }

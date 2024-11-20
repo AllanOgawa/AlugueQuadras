@@ -1,15 +1,13 @@
-import { Alert, Pressable, SafeAreaView, ScrollView, StatusBar, Text, View, Image } from 'react-native'
+import { Alert, SafeAreaView, ScrollView, StatusBar, Text, View, Image } from 'react-native'
 import Constants from 'expo-constants'
 import { useEffect, useState } from 'react';
 import Loading from '@components/loading';
 import { ReservasProps } from '@/src/interfaces/reservas';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import BotaoPressable from '@/src/components/botoes/botaoPressable';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import HorizontalLine from '@/src/components/horizontalLine';
-import AvaliacaoEstrelas from '@/src/components/avaliacaoEstrelas';
 import SetaVoltar from '@/src/components/setaVoltar';
 
 const statusBarHeight = Constants.statusBarHeight;

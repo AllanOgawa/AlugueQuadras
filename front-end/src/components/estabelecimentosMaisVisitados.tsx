@@ -1,7 +1,6 @@
 import { FlatList, Pressable, Text, Image, SafeAreaView, View } from 'react-native';
 import { useEffect, useState } from 'react'
 import { router } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import Loading from './loading';
 
@@ -30,7 +29,7 @@ export default function MaisVisitados() {
 
 			setEstabelecimentos(data);
 		} catch (error) {
-			console.error('Erro ao buscar estabelecimentos:', error);
+			console.log('Erro ao buscar estabelecimentos:', error);
 		} finally {
 			setLoading(false);
 		}

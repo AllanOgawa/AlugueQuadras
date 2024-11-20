@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, SafeAreaView, ScrollView, ActivityIndicator, StatusBar, Modal, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, SafeAreaView, ActivityIndicator, StatusBar, Modal, TouchableOpacity, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, useLocalSearchParams } from 'expo-router';
 import SetaVoltar from '@/src/components/setaVoltar';
@@ -37,7 +37,7 @@ const removerEstabelecimento = async (id: number | undefined) => {
             router.replace('/menu');
         }, 600);
     } catch (error) {
-        console.error(error);
+        console.log(error);
         Toast.show({
             type: 'error',
             text1: 'Erro ao remover o estabelecimento',
@@ -105,7 +105,7 @@ export default function MenuEstabelecimento() {
                                 if (estabelecimento?.idkey) {
                                     router.push({ pathname: '/(quadra)/menu', params: { idEstabelecimento: estabelecimento.idkey.toString() } });
                                 } else {
-                                    console.warn('ID do estabelecimento não encontrado');
+                                    console.log('ID do estabelecimento não encontrado');
                                 }
                             }}
                         />

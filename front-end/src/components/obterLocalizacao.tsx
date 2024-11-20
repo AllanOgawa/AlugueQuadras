@@ -4,7 +4,6 @@ export async function ObterLocalizacao() {
   // Solicitar permissões de localização
   let { status } = await Location.requestForegroundPermissionsAsync();
   if (status !== 'granted') {
-    console.log('Permissão para acessar localização não permitida');
     return null;
   }
 
@@ -28,7 +27,6 @@ export async function ObterLocalizacao() {
       city,
     };
   } else {
-    console.log('Não foi possível obter a localização.');
     return null;
   }
 }

@@ -9,7 +9,6 @@ import Acomodacoes from '@components/acomodacoes';
 import LocalizacaoEstabelecimento from '@components/localizacaoEstabelecimento';
 import HorarioEstabelecimento from '@components/horarioEstabelecimento';
 import BotaoPressable from '@components/botoes/botaoPressable';
-import AvaliacoesEstabelecimento from '@components/avaliacoesEstabelecimento';
 import { EstabelecimentoProps } from '@src/interfaces/estabelecimento';
 import Constants from 'expo-constants';
 import Loading from '@components/loading';
@@ -75,7 +74,7 @@ export default function Estabelecimento() {
 
             setEstabelecimento(data);
         } catch (error) {
-            console.error('Erro ao buscar estabelecimentos:', error);
+            console.log('Erro ao buscar estabelecimentos:', error);
         } finally {
             setLoading(false);
         }
@@ -151,14 +150,6 @@ export default function Estabelecimento() {
                     }
 
                     <HorizontalLine margin={28} />
-                    {/* <Text className='font-bold text-xl mb-7'>Avaliações</Text> */}
-                    {/* <AvaliacoesEstabelecimento
-                        idEstabelecimento={estabelecimento.id}
-                        avaliacoes={estabelecimento.avaliacoes}
-                        avaliacaoMedia={estabelecimento.avaliacao}
-                        telaCheia={false}
-                    /> */}
-
                     <Text className='font-bold text-xl mb-5'>Horário de Funcionamento</Text>
                     <HorarioEstabelecimento horarios={estabelecimento.horariosFuncionamento} />
 
