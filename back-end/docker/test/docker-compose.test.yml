@@ -11,6 +11,8 @@ services:
     command: ["node", "-r", "dotenv/config", "dist/src/main.js", "dotenv_config_path=env/test.env"]
     networks:
       - nginx_proxy
+    volumes:
+      - /mnt/api-aluguequadras/test:/app/data
 
 networks:
   nginx_proxy:
