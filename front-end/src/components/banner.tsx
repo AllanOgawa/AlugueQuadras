@@ -1,7 +1,6 @@
 import { Dimensions, View, Image, SafeAreaView } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import { useEffect, useState } from 'react';
-import { ImagemProps } from '@src/interfaces/image';
 import Constants from 'expo-constants';
 
 const bucketUrl = Constants.expoConfig?.extra?.bucketUrl || '';

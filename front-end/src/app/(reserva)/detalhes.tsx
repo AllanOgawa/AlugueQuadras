@@ -1,5 +1,5 @@
-import { SafeAreaView, StatusBar, Text, View, Image, Modal, Pressable, Alert, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
-import { JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal, useEffect, useState } from 'react';
+import { SafeAreaView, StatusBar, Text, View, Image, Modal, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { useEffect, useState } from 'react';
 import Constants from 'expo-constants'
 import { router, useLocalSearchParams } from 'expo-router';
 import SetaVoltar from '@components/setaVoltar';
@@ -38,7 +38,7 @@ export default function DetalhesReserva() {
                 setParsedEstabelecimento(JSON.parse(reserva).quadra.estabelecimento);
             }
         } catch (error) {
-            console.error("Erro ao parsear dados:", error);
+            console.log("Erro ao parsear dados:", error);
         }
         setLoading(false);
     }, [reserva]);
@@ -56,7 +56,7 @@ export default function DetalhesReserva() {
                 }
             }
         } catch (error) {
-            console.error("Erro ao parsear dados:", error);
+            console.log("Erro ao parsear dados:", error);
         }
         setLoading(false);
     }, [parsedReserva]);

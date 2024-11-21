@@ -73,7 +73,7 @@ export default function UsuarioCadastro() {
                 setLoading(false);
             }
         } catch (e) {
-            console.error('Erro ao obter dados', e);
+            console.log('Erro ao obter dados', e);
         }
     };
 
@@ -81,7 +81,7 @@ export default function UsuarioCadastro() {
         try {
             await AsyncStorage.setItem("access_token", access_token);
         } catch (e) {
-            console.error('Erro ao salvar dados', e);
+            console.log('Erro ao salvar dados', e);
         }
     };
 
@@ -105,7 +105,6 @@ export default function UsuarioCadastro() {
             const data = await response.json();
 
             if (response.ok) {
-                console.log(data)
                 Toast.show({
                     type: 'success',
                     text1: "Senha Alterada com Sucesso",

@@ -111,7 +111,7 @@ const UploadImage = forwardRef(({
             const value = await AsyncStorage.getItem("access_token");
             return value || null;
         } catch (e) {
-            console.error('Erro ao obter dados', e);
+            console.log('Erro ao obter dados', e);
             return null;
         }
     }
@@ -165,7 +165,7 @@ const UploadImage = forwardRef(({
                 sucesso = true;
             }
         } catch (error) {
-            console.error('Erro de rede getUploadUrl', error);
+            console.log('Erro de rede getUploadUrl', error);
             Toast.show({
                 type: 'error',
                 text1: "Erro de Rede",
@@ -197,14 +197,13 @@ const UploadImage = forwardRef(({
             });
 
             if (response.ok) {
-                console.log('Imagem enviada com sucesso!');
                 sucesso = true;
             } else {
                 const errorText = await response.text();
                 console.log(`Falha no upload: ${response.status}\n${errorText}`);
             }
         } catch (error) {
-            console.error('Erro no upload:', error);
+            console.log('Erro no upload:', error);
             Toast.show({
                 type: 'error',
                 text1: "Erro de Rede",

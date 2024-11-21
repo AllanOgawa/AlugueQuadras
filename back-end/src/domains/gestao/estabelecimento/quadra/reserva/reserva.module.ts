@@ -6,11 +6,13 @@ import { ReservaService } from './reserva.service';
 import { ReservaController } from './reserva.controller';
 import { IsEndAfterStart } from './validators/is-end-after-start.validator';
 import { QuadraModule } from '../quadra.module';
+import { HorarioFuncionamentoModule } from '../../horario-funcionamento/horario-funcionamento.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Reserva]),
-    forwardRef(() => QuadraModule)
+    forwardRef(() => QuadraModule),
+    HorarioFuncionamentoModule,
   ],
   controllers: [ReservaController],
   providers: [ReservaService, IsEndAfterStart],

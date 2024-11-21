@@ -52,16 +52,15 @@ export default function TelaLogin() {
                 setLoading(false);
             }
         } catch (e) {
-            console.error('Erro ao obter dados', e);
+            console.log('Erro ao obter dados', e);
         }
     };
 
     async function setAccessToken(access_token: string) {
         try {
             await AsyncStorage.setItem("access_token", access_token);
-            console.log('Dados armazenados no localStorage com sucesso');
         } catch (e) {
-            console.error('Erro ao salvar dados', e);
+            console.log('Erro ao salvar dados', e);
         }
     };
 
@@ -85,7 +84,7 @@ export default function TelaLogin() {
                 setAccessToken("");
             }
         } catch (error) {
-            console.error('Erro de rede', error);
+            console.log('Erro de rede', error);
             setAccessToken("");
             Toast.show({
                 type: 'error',

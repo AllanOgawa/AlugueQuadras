@@ -62,7 +62,6 @@ export default function CadastroQuadra() {
                 const parsedQuadra = (JSON.parse(quadra));
 
                 if (quadra) {
-                    console.log(parsedQuadra.idkey)
                     setIdkeyQuadra(parsedQuadra.idkey || null);
                     setNome(parsedQuadra.nome || '');
                     setValor(parsedQuadra.valor || '');
@@ -84,7 +83,7 @@ export default function CadastroQuadra() {
                 }
             }
         } catch (error) {
-            console.error("Erro ao parsear estabelecimento:", error);
+            console.log("Erro ao parsear estabelecimento:", error);
         } finally {
             setLoading(false);
             fetchEsportes();
@@ -158,10 +157,10 @@ export default function CadastroQuadra() {
                 await uploadImageRef.current.uploadAllImages();
 
             } catch (error) {
-                console.error('Erro ao carregar imagens', error);
+                console.log('Erro ao carregar imagens', error);
             }
         } else {
-            console.error('UploadImage ref não está definida.');
+            console.log('UploadImage ref não está definida.');
         }
         setLoading(false);
     }
@@ -184,7 +183,7 @@ export default function CadastroQuadra() {
                 coberta: coberta,
                 idkeyEstabelecimento: Number(idEstabelecimento),
                 imagensToAdd: imagensToAdd,
-                tipoEsporteToAdd: esportesToAdd
+                tiposEsporteToAdd: esportesToAdd
             };
         else {
             body = {
@@ -200,7 +199,6 @@ export default function CadastroQuadra() {
                 tipoEsporteToRemove: esportesToRemove
             };
         }
-
         gravarQuadra(body);
     }
 
@@ -238,14 +236,13 @@ export default function CadastroQuadra() {
                     params: { idEstabelecimento }
                 });
             } else {
-                console.log(data.message)
                 if (isEditing)
                     Toast.show({ type: 'error', text1: 'Falha na Alteração', text2: data.message });
                 else
                     Toast.show({ type: 'error', text1: 'Falha no Cadastro', text2: data.message });
             }
         } catch (error) {
-            console.error('Erro ao gravar Quadra', error);
+            console.log('Erro ao gravar Quadra', error);
         } finally {
             setLoading(false);
         }

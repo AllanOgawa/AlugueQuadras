@@ -12,7 +12,7 @@ import { Repository, LessThan, MoreThan, Not, Between } from 'typeorm';
 import { Reserva } from './entities/reserva.entity';
 import { CreateReservaDto } from './dto/create-reserva.dto';
 import { QuadraService } from '../quadra.service';
-import { DiaSemana } from '../../horario-funcionamento/enums/dia-semana.enum';
+import { HorarioFuncionamentoService } from '@src/domains/gestao/estabelecimento/horario-funcionamento/horario-funcionamento.service';
 
 @Injectable()
 export class ReservaService {
@@ -22,6 +22,8 @@ export class ReservaService {
 
         @Inject(forwardRef(() => QuadraService))
         private readonly quadraService: QuadraService,
+
+        private readonly horarioFuncionamentoService: HorarioFuncionamentoService,
     ) { }
 
     async create(
@@ -54,22 +56,12 @@ export class ReservaService {
             );
         }
 
-        // Cálculo da duração da reserva (em horas)
-        const duracaoHoras =
-            (dataFim.getTime() - dataInicio.getTime()) / (1000 * 60 * 60);
-        if (duracaoHoras > 4) {
-            throw new BadRequestException(
-                'A reserva não pode exceder 4 horas.',
-            );
-        }
-
-        // Verifica se as reservas estão dentro do horário permitido
-        const horaInicio = dataInicio.getUTCHours();
-        const horaFim = dataFim.getUTCHours();
-        if (horaInicio < 8 || horaFim > 22) {
-            throw new BadRequestException(
-                'Reservas devem ser realizadas entre 08:00 e 22:00.',
-            );
+        try {
+            const inicio = typeof dataInicio === 'string' ? new Date(dataInicio) : dataInicio;
+            const fim = typeof dataFim === 'string' ? new Date(dataFim) : dataFim;
+            await this.horarioFuncionamentoService.checkHorarioFuncionamento(quadra.estabelecimento.idkey, inicio, fim);
+        } catch (error) {
+            throw new BadRequestException(error.message);
         }
 
         const reserva = this.reservaRepository.create({
@@ -139,6 +131,7 @@ export class ReservaService {
             );
         }
     }
+
     async findAllByEstabelecimento(
         estabelecimentoId: number,
     ): Promise<Reserva[]> {
@@ -225,35 +218,32 @@ export class ReservaService {
                     hora < horarioFim;
                     hora.setHours(hora.getHours() + 1)
                 ) {
-                    const horaInicioStr = hora.toTimeString().slice(0, 8);
+                    const horaInicioStr = hora.toISOString();
                     const horaFim = new Date(hora);
                     horaFim.setHours(hora.getHours() + 1);
-                    const horaFimStr = horaFim.toTimeString().slice(0, 8);
+                    const horaFimStr = horaFim.toISOString();
 
                     const isDisponivel = !reservasDia.some((reserva) => {
+                        const reservaInicio = new Date(
+                            reserva.dataInicio,
+                        ).toISOString();
+                        const reservaFim = new Date(
+                            reserva.dataFim,
+                        ).toISOString();
                         const conflitoInicio =
-                            reserva.dataInicio <= hora &&
-                            reserva.dataFim > hora;
+                            reservaInicio <= horaInicioStr &&
+                            reservaFim > horaInicioStr;
                         const conflitoFim =
-                            reserva.dataInicio < horaFim &&
-                            reserva.dataFim >= horaFim;
-
-                        if (conflitoInicio || conflitoFim) {
-                            console.log('Conflito encontrado para horário:', {
-                                horaInicio: horaInicioStr,
-                                horaFim: horaFimStr,
-                                reservaInicio: reserva.dataInicio,
-                                reservaFim: reserva.dataFim,
-                            });
-                        }
+                            reservaInicio < horaFimStr &&
+                            reservaFim >= horaFimStr;
 
                         return conflitoInicio || conflitoFim;
                     });
 
                     if (isDisponivel) {
                         horasDisponiveis.push({
-                            horaInicio: horaInicioStr,
-                            horaFim: horaFimStr,
+                            horaInicio: horaInicioStr.slice(11, 19), // Convertendo de volta para formato de hora
+                            horaFim: horaFimStr.slice(11, 19),
                         });
                     }
                 }

@@ -1,5 +1,4 @@
 import { View, Text, ScrollView } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
 import { AcomodacoesProps } from '@src/interfaces/acomodacoes';
 import Icone from './icone';
 

@@ -11,6 +11,8 @@ services:
     command: ["node", "-r", "dotenv/config", "dist/src/main.js", "dotenv_config_path=env/homologation.env"]
     networks:
       - nginx_proxy
+    volumes:
+      - /mnt/api-aluguequadras/homologation:/app/data
 
 networks:
   nginx_proxy:

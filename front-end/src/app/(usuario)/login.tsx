@@ -32,9 +32,8 @@ export default function UsuarioLogin() {
     async function setAccessToken(access_token: string) {
         try {
             await AsyncStorage.setItem("access_token", access_token);
-            console.log('Dados armazenados no localStorage com sucesso');
         } catch (e) {
-            console.error('Erro ao salvar dados', e);
+            console.log('Erro ao salvar dados', e);
         }
     };
 

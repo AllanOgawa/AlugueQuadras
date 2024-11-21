@@ -7,9 +7,6 @@ export default function EstabelecimentoLayout() {
 			<Stack.Screen name="detalhes" options={{
 				headerShown: true, headerTitle: "", animation: "ios"
 			}} />
-			<Stack.Screen name="avaliacoes" options={{
-				headerShown: true, headerTitle: "Avaliações", animation: "ios"
-			}} />
 			<Stack.Screen name='menu' options={{
 				headerShown: false, headerTitle: "Estabelecimentos", animation: "ios"
 			}} />

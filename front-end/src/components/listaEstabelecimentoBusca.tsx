@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, ActivityIndicator, Pressable, Modal, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, Pressable, Modal, Dimensions } from 'react-native';
 import { EstabelecimentoProps } from '../interfaces/estabelecimento';
 import Constants from 'expo-constants';
 import HorizontalLine from './horizontalLine';
 import { Ionicons } from '@expo/vector-icons';
 import Loading from './loading';
 import { QuadraProps } from '../interfaces/quadra';
-import Estabelecimento from '../app/(estabelecimento)/detalhes';
 
 const { width, height } = Dimensions.get('window');
 const bucketUrl = Constants.expoConfig?.extra?.bucketUrl || '';
