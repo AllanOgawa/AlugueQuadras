@@ -13,7 +13,6 @@ import {
 } from '@nestjs/common';
 import { ReservaService } from './reserva.service';
 import { CreateReservaDto } from './dto/create-reserva.dto';
-import { UpdateReservaDto } from './dto/update-reserva.dto';
 import { JwtAuthGuard } from '@src/domains/auth/guard/jwt-auth.guard';
 import {
     ApiBearerAuth,
@@ -27,7 +26,8 @@ import { Reserva } from './entities/reserva.entity';
 @ApiTags('Reserva')
 @Controller('estabelecimento/quadra/reserva')
 export class ReservaController {
-    constructor(private readonly reservaService: ReservaService) { }
+    constructor(private readonly reservaService: ReservaService,
+    ) { }
 
     @Post('new')
     @UseGuards(JwtAuthGuard)
@@ -45,11 +45,12 @@ export class ReservaController {
         } catch (error) {
             if (error instanceof HttpException) {
                 throw error;
+            } else {
+                throw new HttpException(
+                    'Erro ao criar reserva',
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                );
             }
-            throw new HttpException(
-                'Erro ao criar reserva',
-                HttpStatus.INTERNAL_SERVER_ERROR,
-            );
         }
     }
 

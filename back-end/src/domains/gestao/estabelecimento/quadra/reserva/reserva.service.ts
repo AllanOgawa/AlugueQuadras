@@ -12,7 +12,7 @@ import { Repository, LessThan, MoreThan, Not, Between } from 'typeorm';
 import { Reserva } from './entities/reserva.entity';
 import { CreateReservaDto } from './dto/create-reserva.dto';
 import { QuadraService } from '../quadra.service';
-import { DiaSemana } from '../../horario-funcionamento/enums/dia-semana.enum';
+import { HorarioFuncionamentoService } from '@src/domains/gestao/estabelecimento/horario-funcionamento/horario-funcionamento.service';
 
 @Injectable()
 export class ReservaService {
@@ -22,7 +22,9 @@ export class ReservaService {
 
         @Inject(forwardRef(() => QuadraService))
         private readonly quadraService: QuadraService,
-    ) {}
+
+        private readonly horarioFuncionamentoService: HorarioFuncionamentoService,
+    ) { }
 
     async create(
         usuario: any,
@@ -63,14 +65,7 @@ export class ReservaService {
             );
         }
 
-        // Verifica se as reservas estão dentro do horário permitido
-        const horaInicio = dataInicio.getUTCHours();
-        const horaFim = dataFim.getUTCHours();
-        if (horaInicio < 8 || horaFim > 22) {
-            throw new BadRequestException(
-                'Reservas devem ser realizadas entre 08:00 e 22:00.',
-            );
-        }
+        await this.horarioFuncionamentoService.checkHorarioFuncionamento(quadra.estabelecimento.idkey, dataInicio, dataFim);
 
         const reserva = this.reservaRepository.create({
             dataInicio,
@@ -139,6 +134,7 @@ export class ReservaService {
             );
         }
     }
+
     async findAllByEstabelecimento(
         estabelecimentoId: number,
     ): Promise<Reserva[]> {

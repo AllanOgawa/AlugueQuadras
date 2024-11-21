@@ -22,6 +22,10 @@ export function setupSwagger(app: INestApplication): void {
     .addTag('Estabelecimento', 'Endpoints para a gestão dos estabelecimentos.')
     .addTag('Quadra', 'Endpoints que lidam com operações de CRUD de quadras esportivas.')
     .addTag('Storage', 'Endpoints para a gestão do bucket, controla o envio de imagens.')
+    .addTag('Tipo Esporte', 'Endpoints que lidam com operações de CRUD de tipos de esportes.')
+    .addTag('Acomodação', 'Endpoints que lidam com operações de CRUD de acomodaçoes do estabelecimento.')
+    .addTag('Horário de Funcionamento', 'Endpoints que lidam com operações de leitura de horários de funcionamento.')
+    .addTag('Reserva', 'Endpoints que lidam com operações de CRUD de reservas das quadras.')
     .addTag('Health', 'Endpoints para testar a disponibilidade da aplicação.')
     .build();
 
