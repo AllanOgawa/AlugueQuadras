@@ -56,16 +56,13 @@ export class ReservaService {
             );
         }
 
-        // Cálculo da duração da reserva (em horas)
-        const duracaoHoras =
-            (dataFim.getTime() - dataInicio.getTime()) / (1000 * 60 * 60);
-        if (duracaoHoras > 4) {
-            throw new BadRequestException(
-                'A reserva não pode exceder 4 horas.',
-            );
+        try {
+            const inicio = typeof dataInicio === 'string' ? new Date(dataInicio) : dataInicio;
+            const fim = typeof dataFim === 'string' ? new Date(dataFim) : dataFim;
+            await this.horarioFuncionamentoService.checkHorarioFuncionamento(quadra.estabelecimento.idkey, inicio, fim);
+        } catch (error) {
+            throw new BadRequestException(error.message);
         }
-
-        await this.horarioFuncionamentoService.checkHorarioFuncionamento(quadra.estabelecimento.idkey, dataInicio, dataFim);
 
         const reserva = this.reservaRepository.create({
             dataInicio,

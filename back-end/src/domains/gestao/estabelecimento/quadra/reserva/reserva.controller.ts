@@ -10,6 +10,7 @@ import {
     UseGuards,
     HttpException,
     HttpStatus,
+    BadRequestException,
 } from '@nestjs/common';
 import { ReservaService } from './reserva.service';
 import { CreateReservaDto } from './dto/create-reserva.dto';
@@ -44,6 +45,8 @@ export class ReservaController {
             return await this.reservaService.create(req.user, createReservaDto);
         } catch (error) {
             if (error instanceof HttpException) {
+                throw error;
+            } else if (error instanceof BadRequestException) {
                 throw error;
             } else {
                 throw new HttpException(
