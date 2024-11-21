@@ -186,4 +186,56 @@ export class HorarioFuncionamentoService {
       await queryRunner.release();
     }
   }
+
+  async checkHorarioFuncionamento(
+    estabelecimentoIdkey: number,
+    dataInicio: Date,
+    dataFim: Date,
+  ): Promise<void> {
+    
+    const horariosFuncionamento = await this.findAllByEstabelecimento(estabelecimentoIdkey);
+
+    const dataInicioStr = dataInicio.toISOString().split('T')[0];
+    const dataFimStr = dataFim.toISOString().split('T')[0];
+    if (dataInicioStr !== dataFimStr) {
+      throw new BadRequestException('Reservas devem estar dentro de um único dia.');
+    }
+
+    const diaSemana = dataInicio.getUTCDay();
+    const horariosHoje = horariosFuncionamento.filter(
+      horario => horario.diaSemana === diaSemana,
+    );
+
+    if (horariosHoje.length === 0) {
+      throw new BadRequestException('Estabelecimento está fechado neste dia.');
+    }
+
+    const reservaInicioMinutos = dataInicio.getUTCHours() * 60 + dataInicio.getUTCMinutes();
+    const reservaFimMinutos = dataFim.getUTCHours() * 60 + dataFim.getUTCMinutes();
+
+    let reservaDentroDoHorario = false;
+
+    for (const horario of horariosHoje) {
+      const [horaAbertura, minutoAbertura] = horario.horaAbertura.split(':').map(Number);
+      const [horaFechamento, minutoFechamento] = horario.horaFechamento.split(':').map(Number);
+
+      const aberturaMinutos = horaAbertura * 60 + minutoAbertura;
+      const fechamentoMinutos = horaFechamento * 60 + minutoFechamento;
+
+      if (
+        reservaInicioMinutos >= aberturaMinutos &&
+        reservaFimMinutos <= fechamentoMinutos
+      ) {
+        reservaDentroDoHorario = true;
+        break;
+      }
+    }
+
+    if (!reservaDentroDoHorario) {
+      throw new BadRequestException(
+        'Reserva fora do horário de funcionamento do estabelecimento.',
+      );
+    }
+  }
+  
 }

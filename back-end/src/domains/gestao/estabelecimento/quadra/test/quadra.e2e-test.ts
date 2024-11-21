@@ -207,6 +207,11 @@ export default function (getApp: () => INestApplication) {
         .delete(`/estabelecimento/quadra/remove/${quadraId}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .expect(200);
+
+      await request(app.getHttpServer())
+        .delete(`/estabelecimento/remove/${estabelecimentoId}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .expect(200);
     });
 
   });
