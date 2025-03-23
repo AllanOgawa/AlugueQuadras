@@ -1,0 +1,99 @@
+scope: pg-cluster
+namespace: /db/
+name: postgres1
+
+restapi:
+  listen: "0.0.0.0:8008"
+  connect_address: "192.168.1.3:8008"
+
+etcd3:
+  hosts: 192.168.1.3:2379
+
+# Somente pra inicializar o postgres
+bootstrap:
+  dcs:
+    ttl: 30
+    loop_wait: 10
+    retry_timeout: 10
+    maximum_lag_on_failover: 1048576
+  parameters:
+    wal_level: replica
+    hot_standby: "on"
+    wal_keep_segments: 128MB
+    max_wal_senders: 5
+    max_replication_slots: 5
+    checkpoint_timeout: 30
+  postgresql:
+    use_slots: true
+    use_pg_rewind: true
+    authentication:
+      superuser:
+        username: "postgres"
+        password: "postgres"
+      replication:
+        username: "replicator"
+        password: "r3pl1c4#2025!"
+    pg_hba:
+      - local all all md5
+      - local all all scram-sha-256
+      - host all all 0.0.0.0/0 md5
+      - host all all 0.0.0.0/0 scram-sha-256
+      - host replication replicator 0.0.0.0/0 scram-sha-256
+  initdb:
+    - encoding: "UTF8"
+    - data-checksums
+
+postgresql:
+  listen: "0.0.0.0:5433"
+  connect_address: "192.168.1.3:5433"
+  data_dir: "/var/lib/postgresql/data/pgdata"
+  bin_dir: "/usr/lib/postgresql/17/bin/"
+  authentication:
+    superuser:
+      username: "postgres"
+      password: "postgres"
+      scram-sha-256: true
+    replication:
+      username: "replicator"
+      password: "r3pl1c4#2025!"
+      scram-sha-256: true
+  parameters:
+    use_slots: true
+    max_replication_slots: 5
+    wal_level: replica
+    max_wal_senders: 10
+    synchronous_commit: on
+    synchronous_standby_names: "postgres2"
+    hot_standby: on
+    archive_mode: on
+    archive_command: "/bin/true"
+  pg_hba:
+    - local all all md5
+    - local all all scram-sha-256
+    - host all all 0.0.0.0/0 md5
+    - host all all 0.0.0.0/0 scram-sha-256
+    - host replication replicator 0.0.0.0/0 scram-sha-256
+
+healthcheck:
+  enabled: true # Habilita o health check
+  interval: 10 # Intervalo em segundos entre as verificações de saúde
+  retries: 3 # Número de tentativas antes de considerar o nó como não saudável
+  timeout: 5 # Tempo máximo (em segundos) para aguardar uma resposta do health check
+
+watchdog:
+  enabled: true
+  ttl: 10
+  failover_timeout: 30
+  node_name: postgres1
+  master_start_timeout: 300
+  synchronous_mode: false
+  script_max_timeout: 30
+  script_timeout: 10
+  loop_wait: 10
+  retry_timeout: 10
+  maximum_lag_on_failover: 1048576
+
+log:
+  level: DEBUG
+  dir: /etc/patroni/logs
+  file_num: 5
