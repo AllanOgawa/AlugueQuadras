@@ -1,7 +1,7 @@
 services:
   back-end-aluguequadras-homologation:
     build:
-      context: ../../
+      context: ../../../back-end/
       dockerfile: docker/homologation/Dockerfile
     image: back-end-aluguequadras:homologation
     container_name: back-end-aluguequadras-homologation

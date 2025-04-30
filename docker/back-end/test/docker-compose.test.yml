@@ -1,7 +1,7 @@
 services:
   back-end-aluguequadras-test:
     build:
-      context: ../../
+      context: ../../../back-end/
       dockerfile: docker/test/Dockerfile
     image: back-end-aluguequadras:test
     container_name: back-end-aluguequadras-test

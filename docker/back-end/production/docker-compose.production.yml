@@ -1,7 +1,7 @@
 services:
   back-end-aluguequadras-production:
     build:
-      context: ../../
+      context: ../../../back-end/
       dockerfile: docker/production/Dockerfile
     image: back-end-aluguequadras:production
     container_name: back-end-aluguequadras-production

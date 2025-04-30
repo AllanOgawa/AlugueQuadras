@@ -1,0 +1,23 @@
+auth_modules:
+  postgresql1:
+    type: userpass
+    userpass:
+      username: postgres
+      password: postgres
+    options:
+      # options become key=value parameters of the DSN
+      sslmode: disable
+      dbname: postgres
+      host: 192.168.1.3
+      port: 5433
+  postgresql2:
+    type: userpass
+    userpass:
+      username: postgres
+      password: postgres
+    options:
+      # options become key=value parameters of the DSN
+      sslmode: disable
+      dbname: postgres
+      host: 192.168.1.3
+      port: 5434

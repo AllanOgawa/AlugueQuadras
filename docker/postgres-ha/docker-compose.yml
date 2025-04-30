@@ -1,0 +1,105 @@
+services:
+  # Serviço etcd (backend para o Patroni)
+  etcd:
+    image: quay.io/coreos/etcd:v3.5.0
+    hostname: etcd
+    container_name: etcd
+    environment:
+      - ETCD_NAME=etcd1
+      - ETCD_DATA_DIR=/etcd-data
+      - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
+      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
+      - ETCD_INITIAL_CLUSTER=etcd1=http://etcd:2380
+      - ETCD_INITIAL_ADVERTISE_PEER_URLS=http://etcd:2380
+    ports:
+      - "2379:2379" # Porta para clientes
+      # - "2380:2380" # Porta para comunicação entre nós etcd (se tiver cluster)
+    networks:
+      - postgresql_network
+
+  postgresql1:
+    build: ./postgresql1/
+    hostname: postgresql1
+    container_name: postgresql1
+    privileged: true
+    volumes:
+      - postgres-data1:/var/lib/postgresql/data
+    ports:
+      - "5433:5433" # Porta do PostgreSQL
+      - "8008:8008" # Porta da API REST do Patroni
+    depends_on:
+      - etcd
+    networks:
+      - postgresql_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8008/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  postgresql2:
+    build: ./postgresql2/
+    hostname: postgresql2
+    container_name: postgresql2
+    privileged: true
+    volumes:
+      - postgres-data2:/var/lib/postgresql/data
+    ports:
+      - "5434:5434" # Porta do PostgreSQL
+      - "8009:8009" # Porta da API REST do Patroni
+    depends_on:
+      - etcd
+      - postgresql1
+    networks:
+      - postgresql_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8009/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  pgpool:
+    build: ./pgpool
+    hostname: pgpool
+    container_name: pgpool
+    # restart: always
+    ports:
+      - "5432:5432"
+      - "9719:9719"
+      # - "9898:9898" PCP port (UNIX, not TCP)
+    depends_on:
+      postgresql1:
+        condition: service_healthy
+      postgresql2:
+        condition: service_healthy
+    volumes:
+      - ./pgpool/config/pool_hba.conf:/etc/pgpool2/pool_hba.conf  
+      - ./pgpool/config/pcp.conf:/etc/pgpool2/pcp.conf  
+      - ./pgpool/config/pgpool.conf:/etc/pgpool2/pgpool.conf  
+      - ./pgpool/config/pool_passwd:/etc/pgpool2/pool_passwd
+    networks:
+      - postgresql_network
+
+  postgres_exporter:
+    build: ./postgres-exporter
+    hostname: postgres-exporter
+    container_name: postgres-exporter
+    # restart: always
+    ports:
+      - "9187:9187"
+    depends_on:
+      postgresql1:
+        condition: service_healthy
+      postgresql2:
+        condition: service_healthy
+    networks:
+      - postgresql_network
+
+volumes:
+  postgres-data1:
+  postgres-data2:
+
+
+networks:
+  postgresql_network:
+    driver: bridge
